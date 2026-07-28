@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>三三的工作台</title>
+<style>
+:root{--bg:#f5eeff;--card:#fdfaff;--text:#2d2d3f;--t2:#7c7c8a;--b:#e9d5ff;--p:#8b5cf6;--s:#10b981;--w:#f59e0b;--d:#ef4444;--r:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:14px;padding:16px;min-height:100vh}
+h1{font-size:22px;font-weight:800;margin-bottom:4px}
+.sub{font-size:13px;color:var(--t2);margin-bottom:14px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.c1{text-align:center;padding:12px 8px;border-radius:var(--r)}
+.c1 i{font-size:20px;display:block;margin-bottom:4px}
+.c1 b{font-size:26px;display:block}
+.c1 s{font-size:11px;color:var(--t2)}
+.row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--b)}
+.row:last-child{border:none}
+.chk{width:18px;height:18px;border:2px solid var(--b);border-radius:6px;flex-shrink:0;cursor:pointer}
+.chk.done{background:var(--s);border-color:var(--s);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold}
+.info{flex:1;min-width:0}
+.title{font-size:13px;font-weight:500}
+.title.done{text-decoration:line-through;color:var(--t2)}
+.meta{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+.tag{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:500}
+.t-h{background:#fef2f2;color:#dc2626}.t-m{background:#eff6ff;color:#2563eb}.t-l{background:#f3f4f6;color:#6b7280}
+.t-d{background:#f0fdf4;color:#16a34a}.t-w{background:#dcfce7;color:#16a34a}
+.inp{display:flex;gap:6px;margin-top:12px}
+.inp input{flex:1;padding:10px 12px;border:1px solid var(--b);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--card)}
+.inp input:focus{border-color:var(--p)}
+.btn{padding:8px 14px;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
+.btn-p{background:var(--p);color:white}
+.btn-m{background:var(--p);color:white;padding:6px 10px;font-size:16px;min-width:40px}
+.btn-rec{background:var(--d);color:white}
+.nav{display:flex;justify-content:space-around;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--b);padding:8px 0;padding-bottom:env(safe-area-inset-bottom)}
+.nav a{display:flex;flex-direction:column;align-items:center;text-decoration:none;color:#a78bfa;font-size:10px;gap:2px}
+.nav a span:first-child{font-size:20px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:100;align-items:center;justify-content:center;padding:16px}
+.modal>div{background:white;border-radius:var(--r);padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
+.modal label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-top:10px}
+.modal input,.modal select,.modal textarea{width:100%;padding:8px 10px;border:1px solid var(--b);border-radius:8px;font-size:13px;font-family:inherit;margin-top:3px;outline:none}
+#emptyMsg{padding:30px;text-align:center;color:var(--t2);font-size:13px}
+</style>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi5LiJ5LiJ55qE5bel5L2c5Y%2BwIiwic2hvcnRfbmFtZSI6IuS4ieS4ieW3peS9nOWPsCIsInN0YXJ0X3VybCI6Ii4vIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2Y1ZWVmZiIsInRoZW1lX2NvbG9yIjoiIzhiNWNmNiJ9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="三三工作台">
+<meta name="theme-color" content="#8b5cf6">
+</head>
+<body>
+
+<h1>📚 三三的工作台</h1>
+<div class="sub" id="today">加载中...</div>
+
+<div class="cards" id="dash"></div>
+
+<div class="card">
+  <div style="font-weight:600;margin-bottom:8px">🔥 今日 Top3</div>
+  <div id="t3list"><div id="emptyMsg">还没有 Top3，去下方编辑任务标记</div></div>
+</div>
+
+<div class="card">
+  <div style="font-weight:600;margin-bottom:8px">📋 快速记录</div>
+  <div class="inp">
+    <input id="qin" placeholder="打字或🎤语音..." onkeydown="if(event.key==='Enter')saveInbox()">
+    <button class="btn btn-m" id="micBtn" onclick="voice()">🎤</button>
+    <button class="btn btn-p" onclick="saveInbox()">记</button>
+  </div>
+</div>
+
+<div class="card">
+  <div style="font-weight:600;margin-bottom:8px">📥 收件箱 <span id="ic">0</span>条待处理</div>
+  <div id="ibox"><div id="emptyMsg">空</div></div>
+</div>
+
+<div class="card">
+  <div style="font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between;">
+    <span>📋 全部任务 <b id="tc">0</b></span>
+    <button class="btn btn-p" onclick="editTask()">+ 新建</button>
+  </div>
+  <div id="tlist"><div id="emptyMsg">没有任务，点"新建"创建第一个</div></div>
+</div>
+
+<!-- 编辑弹窗 -->
+<div class="modal" id="em">
+  <div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <b id="emt">新建任务</b>
+      <button onclick="closeEdit()" style="border:none;background:none;font-size:18px;cursor:pointer">✕</button>
+    </div>
+    <input type="hidden" id="eid">
+    <label>标题*</label><input id="en" placeholder="任务名称">
+    <label>描述</label><input id="ed" placeholder="补充说明">
+    <div style="display:flex;gap:8px">
+      <div style="flex:1"><label>优先级</label><select id="ep"><option>低</option><option>中</option><option>高</option></select></div>
+      <div style="flex:1"><label>状态</label><select id="es"><option>待办</option><option>进行中</option><option>已完成</option></select></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1"><label>开始</label><input type="date" id="estart"></div>
+      <div style="flex:1"><label>截止</label><input type="date" id="edue"></div>
+    </div>
+    <label>负责人</label><input id="ea" placeholder="谁负责">
+    <label>协同人</label><input id="ec" placeholder="谁配合">
+    <div style="display:flex;gap:12px;margin-top:10px">
+      <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" id="et3"> Top3</label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" id="erisk"> 风险</label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" id="ems"> 里程碑</label>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:14px">
+      <button onclick="delTask()" id="delbtn" style="display:none;background:none;border:1px solid var(--d);color:var(--d);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">🗑 删除</button>
+      <span style="flex:1"></span>
+      <button onclick="closeEdit()" style="background:none;border:1px solid var(--b);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">取消</button>
+      <button class="btn btn-p" onclick="saveEdit()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 底部导航 -->
+<div class="nav">
+  <a href="#" onclick="scrollToEl('#dash')"><span>🏠</span>首页</a>
+  <a href="#" onclick="scrollToEl('#tlist')"><span>📋</span>任务</a>
+  <a href="#" onclick="scrollToEl('#ibox')"><span>📥</span>收件箱</a>
+</div>
+
+<script>
+function S(k){return localStorage.getItem('wb_'+k)}
+function SS(k,v){localStorage.setItem('wb_'+k,v)}
+function T(){return JSON.parse(S('tasks')||'[]')}
+function ST(ts){SS('tasks',JSON.stringify(ts))}
+function I(){return JSON.parse(S('inbox')||'[]')}
+function SI(ix){SS('inbox',JSON.stringify(ix))}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
+function fmt(d){if(!d)return'';var p=d.split('-');return p[1]+'月'+p[2]+'日'}
+function fmtShort(d){if(!d)return'';var p=d.split('-');return p[1]+'/'+p[2]}
+function todayISO(){return new Date().toISOString().slice(0,10)}
+
+function render(){
+  var ts=T(),ix=I(),tday=todayISO();
+  document.getElementById('today').textContent=fmt(tday)+' · '+['周日','周一','周二','周三','周四','周五','周六'][new Date().getDay()];
+  
+  // 数据卡
+  var todo=ts.filter(function(t){return t.status!=='已完成';});
+  var done=ts.filter(function(t){return t.status==='已完成';});
+  var risk=ts.filter(function(t){return t.risk&&t.status!=='已完成';});
+  var doneToday=done.filter(function(t){return t.doneDate===tday;});
+  document.getElementById('dash').innerHTML=
+    '<div class="c1 card"><i>📋</i><b style="color:var(--w)">'+todo.length+'</b><s>待办</s></div>'+
+    '<div class="c1 card"><i>⚠️</i><b style="color:var(--d)">'+risk.length+'</b><s>风险</s></div>'+
+    '<div class="c1 card"><i>✅</i><b style="color:var(--s)">'+doneToday.length+'</b><s>今日完成</s></div>'+
+    '<div class="c1 card"><i>📂</i><b style="color:var(--p)">'+(todo.length+done.length)+'</b><s>总任务</s></div>';
+
+  // Top3
+  var t3=ts.filter(function(t){return t.top3&&t.status!=='已完成';}).slice(0,3);
+  var h='';
+  if(t3.length===0){h='<div id="emptyMsg">还没有 Top3</div>';}
+  else{t3.forEach(function(t,i){h+=taskRow(t,i+1);});}
+  document.getElementById('t3list').innerHTML=h;
+
+  // 全部任务
+  document.getElementById('tc').textContent=ts.length+done.length;
+  ts.sort(function(a,b){return (a.start||a.due||'')>(b.start||b.due||'')?1:(a.start||a.due||'')<(b.start||b.due||'')?-1:0;});
+  var th='';
+  if(ts.length===0&&done.length===0){th='<div id="emptyMsg">没有任务</div>';}
+  else{
+    // 分组
+    var groups={};
+    ts.forEach(function(t){
+      var k=t.start||t.due||'无日期';
+      if(!groups[k])groups[k]=[];
+      groups[k].push(t);
+    });
+    Object.keys(groups).sort().forEach(function(k){
+      if(k!=='无日期'){th+='<div style="padding:8px 0 4px;font-size:13px;font-weight:600;color:var(--p);border-bottom:2px solid var(--b);margin-bottom:4px;">'+k+' · '+groups[k].length+'项</div>';}
+      groups[k].forEach(function(t){th+=taskRow(t);});
+    });
+    done.forEach(function(t){th+=taskRow(t);});
+  }
+  document.getElementById('tlist').innerHTML=th;
+
+  // 收件箱
+  var pending=ix.filter(function(x){return !x.done;});
+  document.getElementById('ic').textContent=pending.length;
+  var ih='';
+  if(ix.length===0){ih='<div id="emptyMsg">空</div>';}
+  else{
+    ix.forEach(function(x,i){
+      ih+='<div class="row">'+
+        (x.done?'<span style="font-size:11px;color:var(--t2);background:var(--bg);padding:2px 8px;border-radius:8px;flex-shrink:0">✓ 已处理</span>':
+        '<span style="font-size:11px;color:var(--w);background:#fff7ed;padding:2px 8px;border-radius:8px;flex-shrink:0">⏳ 待处理</span>')+
+        '<div class="info"><div class="title">'+x.content+'</div></div>'+
+        (x.done?'<button onclick="delInbox('+i+')" style="border:none;background:none;color:var(--d);cursor:pointer;font-size:16px">🗑</button>':
+        '<button onclick="convInbox('+i+')" style="border:none;background:var(--p);color:white;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer">转任务</button>'+
+        '<button onclick="archInbox('+i+')" style="border:none;background:var(--b);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer">归档</button>')+
+      '</div>';
+    });
+  }
+  document.getElementById('ibox').innerHTML=ih;
+}
+
+function taskRow(t,num){
+  var pcl=t.priority==='高'?'t-h':t.priority==='中'?'t-m':'t-l';
+  var scl=t.status==='已完成'?'t-d':t.status==='进行中'?'t-m':'t-l';
+  var numBadge=num?'<b style="color:var(--d)">'+num+'. </b>':'';
+  return '<div class="row">'+
+    '<div class="chk'+(t.status==='已完成'?' done':'')+'" onclick="toggleTask(\''+t.id+'\')">'+(t.status==='已完成'?'✓':'')+'</div>'+
+    '<div class="info" onclick="editTask(\''+t.id+'\')">'+
+      '<div class="title'+(t.status==='已完成'?' done':'')+'">'+numBadge+t.title+'</div>'+
+      '<div class="meta">'+
+        '<span class="tag '+pcl+'">'+t.priority+'</span>'+
+        '<span class="tag '+scl+'">'+t.status+'</span>'+
+        (t.start?'<span style="font-size:10px;color:var(--t2)">'+fmtShort(t.start):'')+
+        (t.due?' → '+fmtShort(t.due)+'</span>':'')+
+        (t.assignee?'<span style="font-size:10px;color:var(--t2)">👤'+t.assignee+'</span>':'')+
+        (t.risk?'<span class="tag t-h">⚠️</span>':'')+
+        (t.milestone?'<span style="background:#f3e8ff;color:#7c3aed;font-size:10px;padding:2px 6px;border-radius:8px">📍</span>':'')+
+      '</div>'+
+    '</div>'+
+    '<span style="font-size:10px;color:var(--t2);flex-shrink:0">'+(t.start?fmtShort(t.start):t.due?fmtShort(t.due):'')+'</span>'+
+    '<button onclick="event.stopPropagation();delById(\''+t.id+'\')" style="border:none;background:none;color:var(--d);cursor:pointer;font-size:14px">🗑</button>'+
+  '</div>';
+}
+
+function editTask(id){
+  document.getElementById('eid').value='';['en','ed','ea','ec'].forEach(function(x){document.getElementById(x).value='';});
+  document.getElementById('ep').value='低';document.getElementById('es').value='待办';
+  document.getElementById('estart').value='';document.getElementById('edue').value='';
+  document.getElementById('et3').checked=false;document.getElementById('erisk').checked=false;
+  document.getElementById('ems').checked=false;document.getElementById('delbtn').style.display='none';
+  if(id){
+    var ts=T(),t=ts.find(function(x){return x.id===id;});
+    if(!t)return;
+    document.getElementById('emt').textContent='编辑任务';
+    document.getElementById('eid').value=t.id;
+    document.getElementById('en').value=t.title;
+    document.getElementById('ed').value=t.desc||'';
+    document.getElementById('ep').value=t.priority||'低';
+    document.getElementById('es').value=t.status||'待办';
+    document.getElementById('estart').value=t.start||'';
+    document.getElementById('edue').value=t.due||'';
+    document.getElementById('ea').value=t.assignee||'';
+    document.getElementById('ec').value=t.collab||'';
+    document.getElementById('et3').checked=!!t.top3;
+    document.getElementById('erisk').checked=!!t.risk;
+    document.getElementById('ems').checked=!!t.milestone;
+    document.getElementById('delbtn').style.display='block';
+  }else{
+    document.getElementById('emt').textContent='新建任务';
+  }
+  document.getElementById('em').style.display='flex';
+}
+
+function closeEdit(){document.getElementById('em').style.display='none';}
+
+function saveEdit(){
+  var id=document.getElementById('eid').value;
+  var ts=T();
+  var data={
+    id:id||uid(),
+    title:document.getElementById('en').value.trim(),
+    desc:document.getElementById('ed').value.trim(),
+    priority:document.getElementById('ep').value,
+    status:document.getElementById('es').value,
+    start:document.getElementById('estart').value,
+    due:document.getElementById('edue').value,
+    assignee:document.getElementById('ea').value.trim(),
+    collab:document.getElementById('ec').value.trim(),
+    top3:document.getElementById('et3').checked,
+    risk:document.getElementById('erisk').checked,
+    milestone:document.getElementById('ems').checked,
+    doneDate:document.getElementById('es').value==='已完成'?todayISO():''
+  };
+  if(!data.title){alert('标题不能为空');return;}
+  if(id){
+    var idx=ts.findIndex(function(x){return x.id===id;});
+    if(idx>=0){data.createdAt=ts[idx].createdAt;ts[idx]=data;}
+  }else{
+    data.createdAt=todayISO();ts.push(data);
+  }
+  ST(ts);closeEdit();render();
+}
+
+function toggleTask(id){
+  var ts=T(),t=ts.find(function(x){return x.id===id;});
+  if(!t)return;
+  t.status=t.status==='已完成'?'待办':'已完成';
+  t.doneDate=t.status==='已完成'?todayISO():'';
+  ST(ts);render();
+}
+
+function delById(id){
+  if(!confirm('删除？'))return;
+  var ts=T().filter(function(x){return x.id!==id;});
+  ST(ts);render();
+}
+
+function delTask(){
+  delById(document.getElementById('eid').value);closeEdit();
+}
+
+function saveInbox(){
+  var v=document.getElementById('qin').value.trim();
+  if(!v)return;
+  var ix=I();ix.push({content:v,time:new Date().toLocaleString('zh-CN')});SI(ix);
+  document.getElementById('qin').value='';render();
+}
+
+function convInbox(i){
+  var ix=I(),v=ix[i].content;
+  ix[i].done=true;SI(ix);
+  var ts=T();
+  ts.push({id:uid(),title:v,priority:'低',status:'待办',start:'',due:'',assignee:'',collab:'',top3:false,risk:false,milestone:false,doneDate:'',createdAt:todayISO()});
+  ST(ts);render();
+}
+
+function archInbox(i){var ix=I();ix[i].done=true;SI(ix);render();}
+function delInbox(i){var ix=I();ix.splice(i,1);SI(ix);render();}
+
+// 语音
+var rec=null;
+function voice(){
+  var b=document.getElementById('micBtn');
+  if(rec&&rec.listening){rec.stop();b.className='btn btn-m';b.textContent='🎤';return;}
+  if(!rec){
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){alert('浏览器不支持语音');return;}
+    rec=new SR();rec.lang='zh-CN';rec.interimResults=false;
+    rec.onresult=function(e){document.getElementById('qin').value=e.results[0][0].transcript;b.className='btn btn-m';b.textContent='🎤';};
+    rec.onerror=rec.onend=function(){b.className='btn btn-m';b.textContent='🎤';};
+  }
+  rec.start();b.className='btn btn-rec';b.textContent='⏺';
+}
+
+function scrollToEl(sel){document.querySelector(sel).scrollIntoView({behavior:'smooth'});}
+document.getElementById('em').addEventListener('click',function(e){if(e.target===this)closeEdit();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeEdit();});
+
+render();
+</script>
+</body>
+</html>
