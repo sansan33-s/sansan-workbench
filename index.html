@@ -1,43 +1,33 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>三三的工作台</title>
-<link rel="manifest" href="data:application/json,eyJuYW1lIjoi5LiJ5LiJ55qE5bel5L2c5Y-wIiwic2hvcnRfbmFtZSI6IuS4ieS4ieW3peS9nOWPsCIsInN0YXJ0X3VybCI6Ii4vIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2Y1ZWVmZiIsInRoZW1lX2NvbG9yIjoiIzhiNWNmNiJ9">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="三三工作台">
-<meta name="theme-color" content="#8b5cf6">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>三三的工作台</title>
+<link rel="manifest" href="data:application/json,eyJuYW1lIjoi5LiJ5LiJ55qE5bel5L2c5Y-wIn0=">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="三三工作台"><meta name="theme-color" content="#8b5cf6">
 <style>
-:root{--bg:#f5eeff;--card:#fdfaff;--txt:#2d2d3f;--t2:#7c7c8a;--b:#e9d5ff;--p:#8b5cf6;--s:#10b981;--w:#f59e0b;--d:#ef4444;--r:12px}
+:root{--bg:#f5eeff;--c:#fdfaff;--t:#2d2d3f;--t2:#7c7c8a;--b:#e9d5ff;--p:#8b5cf6;--s:#10b981;--w:#f59e0b;--d:#ef4444;--r:12px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);font-size:14px;padding:16px 16px 80px;min-height:100vh}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t);font-size:14px;padding:16px 16px 80px;min-height:100vh}
 h1{font-size:22px;font-weight:800;margin-bottom:2px}
 .sub{font-size:13px;color:var(--t2);margin-bottom:14px}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
-.card{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:14px;margin-bottom:12px}
-.c1{text-align:center;padding:12px 8px;border-radius:var(--r);cursor:pointer;text-decoration:none;color:var(--txt)}
+.card{background:var(--c);border:1px solid var(--b);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.c1{text-align:center;padding:12px 8px;border-radius:var(--r);cursor:pointer}
 .c1 i{font-size:20px;display:block;margin-bottom:4px}
-.c1 b{font-size:26px;display:block}
-.c1 s{font-size:11px;color:var(--t2)}
+.c1 b{font-size:26px;display:block}.c1 s{font-size:11px;color:var(--t2)}
 .bh{font-weight:600;font-size:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-.row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--b)}
+.row{display:flex;align-items:center;position:relative;overflow:hidden;border-bottom:1px solid var(--b);min-height:44px}
 .row:last-child{border:none}
-.chk{width:18px;height:18px;border:2px solid var(--b);border-radius:6px;flex-shrink:0;cursor:pointer}
+.ri{display:flex;align-items:center;gap:8px;width:100%;padding:8px 0;background:var(--c);position:relative;z-index:2;transition:transform .2s;flex-shrink:0}
+.sdb{position:absolute;right:0;top:0;bottom:0;width:70px;background:var(--d);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;z-index:1;cursor:pointer}
+.chk{width:18px;height:18px;border:2px solid var(--b);border-radius:6px;flex-shrink:0;cursor:pointer;margin-left:4px}
 .chk.done{background:var(--s);border-color:var(--s);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold}
-.inf{flex:1;min-width:0;cursor:pointer}
-.ti{font-size:13px;font-weight:500}
-.ti.done{text-decoration:line-through;color:var(--t2)}
-.meta{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
-.tag{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:500}
-.t-h{background:#fef2f2;color:#dc2626}.t-m{background:#eff6ff;color:#2563eb}.t-l{background:#f3f4f6;color:#6b7280}.t-d{background:#f0fdf4;color:#16a34a}.t-p{background:#f3e8ff;color:#7c3aed}
-.inp{display:flex;gap:6px}
-.inp input{flex:1;padding:10px 12px;border:1px solid var(--b);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--card)}
-.inp input:focus{border-color:var(--p)}
-.btn{padding:8px 14px;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
-.btn-p{background:var(--p);color:white}.btn-s{background:var(--s);color:white}.btn-d{background:var(--d);color:white}
-.btn-o{background:none;border:1px solid var(--b);color:var(--t2);border-radius:8px}
+.inf{flex:1;min-width:0}.ti{font-size:13px;font-weight:500}.ti.done{text-decoration:line-through;color:var(--t2)}
+.meta{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}.tag{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:500}
+.t-h{background:#fef2f2;color:#dc2626}.t-m{background:#eff6ff;color:#2563eb}.t-l{background:#f3f4f6;color:#6b7280}.t-d{background:#f0fdf4;color:#16a34a}.t-p{background:#f3e8ff;color:#7c3aed}.t-w{background:#fff7ed;color:#ea580c}
+.inp{display:flex;gap:6px}.inp input{flex:1;padding:10px 12px;border:1px solid var(--b);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--c)}
+.btn{padding:8px 14px;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap}
+.btn-p{background:var(--p);color:white}.btn-o{background:none;border:1px solid var(--b);color:var(--t2);border-radius:8px}
 .em{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:100;align-items:center;justify-content:center;padding:16px}
 .em>div{background:white;border-radius:var(--r);padding:20px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto}
 .em label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-top:10px}
@@ -45,58 +35,51 @@ h1{font-size:22px;font-weight:800;margin-bottom:2px}
 .flex{display:flex;gap:10px}.flex>*{flex:1}
 .nav{display:flex;justify-content:space-around;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--b);padding:8px 0;padding-bottom:env(safe-area-inset-bottom);z-index:50}
 .nav a{display:flex;flex-direction:column;align-items:center;text-decoration:none;color:#a78bfa;font-size:10px;gap:2px;padding:4px 8px;border-radius:8px}
-.nav a.sel{color:var(--p);font-weight:600}
-.nav a span:first-child{font-size:20px}
-.progress{height:8px;background:var(--b);border-radius:4px;overflow:hidden;margin:8px 0}
-.progress>div{height:100%;border-radius:4px;background:var(--p)}
-.timeline{padding:8px 0 4px;font-size:13px;font-weight:600;color:var(--p);border-bottom:2px solid var(--b);margin-bottom:4px}
+.nav a.sel{color:var(--p);font-weight:600}.nav a span:first-child{font-size:20px}
+.progress{height:8px;background:var(--b);border-radius:4px;overflow:hidden;margin:8px 0}.progress>div{height:100%;border-radius:4px}
+.timeline{padding:8px 0 4px;font-size:13px;font-weight:600;color:var(--p);border-bottom:2px solid var(--b);margin:8px 0 4px}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--p);color:white;padding:8px 16px;border-radius:20px;font-size:12px;z-index:200;opacity:0;transition:opacity .3s}.toast.show{opacity:1}
+.pb-stages{display:flex;justify-content:space-between;margin:12px 0 8px;padding:0 10px}
+.pb-stage{font-size:11px;color:var(--t2)}.pb-row{display:flex;align-items:center;margin-bottom:8px;gap:8px}
+.pb-track{flex:1;display:flex;justify-content:space-between;position:relative;padding:0 10px}
+.pb-track:before{content:'';position:absolute;left:10px;right:10px;height:2px;background:var(--b);top:50%;transform:translateY(-50%);z-index:0}
+.pb-dot{width:12px;height:12px;border-radius:50%;position:relative;z-index:1}
+.overdue-bar{background:#fef2f2;border:1px solid #fecaca;padding:10px;border-radius:8px;margin-bottom:10px;font-size:12px;display:none}
 .cl{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.cc{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:10px;font-size:12px}
-.cc-name{font-weight:600;font-size:13px}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--p);color:white;padding:8px 16px;border-radius:20px;font-size:12px;z-index:200;opacity:0;transition:opacity .3s}
-.toast.show{opacity:1}
 </style>
-</head>
+<style id="inj"></style></head>
 <body>
-
-<!-- Pages -->
 <div id="pg-home">
-<h1>📚 三三的工作台</h1>
-<div class="sub" id="today"></div>
+<h1>📚 三三的工作台</h1><div class="sub" id="today"></div>
 <div class="cards" id="dash"></div>
+<div class="card" id="pbCard"><div class="bh">🎯 项目进度看板</div><div id="pboard"></div></div>
 <div class="card"><div class="bh">🔥 今日 Top3</div><div id="t3list"></div></div>
-<div class="card">
-<div class="bh">📥 快速记录</div>
-<div class="inp"><input id="qin" placeholder="打字或🎤语音..." onkeydown="if(event.key==='Enter'){RI()}"><button class="btn btn-p" id="mb" onclick="VC()">🎤</button><button class="btn btn-p" onclick="RI()">记</button></div></div>
+<div class="card"><div class="bh">📥 快速记录</div><div class="inp"><input id="qin" placeholder="打字或🎤语音..." onkeydown="if(event.key==='Enter'){RI()}"><button class="btn btn-p" id="mb" onclick="VC()">🎤</button><button class="btn btn-p" onclick="RI()">记</button></div></div>
 </div>
 
 <div id="pg-tasks" style="display:none">
 <div class="bh" style="margin-bottom:0"><span>📋 全部任务 <b id="tc">0</b></span><button class="btn btn-p" onclick="ET()">+ 新建</button></div>
-<div id="tfilter" style="margin:8px 0;display:flex;gap:6px;flex-wrap:wrap">
-<button class="btn btn-o sel" data-f="全部" onclick="FL('全部',this)">全部</button>
-<button class="btn btn-o" data-f="待办" onclick="FL('待办',this)">待办</button>
-<button class="btn btn-o" data-f="进行中" onclick="FL('进行中',this)">进行中</button>
-<button class="btn btn-o" data-f="已完成" onclick="FL('已完成',this)">已完成</button>
-</div>
-<div id="tlist"></div>
-</div>
+<div style="margin:8px 0;display:flex;gap:6px;flex-wrap:wrap" id="tfilter">
+<button class="btn btn-o sel" onclick="FL('全部',this)">全部</button>
+<button class="btn btn-o" onclick="FL('待办',this)">待办</button>
+<button class="btn btn-o" onclick="FL('进行中',this)">进行中</button>
+<button class="btn btn-o" onclick="FL('已完成',this)">已完成</button></div>
+<div class="overdue-bar" id="ovbar"></div>
+<div id="tlist"></div></div>
 
 <div id="pg-projects" style="display:none">
 <div class="bh"><span>📁 项目 <b id="pjc">0</b></span><button class="btn btn-p" onclick="EP()">+ 新建</button></div>
-<div id="pjlist"></div>
-</div>
+<div id="pboard2"></div>
+<div id="pjlist"></div></div>
 
 <div id="pg-courses" style="display:none">
 <div class="bh"><span>📚 课程库 <b id="crc">0</b></span><button class="btn btn-p" onclick="EC()">+ 新建</button></div>
-<div id="crlist"></div>
-</div>
+<div id="crlist"></div></div>
 
 <div id="pg-inbox" style="display:none">
-<div class="bh"><span>📥 收件箱 <b id="ic">0</b>条</span></div>
-<div id="ibox"></div>
-</div>
+<div class="bh"><span>📥 收件箱 <b id="ic">0</b>条</span></div><div id="ibox"></div></div>
 
-<!-- 任务编辑弹窗 -->
+<!-- 任务弹窗 -->
 <div class="em" id="em-task"><div>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><b id="emtt">新建任务</b><button onclick="CE()" style="border:none;background:none;font-size:18px;cursor:pointer">✕</button></div>
 <input type="hidden" id="eid"><label>标题*</label><input id="en" placeholder="任务名称"><label>描述</label><input id="ed" placeholder="补充说明">
@@ -107,66 +90,54 @@ h1{font-size:22px;font-weight:800;margin-bottom:2px}
 <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
 <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" id="et3"> Top3</label>
 <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" id="erisk"> 风险</label>
-<label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" id="ems"> 里程碑</label>
-</div>
+<label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" id="ems"> 里程碑</label></div>
 <div style="display:flex;gap:6px;margin-top:14px">
 <button onclick="DEL()" id="delbtn" style="display:none;background:none;border:1px solid var(--d);color:var(--d);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">🗑 删除</button>
-<span style="flex:1"></span><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" onclick="SE()">保存</button>
-</div></div></div>
+<span style="flex:1"></span><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" onclick="SE()">保存</button></div></div></div>
 
 <!-- 项目弹窗 -->
 <div class="em" id="em-proj"><div>
 <div style="display:flex;justify-content:space-between;margin-bottom:12px"><b id="empt">新建项目</b><button onclick="CE()" style="border:none;background:none;font-size:18px;cursor:pointer">✕</button></div>
 <input type="hidden" id="peid"><label>名称*</label><input id="pen"><label>类型</label><select id="pet"><option>半日营</option><option>周末营</option><option>夏令营</option><option>冬令营</option><option>校企合作</option></select>
 <label>学段</label><select id="peg"><option value="">不限</option><option>小学3-6年级</option><option>初中</option><option>高中</option></select>
+<label>阶段</label><select id="peph"><option>筹备</option><option>执行中</option><option>收尾</option><option>已完成</option></select>
 <label>状态</label><select id="pes"><option>筹备中</option><option>进行中</option><option>已结束</option></select>
 <label>客户/学校</label><input id="pecl"><label>下一步</label><input id="penx"><label>备注</label><textarea id="peno" rows="2"></textarea>
-<div class="flex" style="margin-top:14px"><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" onclick="SPE()">保存</button></div>
-</div></div>
+<div class="flex" style="margin-top:14px"><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" onclick="SPE()">保存</button></div></div></div>
 
 <!-- 课程弹窗 -->
 <div class="em" id="em-course"><div>
 <div style="display:flex;justify-content:space-between;margin-bottom:12px"><b id="emct">新建课程</b><button onclick="CE()" style="border:none;background:none;font-size:18px;cursor:pointer">✕</button></div>
 <input type="hidden" id="ceid"><label>名称*</label><input id="cen"><label>主题</label><input id="ces"><label>学段</label><select id="ceg"><option value="">不限</option><option>小学3-6年级</option><option>初中</option><option>高中</option></select>
-<label>状态</label><select id="cest"><option>研发中</option><option>试用</option><option>定稿</option></select>
-<label>备注</label><textarea id="ceno" rows="2"></textarea>
+<label>状态</label><select id="cest"><option>研发中</option><option>试用</option><option>定稿</option></select><label>备注</label><textarea id="ceno" rows="2"></textarea>
 <div style="display:flex;gap:12px;margin-top:10px">
 <label style="font-size:12px"><input type="checkbox" id="cesl"> 课件</label>
 <label style="font-size:12px"><input type="checkbox" id="cepl"> 教案</label>
-<label style="font-size:12px"><input type="checkbox" id="cews"> 学习单</label>
-</div>
-<div class="flex" style="margin-top:14px"><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" onclick="SCE()">保存</button></div>
-</div></div>
+<label style="font-size:12px"><input type="checkbox" id="cews"> 学习单</label></div>
+<div class="flex" style="margin-top:14px"><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" onclick="SCE()">保存</button></div></div></div>
 
 <div class="toast" id="toast"></div>
-
-<!-- 底部导航 -->
 <div class="nav">
 <a href="#" onclick="SW(0,this)" class="sel"><span>🏠</span>首页</a>
 <a href="#" onclick="SW(1,this)"><span>📋</span>任务</a>
 <a href="#" onclick="SW(2,this)"><span>📁</span>项目</a>
 <a href="#" onclick="SW(3,this)"><span>📚</span>课程</a>
-<a href="#" onclick="SW(4,this)"><span>📥</span>收件箱</a>
-</div>
+<a href="#" onclick="SW(4,this)"><span>📥</span>收件箱</a></div>
 
 <script>
-function L(k){return JSON.parse(localStorage.getItem('wb_'+k)||'{}')}
+function L(k){return JSON.parse(localStorage.getItem('wb_'+k)||'[]')}
 function LS(k,v){localStorage.setItem('wb_'+k,JSON.stringify(v))}
-function TT(){return L('tasks')||[]}
-function ST(ts){LS('tasks',ts)}
-function PP(){return L('projects')||[]}
-function SP(ps){LS('projects',ps)}
-function CC(){return L('courses')||[]}
-function SC(cs){LS('courses',cs)}
-function II(){return L('inbox')||[]}
-function SI(ix){LS('inbox',ix)}
+function TT(){return L('tasks')}function ST(v){LS('tasks',v)}
+function PP(){return L('projects')}function SP(v){LS('projects',v)}
+function CC(){return L('courses')}function SC(v){LS('courses',v)}
+function II(){return L('inbox')}function SI(v){LS('inbox',v)}
 function UD(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-function TDAY(){return new Date().toISOString().slice(0,10)}
+function TD(){return new Date().toISOString().slice(0,10)}
 function F(d){if(!d)return'';var p=d.split('-');return p[1]+'月'+p[2]+'日'}
 function FS(d){if(!d)return'';var p=d.split('-');return p[1]+'/'+p[2]}
-function C(sel){return document.querySelector(sel)}
-function CL(sel){return document.querySelectorAll(sel)}
-
+function C(s){return document.querySelector(s)}
+function CL(s){return document.querySelectorAll(s)}
+function TO(m){var t=C('#toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
 var cf='全部',pg=0;
 
 function SW(n,t){
@@ -176,118 +147,155 @@ function SW(n,t){
 }
 
 function RN(){
-  var ts=TT(),ps=PP(),cs=CC(),ix=II(),tday=TDAY();
+  var ts=TT(),ps=PP(),cs=CC(),ix=II(),tday=TD();
   C('#today').textContent=F(tday)+' · '+['周日','周一','周二','周三','周四','周五','周六'][new Date().getDay()];
-
-  // 项目下拉
   var pjSel=C('#epj');pjSel.innerHTML='<option value="">不关联</option>';
   ps.forEach(function(p){pjSel.innerHTML+='<option value="'+p.id+'">'+p.name+'</option>';});
 
-  // 首页
   if(pg===0){
     var todo=ts.filter(function(t){return t.status!=='已完成';});
     var done=ts.filter(function(t){return t.status==='已完成';});
     var risk=ts.filter(function(t){return t.risk&&t.status!=='已完成';});
-    var activePj=ps.filter(function(p){return p.status!=='已结束';});
+    var ap=ps.filter(function(p){return p.status!=='已结束';});
     C('#dash').innerHTML=
-      '<div class="c1 card"><i>📁</i><b style="color:var(--p)">'+activePj.length+'</b><s>进行中项目</s></div>'+
-      '<div class="c1 card"><i>📋</i><b style="color:var(--w)">'+todo.length+'</b><s>待办</s></div>'+
+      '<div class="c1 card"><i>📁</i><b style="color:var(--p)">'+ap.length+'</b><s>进行中项目</s></div>'+
+      '<div class="c1 card" onclick="SW(1,CL(\'.nav a\')[1])"><i>📋</i><b style="color:var(--w)">'+todo.length+'</b><s>待办</s></div>'+
       '<div class="c1 card"><i>⚠️</i><b style="color:var(--d)">'+risk.length+'</b><s>风险</s></div>'+
       '<div class="c1 card"><i>✅</i><b style="color:var(--s)">'+done.length+'</b><s>已完成</s></div>';
-    var t3=ts.filter(function(t){return t.top3&&t.status!=='已完成';}).slice(0,3);
-    C('#t3list').innerHTML=t3.length?t3.map(function(t,i){return TK(t,i+1);}).join(''):'<div style="padding:10px;text-align:center;color:var(--t2);font-size:12px">还没有 Top3</div>';
-    var ixPend=ix.filter(function(x){return !x.done;});
-    C('#ic').textContent=ixPend.length;
+    C('#t3list').innerHTML=(function(){
+      var t3=ts.filter(function(t){return t.top3&&t.status!=='已完成';}).slice(0,3);
+      if(!t3.length)return'<div style="padding:10px;text-align:center;color:var(--t2);font-size:12px">还没有 Top3</div>';
+      return t3.map(function(t,i){return TK(t,i+1);}).join('');
+    })();
+    // 进度看板
+    C('#pboard').innerHTML=(function(){
+      if(!ps.length)return'<div style="padding:10px;text-align:center;color:var(--t2);font-size:12px">暂无项目</div>';
+      var stages=['筹备','执行中','收尾','已完成'];
+      var h='<div class="pb-stages">'+stages.map(function(s){return'<span class="pb-stage">'+s+'</span>';}).join('')+'</div>';
+      ps.forEach(function(p){
+        var si=stages.indexOf(p.phase||'筹备');if(si<0)si=0;
+        h+='<div class="pb-row"><span style="font-size:11px;width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.name+'</span><div class="pb-track">';
+        stages.forEach(function(s,i){
+          var bg=i<si?'var(--s)':i===si?'var(--w)':'var(--b)';
+          h+='<div class="pb-dot" style="background:'+bg+(i===si?';box-shadow:0 0 0 4px rgba(245,158,11,0.2)':'')+'"></div>';
+        });
+        h+='</div></div>';
+      });
+      return h;
+    })();
+    var ip=ix.filter(function(x){return !x.done;});
+    C('#ic').textContent=ip.length;
     C('#ibox').innerHTML=ix.length?ix.map(IX).join(''):'<div style="padding:10px;text-align:center;color:var(--t2);font-size:12px">空</div>';
   }
 
-  // 任务页
   if(pg===1){
     var fts=ts;
-    if(cf==='待办')fts=ts.filter(function(t){return t.status!=='已完成'&&!t.start||t.start>TDAY();});
-    else if(cf==='进行中')fts=ts.filter(function(t){return t.status!=='已完成'&&t.start&&t.start<=TDAY();});
+    if(cf==='待办')fts=ts.filter(function(t){return t.status!=='已完成'&&(!t.start||t.start>tday);});
+    else if(cf==='进行中')fts=ts.filter(function(t){return t.status!=='已完成'&&t.start&&t.start<=tday;});
     else if(cf==='已完成')fts=ts.filter(function(t){return t.status==='已完成';});
     C('#tc').textContent=fts.length;
-    // 逾期条
-    var ov=fts.filter(function(t){return t.due&&t.due<TDAY&&t.status!=='已完成';});
-    var oh=ov.length&&cf==='全部'?'<div style="background:#fef2f2;border:1px solid #fecaca;padding:10px;border-radius:8px;margin-bottom:10px;font-size:12px">⏰ 即将逾期 '+ov.length+' 项：'+ov.map(function(t){return t.title.substr(0,10)+'…';}).join(' · ')+'</div>':'';
-    // 分组
-    var gr={};
-    fts.forEach(function(t){var k=t.start||t.due||'无日期';if(!gr[k])gr[k]=[];gr[k].push(t);});
-    var h=oh;
-    Object.keys(gr).sort().forEach(function(k){
+    var ov=fts.filter(function(t){return t.due&&t.due<tday&&t.status!=='已完成';});
+    var ob=C('#ovbar');
+    if(ov.length&&cf==='全部'){ob.style.display='block';ob.innerHTML='⏰ 即将逾期 '+ov.length+' 项 · '+ov.map(function(t){return t.title.substr(0,12)+'…';}).join(' | ');}
+    else{ob.style.display='none';}
+    var gr={};fts.forEach(function(t){var k=t.start||t.due||'无日期';if(!gr[k])gr[k]=[];gr[k].push(t);});
+    var h='';Object.keys(gr).sort().forEach(function(k){
       if(k!=='无日期')h+='<div class="timeline">'+k+' · '+gr[k].length+'项</div>';
       gr[k].forEach(function(t){h+=TK(t);});
     });
     C('#tlist').innerHTML=h||'<div style="padding:20px;text-align:center;color:var(--t2)">没有任务</div>';
   }
 
-  // 项目页
   if(pg===2){
     C('#pjc').textContent=ps.length;
+    // 进度看板
+    C('#pboard2').innerHTML=(function(){
+      if(!ps.length)return'<div class="card"><div style="padding:10px;text-align:center;color:var(--t2);font-size:12px">暂无项目</div></div>';
+      var stages=['筹备','执行中','收尾','已完成'];
+      var h='<div class="card"><div class="bh">🎯 进度看板</div><div class="pb-stages">'+stages.map(function(s){return'<span class="pb-stage">'+s+'</span>';}).join('')+'</div>';
+      ps.forEach(function(p){
+        var si=stages.indexOf(p.phase||'筹备');if(si<0)si=0;
+        h+='<div class="pb-row"><span style="font-size:11px;width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.name+'</span><div class="pb-track">';
+        stages.forEach(function(s,i){
+          var bg=i<si?'var(--s)':i===si?'var(--w)':'var(--b)';
+          h+='<div class="pb-dot" style="background:'+bg+(i===si?';box-shadow:0 0 0 4px rgba(245,158,11,0.2)':'')+'"></div>';
+        });
+        h+='</div></div>';
+      });
+      return h+'</div>';
+    })();
     var ph='';
     ps.forEach(function(p){
       var pt=ts.filter(function(t){return t.pj===p.id;});
       var pd=pt.filter(function(t){return t.status==='已完成';}).length;
       var pr=pt.filter(function(t){return t.risk&&t.status!=='已完成';}).length;
-      var tot=pt.length;
+      var tot=pt.length,pct=tot?Math.round(pd/tot*100):0;
       ph+='<div class="card">'+
         '<div style="font-weight:600;font-size:14px;margin-bottom:6px">'+p.name+'</div>'+
         '<div style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap">'+
-          '<span class="tag">'+p.type+'</span>'+'<span class="tag t-m">'+p.status+'</span>'+
+          '<span class="tag t-m">'+p.type+'</span><span class="tag">'+(p.phase||'')+'</span><span class="tag t-m">'+p.status+'</span>'+
         '</div>'+
-        '<div class="progress"><div style="width:'+(tot?Math.round(pd/tot*100):0)+'%"></div></div>'+
-        '<div style="font-size:11px;color:var(--t2);margin-bottom:6px">'+(tot?Math.round(pd/tot*100):0)+'% · 待办'+(tot-pd)+' · 风险'+pr+'</div>'+
-        '<div style="display:flex;gap:6px"><button class="btn btn-o" style="font-size:11px" onclick="EP(\''+p.id+'\')">✏️</button><button class="btn btn-o" style="font-size:11px;color:var(--d)" onclick="DP(\''+p.id+'\')">🗑</button></div>'+
+        '<div class="progress"><div style="width:'+pct+'%;background:'+(pct>=80?'var(--s)':pct>=40?'var(--p)':'var(--w)')+'"></div></div>'+
+        '<div style="font-size:11px;color:var(--t2);margin-bottom:8px">'+pct+'% · 待办'+(tot-pd)+' · 风险'+pr+' · '+(p.client||'')+'</div>'+
+        (p.next?'<div style="background:#f3e8ff;padding:8px;border-radius:8px;font-size:11px;color:var(--p);margin-bottom:8px"><b>下一步：</b>'+p.next+'</div>':'')+
+        '<div style="display:flex;gap:6px"><button class="btn btn-o" style="font-size:11px" onclick="EP(\''+p.id+'\')">✏️ 编辑</button><button class="btn btn-o" style="font-size:11px;color:var(--d)" onclick="DP(\''+p.id+'\')">🗑 删除</button></div>'+
       '</div>';
     });
     C('#pjlist').innerHTML=ph||'<div style="padding:20px;text-align:center;color:var(--t2)">没有项目</div>';
   }
 
-  // 课程页
   if(pg===3){
     C('#crc').textContent=cs.length;
+    var cols={'研发中':[],'试用':[],'定稿':[]};
+    cs.forEach(function(c){var k=c.status==='迭代中'?'定稿':c.status;if(cols[k])cols[k].push(c);});
     var ch='';
-    cs.forEach(function(c){
-      ch+='<div class="card">'+
-        '<div class="cc-name">'+c.name+'</div>'+
-        '<div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">'+
-          (c.subject?'<span class="tag">'+c.subject+'</span>':'')+
-          '<span class="tag t-m">'+c.status+'</span>'+
-          '<span class="tag '+(c.slides?'t-d':'')+'" style="'+(c.slides?'':'opacity:.4')+'">'+(c.slides?'📑课件':'📑')+'</span>'+
-          '<span class="tag '+(c.plan?'t-d':'')+'" style="'+(c.plan?'':'opacity:.4')+'">'+(c.plan?'📝教案':'📝')+'</span>'+
-          '<span class="tag '+(c.ws?'t-d':'')+'" style="'+(c.ws?'':'opacity:.4')+'">'+(c.ws?'📄学习单':'📄')+'</span>'+
-        '</div>'+
-        '<div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-o" style="font-size:11px" onclick="EC(\''+c.id+'\')">✏️</button><button class="btn btn-o" style="font-size:11px;color:var(--d)" onclick="DC(\''+c.id+'\')">🗑</button></div>'+
-      '</div>';
+    ['研发中','试用','定稿'].forEach(function(st,i){
+      var items=cols[st]||[];
+      var clr=['#b45309','#2563eb','#16a34a'][i];
+      ch+='<div class="card"><div style="font-weight:600;font-size:13px;padding-bottom:8px;border-bottom:1px solid var(--b);margin-bottom:8px;border-top:3px solid '+clr+';padding-top:8px">'+['🟡','🔵','🟢'][i]+' '+st+' <span style="font-weight:400;color:var(--t2)">'+items.length+'</span></div>';
+      if(!items.length)ch+='<div style="padding:8px;text-align:center;color:var(--t2);font-size:12px">无</div>';
+      items.forEach(function(c){
+        ch+='<div style="padding:8px 0;border-bottom:1px solid var(--b)">'+
+          '<div style="font-weight:600;font-size:13px">'+c.name+'</div>'+
+          '<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">'+
+            (c.subject?'<span class="tag t-m">'+c.subject+'</span>':'')+
+            '<span class="tag '+(c.slides?'t-d':'')+'" style="'+(c.slides?'':'opacity:.4')+'">'+(c.slides?'📑课件':'📑')+'</span>'+
+            '<span class="tag '+(c.plan?'t-d':'')+'" style="'+(c.plan?'':'opacity:.4')+'">'+(c.plan?'📝教案':'📝')+'</span>'+
+            '<span class="tag '+(c.ws?'t-d':'')+'" style="'+(c.ws?'':'opacity:.4')+'">'+(c.ws?'📄学习单':'📄')+'</span>'+
+          '</div>'+
+          '<div style="display:flex;gap:4px;margin-top:6px"><button class="btn btn-o" style="font-size:10px" onclick="EC(\''+c.id+'\')">✏️</button><button class="btn btn-o" style="font-size:10px;color:var(--d)" onclick="DC(\''+c.id+'\')">🗑</button></div>'+
+        '</div>';
+      });
+      ch+='</div>';
     });
     C('#crlist').innerHTML=ch||'<div style="padding:20px;text-align:center;color:var(--t2)">没有课程</div>';
   }
 
-  // 收件箱
   if(pg===4){
-    var ixPend=ix.filter(function(x){return !x.done;});
-    C('#ic').textContent=ixPend.length;
+    var ip=ix.filter(function(x){return !x.done;});
+    C('#ic').textContent=ip.length;
     C('#ibox').innerHTML=ix.length?ix.map(IX).join(''):'<div style="padding:20px;text-align:center;color:var(--t2)">空</div>';
   }
 }
 
 function TK(t,num){
-  var ho=t.status!=='已完成'&&t.start&&t.start<=TDAY();
+  var ho=t.status!=='已完成'&&t.start&&t.start<=TD();
   var pcl=t.priority==='高'?'t-h':t.priority==='中'?'t-m':'t-l';
+  var stDisplay=t.status==='已完成'?'已完成':ho?'进行中':'待办';
   var scl=t.status==='已完成'?'t-d':ho?'t-m':'t-l';
-  var slabel=t.status==='已完成'?'已完成':ho?'进行中':'待办';
   return '<div class="row">'+
-    '<div class="chk'+(t.status==='已完成'?' done':'')+'" onclick="TG(\''+t.id+'\')">'+(t.status==='已完成'?'✓':'')+'</div>'+
-    '<div class="inf" onclick="ET(\''+t.id+'\')"><div class="ti'+(t.status==='已完成'?' done':'')+'">'+(num?'<b style="color:var(--d)">'+num+'. </b>':'')+t.title+'</div>'+
-    '<div class="meta"><span class="tag '+pcl+'">'+t.priority+'</span><span class="tag '+scl+'">'+slabel+'</span>'+
+    '<div class="sdb" onclick="DEL2(\''+t.id+'\')">删除</div>'+
+    '<div class="ri" onclick="ET(\''+t.id+'\')">'+
+    '<div class="chk'+(t.status==='已完成'?' done':'')+'" onclick="event.stopPropagation();TG(\''+t.id+'\')">'+(t.status==='已完成'?'✓':'')+'</div>'+
+    '<div class="inf"><div class="ti'+(t.status==='已完成'?' done':'')+'">'+(num?'<b style="color:var(--d)">'+num+'. </b>':'')+t.title+'</div>'+
+    '<div class="meta"><span class="tag '+pcl+'">'+t.priority+'</span><span class="tag '+scl+'">'+stDisplay+'</span>'+
     (t.start?'<span style="font-size:10px;color:var(--t2)">'+FS(t.start):'')+(t.due?'→'+FS(t.due)+'</span>':'')+
     (t.assignee?'<span style="font-size:10px;color:var(--t2)">👤'+t.assignee+'</span>':'')+
     (t.risk?'<span class="tag t-h">⚠️</span>':'')+(t.ms?'<span class="tag t-p">📍</span>':'')+'</div></div>'+
     '<span style="font-size:10px;color:var(--t2);flex-shrink:0">'+(t.start?FS(t.start):t.due?FS(t.due):'')+'</span>'+
-  '</div>';
+    '<button onclick="event.stopPropagation();DEL2(\''+t.id+'\')" style="border:none;background:none;color:var(--d);cursor:pointer;font-size:14px;opacity:0;padding:0 4px">🗑</button>'+
+  '</div></div>';
 }
-
 function IX(x,i){
   return '<div class="row">'+
     (x.done?'<span style="font-size:11px;color:var(--t2);background:var(--bg);padding:2px 8px;border-radius:8px;flex-shrink:0">✓ 已处理</span>':
@@ -299,68 +307,54 @@ function IX(x,i){
   '</div>';
 }
 
-// 任务操作
+// Tasks
 function ET(id){
-  C('#eid').value='';['en','ed','ea','eco'].forEach(function(x){C('#'+x).value='';});
-  C('#ep').value='低';C('#es').value='待办';C('#estart').value='';C('#edue').value='';
-  C('#epj').value='';C('#et3').checked=false;C('#erisk').checked=false;C('#ems').checked=false;
-  C('#delbtn').style.display='none';CE('em-task');
-  if(id){
-    var t=TT().find(function(x){return x.id===id;});
-    if(!t)return;
-    C('#emtt').textContent='编辑任务';C('#eid').value=t.id;
-    C('#en').value=t.title;C('#ed').value=t.desc||'';C('#ep').value=t.priority||'低';
-    C('#es').value=t.status||'待办';C('#estart').value=t.start||'';C('#edue').value=t.due||'';
+  C('#eid').value='';['en','ed','ea','eco'].forEach(function(x){C('#'+x).value='';});C('#ep').value='低';
+  C('#es').value='待办';C('#estart').value='';C('#edue').value='';C('#epj').value='';
+  C('#et3').checked=false;C('#erisk').checked=false;C('#ems').checked=false;C('#delbtn').style.display='none';CE('em-task');
+  if(id){var t=TT().find(function(x){return x.id===id;});if(!t)return;
+    C('#emtt').textContent='编辑任务';C('#eid').value=t.id;C('#en').value=t.title;C('#ed').value=t.desc||'';
+    C('#ep').value=t.priority||'低';C('#es').value=t.status||'待办';C('#estart').value=t.start||'';C('#edue').value=t.due||'';
     C('#ea').value=t.assignee||'';C('#eco').value=t.collab||'';C('#epj').value=t.pj||'';
-    C('#et3').checked=!!t.top3;C('#erisk').checked=!!t.risk;C('#ems').checked=!!t.ms;
-    C('#delbtn').style.display='block';
+    C('#et3').checked=!!t.top3;C('#erisk').checked=!!t.risk;C('#ems').checked=!!t.ms;C('#delbtn').style.display='block';
   }else{C('#emtt').textContent='新建任务';}
   C('#em-task').style.display='flex';
 }
-
-function SE(){
-  var id=C('#eid').value,ts=TT();
+function SE(){var id=C('#eid').value,ts=TT();
   var d={id:id||UD(),title:C('#en').value.trim(),desc:C('#ed').value.trim(),priority:C('#ep').value,
     status:C('#es').value,start:C('#estart').value,due:C('#edue').value,assignee:C('#ea').value.trim(),
     collab:C('#eco').value.trim(),pj:C('#epj').value||'',top3:C('#et3').checked,risk:C('#erisk').checked,
-    ms:C('#ems').checked,doneDate:C('#es').value==='已完成'?TDAY():''};
+    ms:C('#ems').checked,doneDate:C('#es').value==='已完成'?TD():''};
   if(!d.title){alert('标题不能为空');return;}
   if(id){var i=ts.findIndex(function(x){return x.id===id;});if(i>=0){d.createdAt=ts[i].createdAt;ts[i]=d;}}
-  else{d.createdAt=TDAY();ts.push(d);}
-  ST(ts);CE();RN();
-}
-
-function TG(id){var ts=TT(),t=ts.find(function(x){return x.id===id;});if(!t)return;t.status=t.status==='已完成'?'待办':'已完成';t.doneDate=t.status==='已完成'?TDAY():'';ST(ts);RN();}
-function DEL(){var id=C('#eid').value;if(!id||!confirm('删除？'))return;ST(TT().filter(function(x){return x.id!==id;}));CE();RN();}
+  else{d.createdAt=TD();ts.push(d);}ST(ts);CE();RN();}
+function TG(id){var ts=TT(),t=ts.find(function(x){return x.id===id;});if(!t)return;t.status=t.status==='已完成'?'待办':'已完成';t.doneDate=t.status==='已完成'?TD():'';ST(ts);RN();}
+function DEL(){if(!confirm('删除？'))return;var id=C('#eid').value;ST(TT().filter(function(x){return x.id!==id;}));CE();RN();}
+function DEL2(id){if(!confirm('删除？'))return;ST(TT().filter(function(x){return x.id!==id;}));RN();}
 function FL(f,t){cf=f;CL('#tfilter .btn').forEach(function(b){b.classList.remove('sel')});t.classList.add('sel');RN();}
 
-// 项目操作
+// Projects
 function EP(id){
   C('#peid').value='';['pen','pecl','penx','peno'].forEach(function(x){C('#'+x).value='';});
-  C('#pet').value='半日营';C('#peg').value='';C('#pes').value='筹备中';CE('em-proj');
+  C('#pet').value='半日营';C('#peg').value='';C('#peph').value='筹备';C('#pes').value='筹备中';CE('em-proj');
   if(id){var p=PP().find(function(x){return x.id===id;});if(!p)return;
-    C('#empt').textContent='编辑项目';C('#peid').value=p.id;C('#pen').value=p.name;
-    C('#pet').value=p.type;C('#peg').value=p.grade||'';C('#pes').value=p.status||'筹备中';
+    C('#empt').textContent='编辑项目';C('#peid').value=p.id;C('#pen').value=p.name;C('#pet').value=p.type;
+    C('#peg').value=p.grade||'';C('#peph').value=p.phase||'筹备';C('#pes').value=p.status||'筹备中';
     C('#pecl').value=p.client||'';C('#penx').value=p.next||'';C('#peno').value=p.notes||'';
   }else{C('#empt').textContent='新建项目';}
   C('#em-proj').style.display='flex';
 }
-
-function SPE(){
-  var id=C('#peid').value,ps=PP();
+function SPE(){var id=C('#peid').value,ps=PP();
   var d={id:id||UD(),name:C('#pen').value.trim(),type:C('#pet').value,grade:C('#peg').value,
-    status:C('#pes').value,client:C('#pecl').value.trim(),next:C('#penx').value.trim(),notes:C('#peno').value.trim()};
+    phase:C('#peph').value,status:C('#pes').value,client:C('#pecl').value.trim(),next:C('#penx').value.trim(),notes:C('#peno').value.trim()};
   if(!d.name){alert('名称不能为空');return;}
-  if(id){var i=ps.findIndex(function(x){return x.id===id;});if(i>=0)ps[i]=d;}else ps.push(d);
-  SP(ps);CE();RN();
-}
-function DP(id){if(!confirm('确定删除这个项目？'))return;SP(PP().filter(function(x){return x.id!==id;}));RN();}
+  if(id){var i=ps.findIndex(function(x){return x.id===id;});if(i>=0)ps[i]=d;}else ps.push(d);SP(ps);CE();RN();}
+function DP(id){if(!confirm('删除项目？'))return;SP(PP().filter(function(x){return x.id!==id;}));RN();}
 
-// 课程操作
+// Courses
 function EC(id){
   C('#ceid').value='';['cen','ces','ceno'].forEach(function(x){C('#'+x).value='';});
-  C('#ceg').value='';C('#cest').value='研发中';C('#cesl').checked=false;C('#cepl').checked=false;C('#cews').checked=false;
-  CE('em-course');
+  C('#ceg').value='';C('#cest').value='研发中';C('#cesl').checked=false;C('#cepl').checked=false;C('#cews').checked=false;CE('em-course');
   if(id){var c=CC().find(function(x){return x.id===id;});if(!c)return;
     C('#emct').textContent='编辑课程';C('#ceid').value=c.id;C('#cen').value=c.name;C('#ces').value=c.subject||'';
     C('#ceg').value=c.grade||'';C('#cest').value=c.status||'研发中';C('#ceno').value=c.notes||'';
@@ -368,48 +362,48 @@ function EC(id){
   }else{C('#emct').textContent='新建课程';}
   C('#em-course').style.display='flex';
 }
-
-function SCE(){
-  var id=C('#ceid').value,cs=CC();
+function SCE(){var id=C('#ceid').value,cs=CC();
   var d={id:id||UD(),name:C('#cen').value.trim(),subject:C('#ces').value.trim(),grade:C('#ceg').value,
     status:C('#cest').value,slides:C('#cesl').checked,plan:C('#cepl').checked,ws:C('#cews').checked,notes:C('#ceno').value.trim()};
   if(!d.name){alert('名称不能为空');return;}
-  if(id){var i=cs.findIndex(function(x){return x.id===id;});if(i>=0)cs[i]=d;}else cs.push(d);
-  SC(cs);CE();RN();
-}
+  if(id){var i=cs.findIndex(function(x){return x.id===id;});if(i>=0)cs[i]=d;}else cs.push(d);SC(cs);CE();RN();}
 function DC(id){if(!confirm('删除？'))return;SC(CC().filter(function(x){return x.id!==id;}));RN();}
 
-// 收件箱
+// Inbox
 function RI(){var v=C('#qin').value.trim();if(!v)return;var ix=II();ix.push({content:v,time:new Date().toLocaleString('zh-CN')});SI(ix);C('#qin').value='';RN();TO('已记录');}
-function CIX(i){var ix=II();ix[i].done=true;SI(ix);var ts=TT();ts.push({id:UD(),title:ix[i].content,priority:'低',status:'待办',start:'',due:'',assignee:'',collab:'',pj:'',top3:false,risk:false,ms:false,doneDate:'',createdAt:TDAY()});ST(ts);RN();TO('已转为任务');}
-function AIX(i){var ix=II();ix[i].done=true;SI(ix);RN();}
-function DIX(i){var ix=II();ix.splice(i,1);SI(ix);RN();}
+function CIX(i){var ix=II();ix[i].done=true;SI(ix);var ts=TT();ts.push({id:UD(),title:ix[i].content,priority:'低',status:'待办',start:'',due:'',assignee:'',collab:'',pj:'',top3:false,risk:false,ms:false,doneDate:'',createdAt:TD()});ST(ts);RN();TO('已转为任务');}
+function AIX(i){var ix=II();ix[i].done=true;SI(ix);RN();}function DIX(i){var ix=II();ix.splice(i,1);SI(ix);RN();}
 
-// 语音
+// Voice
 var rec=null;
 function VC(){var b=C('#mb');if(rec&&rec.listening){rec.stop();b.textContent='🎤';return;}
-  if(!rec){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('浏览器不支持语音');return;}
-    rec=new SR();rec.lang='zh-CN';rec.interimResults=false;rec.onresult=function(e){C('#qin').value=e.results[0][0].transcript;b.textContent='🎤';};rec.onerror=rec.onend=function(){b.textContent='🎤';};}
+  if(!rec){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('不支持语音');return;}
+    rec=new SR();rec.lang='zh-CN';rec.interimResults=false;
+    rec.onresult=function(e){C('#qin').value=e.results[0][0].transcript;b.textContent='🎤';};
+    rec.onerror=rec.onend=function(){b.textContent='🎤';};}
   rec.start();b.textContent='⏺';}
 
-function CE(modalId){
-  if(modalId)C('#'+modalId).style.display='flex';
-  else{CL('.em').forEach(function(m){m.style.display='none'});}
-}
-function TO(msg){var t=C('#toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000);}
+// Left swipe for tasks
+var swX=0,swR=null,swI=null,swS=0;
+document.addEventListener('touchstart',function(e){var r=e.target.closest('.row');if(!r)return;
+  document.querySelectorAll('.row').forEach(function(x){if(x!==r){var i=x.querySelector('.ri');if(i){i.style.transform='';i.style.transition='';}}});
+  swR=r;swI=r.querySelector('.ri');if(!swI)return;swX=e.touches[0].clientX;
+  swS=parseInt((swI.style.transform||'').replace(/[^0-9.-]/g,''))||0;swI.style.transition='none';},{passive:true});
+document.addEventListener('touchmove',function(e){if(!swR||!swI)return;
+  var dx=e.touches[0].clientX-swX+swS;swI.style.transform='translateX('+Math.max(Math.min(dx,0),-70)+'px)';},{passive:true});
+document.addEventListener('touchend',function(){if(!swR||!swI)return;swI.style.transition='transform .2s';
+  var dx=parseInt(swI.style.transform.replace(/[^0-9.-]/g,''))||0;swI.style.transform=dx<-35?'translateX(-70px)':'';swR=null;swI=null;});
 
-// 弹窗背景点击关闭
+function CE(mid){if(mid)C('#'+mid).style.display='flex';else CL('.em').forEach(function(m){m.style.display='none'});}
 CL('.em').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)CE();});});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')CE();});
-
-// 首次加载时自动导入旧数据
+RN();
 if(!localStorage.getItem("wb_tasks")){
   localStorage.setItem("wb_tasks",JSON.stringify([{"id": "1", "title": "元宇宙教学课件审核定稿", "desc": "陈博涵梳理课程、协助修改课件教案及培训——现有内容不适合小学生，制作周期3天", "priority": "高", "status": "已完成", "start": "2026-07-24", "due": "2026-07-26", "assignee": "邱雨槡", "collab": "陈博涵", "pj": "1", "top3": true, "risk": true, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}, {"id": "4", "title": "讲解词审核 → 发至市场部补充", "desc": "钟涵湘已编制初稿，需审核后发至市场部补充（适配小学讲解词）", "priority": "高", "status": "已完成", "start": "2026-07-25", "due": "2026-07-28", "assignee": "邱雨槡", "collab": "钟涵湘", "pj": "1", "top3": false, "risk": true, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}, {"id": "2", "title": "联系综合部彩印研学任务单（20份）", "desc": "A4单面彩印，含4个展项任务+集章区", "priority": "高", "status": "待办", "start": "2026-07-26", "due": "2026-07-27", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": true, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "3", "title": "确认智能交互部二维码demo并反馈修改", "desc": "联系周涛，配置周期2小时，周一先制作demo", "priority": "中", "status": "待办", "start": "2026-07-26", "due": "2026-07-28", "assignee": "邱雨槡", "collab": "周涛", "pj": "1", "top3": true, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "5", "title": "收集10个电话号码注册元宇宙平台账号", "desc": "需提前登录，且须保持当天畅通（内测有时断开）", "priority": "高", "status": "待办", "start": "2026-07-28", "due": "2026-08-03", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": false, "risk": true, "ms": true, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "8", "title": "借用相机（数智营销部-洪风怡）", "desc": "已沟通借用，确认取用时间和归还流程", "priority": "低", "status": "待办", "start": "2026-08-02", "due": "2026-08-03", "assignee": "邱雨槡", "collab": "洪风怡", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "9", "title": "借用扩音器（市场部-翁倩文）", "desc": "已联系借用，确认取用时间", "priority": "低", "status": "待办", "start": "2026-08-03", "due": "2026-08-04", "assignee": "邱雨槡", "collab": "翁倩文", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "7", "title": "联系会务摆放课桌椅及电视", "desc": "2号楼3楼教室，1套课桌椅+电视", "priority": "低", "status": "已完成", "start": "2026-08-03", "due": "2026-08-04", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}, {"id": "6", "title": "笔记本电脑（10台）出库 + 鼠标电源", "desc": "学生上机操作，2人一台。已有设备，需办理出库手续", "priority": "低", "status": "已完成", "start": "2026-08-03", "due": "2026-08-04", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}]));
   localStorage.setItem("wb_projects",JSON.stringify([{"id": "1", "name": "元启未来 屿你同行 — 咪咕元宇宙总部科技研学半日游", "type": "半日营", "grade": "小学3-6年级", "status": "筹备中", "client": "厦门集美XX小学（首次合作，学校对接人：李老师）", "next": "元宇宙教学课件审核定稿", "notes": ""}]));
   localStorage.setItem("wb_courses",JSON.stringify([{"id": "3", "name": "鼓浪屿元宇宙研学任务单", "subject": "XR / AIGC", "grade": "小学3-6年级", "status": "定稿", "slides": false, "plan": false, "ws": true, "notes": "适配3-6年级学生的研学任务单，分为展厅探秘打卡站（4个打卡点2x2布局）+元宇宙课堂探究（基础闯关+观察记录+思考挑战）+研学成长袋。马卡龙色系圆角设计，打印后手写填写。"}, {"id": "2", "name": "元宇宙展厅参观（小学版）", "subject": "科技文化", "grade": "小学3-6年级", "status": "试用", "slides": false, "plan": false, "ws": true, "notes": "走进咪咕元宇宙总部核心展厅，了解央企科创实践。含企业科创文化讲解10min、XR科普互动5min、AI互动短剧5min、AI合拍5min、XR大空间漫��10min、AR游园打卡10min。"}, {"id": "1", "name": "元宇宙科技启蒙", "subject": "XR技术 / AIGC", "grade": "小学3-6年级", "status": "研发中", "slides": false, "plan": false, "ws": false, "notes": "元宇宙趣味课堂，讲师通俗讲解VR/AR/XR核心概念、AIGC技术原理，解读数字鼓浪屿项目创作背景。含15分钟任务实操 + 15分钟上机体验。"}]));
   localStorage.setItem("wb_inbox",JSON.stringify([{"content": "结营仪式要不要准备小证书/科技探索官认证卡？和任务单呼应", "done": false, "time": "2026-07-27 23:39:19"}, {"content": "下周和智能交互部开会确认AR打卡点位要不要再加一个", "done": false, "time": "2026-07-27 23:39:19"}, {"content": "任务单彩印需要确认纸张克数，上次用的是157g铜版纸效果好", "done": false, "time": "2026-07-27 23:39:19"}]));
 }
-RN();
 </script>
 </body>
 </html>
