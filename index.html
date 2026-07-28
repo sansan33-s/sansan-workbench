@@ -54,7 +54,7 @@ h1{font-size:22px;font-weight:800;margin-bottom:2px}
 <div class="cards" id="dash"></div>
 <div class="card" id="pbCard"><div class="bh">🎯 项目进度看板</div><div id="pboard"></div></div>
 <div class="card"><div class="bh">🔥 今日 Top3</div><div id="t3list"></div></div>
-<div class="card"><div class="bh">📥 快速记录</div><div class="inp"><input id="qin" placeholder="打字或🎤语音..." onkeydown="if(event.key==='Enter'){RI()}"><button class="btn btn-p" id="mb" onclick="VC()">🎤</button><button class="btn btn-p" onclick="RI()">记</button></div></div>
+<div class="card"><div class="bh">📥 快速记录</div><div class="inp"><input id="qin" placeholder="打字或🎤语音..." onkeydown="if(event.key==='Enter'){RI()}"><button class="btn btn-p" id="mb" onclick="VC()">🎤</button><input type="file" accept="image/*" capture="environment" id="imgFile" style="display:none" onchange="IMG()"><button class="btn btn-p" onclick="document.getElementById('imgFile').click()">📷</button><button class="btn btn-p" onclick="RI()">记</button></div></div>
 </div>
 
 <div id="pg-tasks" style="display:none">
@@ -376,6 +376,29 @@ function AIX(i){var ix=II();ix[i].done=true;SI(ix);RN();}function DIX(i){var ix=
 
 // Voice
 var rec=null;
+
+function IMG(){
+  var f=document.getElementById('imgFile').files[0];
+  if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    document.getElementById('imgPreview').src=e.target.result;
+    document.getElementById('imgTitle').value='';
+    document.getElementById('imgDesc').value='';
+    document.getElementById('imgPrio').value='中';
+    C('#em-img').style.display='flex';
+  };
+  r.readAsDataURL(f);
+}
+function SVI(){
+  var t=C('#imgTitle').value.trim()||'图片任务';
+  var d=C('#imgDesc').value.trim();
+  var src=C('#imgPreview').src;
+  var ts=TT();
+  ts.push({id:UD(),title:t,desc:d+(src.indexOf('data:')===0?' [📷图]':''),priority:C('#imgPrio').value,status:'待办',start:'',due:'',assignee:'',collab:'',pj:'',top3:false,risk:false,ms:false,doneDate:'',createdAt:TD(),img:src.indexOf('data:')===0?src:''});
+  ST(ts);CE();RN();TO('图片任务已创建');
+  document.getElementById('imgFile').value='';
+}
 function VC(){var b=C('#mb');if(rec&&rec.listening){rec.stop();b.textContent='🎤';return;}
   if(!rec){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('不支持语音');return;}
     rec=new SR();rec.lang='zh-CN';rec.interimResults=false;
@@ -394,7 +417,7 @@ document.addEventListener('touchmove',function(e){if(!swR||!swI)return;
 document.addEventListener('touchend',function(){if(!swR||!swI)return;swI.style.transition='transform .2s';
   var dx=parseInt(swI.style.transform.replace(/[^0-9.-]/g,''))||0;swI.style.transform=dx<-35?'translateX(-70px)':'';swR=null;swI=null;});
 
-function CE(mid){if(mid)C('#'+mid).style.display='flex';else CL('.em').forEach(function(m){m.style.display='none'});}
+function CE(mid){if(mid)C('#'+mid).style.display='flex';else{CL('.em').forEach(function(m){m.style.display='none'});document.getElementById('imgFile').value='';}}
 CL('.em').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)CE();});});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')CE();});
 RN();
@@ -405,5 +428,14 @@ if(!localStorage.getItem("wb_tasks")){
   localStorage.setItem("wb_inbox",JSON.stringify([{"content": "结营仪式要不要准备小证书/科技探索官认证卡？和任务单呼应", "done": false, "time": "2026-07-27 23:39:19"}, {"content": "下周和智能交互部开会确认AR打卡点位要不要再加一个", "done": false, "time": "2026-07-27 23:39:19"}, {"content": "任务单彩印需要确认纸张克数，上次用的是157g铜版纸效果好", "done": false, "time": "2026-07-27 23:39:19"}]));
 }
 </script>
+
+<div class="em" id="em-img"><div>
+<div style="display:flex;justify-content:space-between;margin-bottom:12px"><b>📷 识图转任务</b><button onclick="CE()" style="border:none;background:none;font-size:18px;cursor:pointer">✕</button></div>
+<img id="imgPreview" style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;margin-bottom:12px;border:1px solid var(--b)">
+<label>标题</label><input id="imgTitle" placeholder="给这个任务起个名字">
+<label>描述（可从图中提取）</label><textarea id="imgDesc" rows="3" placeholder="描述图片内容..."></textarea>
+<label>优先级</label><select id="imgPrio"><option>低</option><option>中</option><option>高</option></select>
+<div class="flex" style="margin-top:14px"><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" onclick="SVI()">保存任务</button></div>
+</div></div>
 </body>
 </html>
