@@ -48,7 +48,9 @@ h1{font-size:22px;font-weight:800;margin-bottom:2px}
 .overdue-bar{background:#fef2f2;border:1px solid #fecaca;padding:10px;border-radius:8px;margin-bottom:10px;font-size:12px;display:none}
 .cl{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 </style>
-<style id="inj"></style></head>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style id="inj"></style>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script></head>
 <body>
 <div id="pg-home">
 <h1>📚 三三的工作台</h1><div class="sub" id="today"></div>
@@ -371,6 +373,27 @@ function SCE(){var id=C('#ceid').value,cs=CC();
 function DC(id){if(!confirm('删除？'))return;SC(CC().filter(function(x){return x.id!==id;}));RN();}
 
 // Inbox
+
+function openFile(){document.getElementById("imgFile").click();}
+function closeOcr(){document.getElementById("ocrModal").style.display="none";document.getElementById("imgFile").value="";}
+function OCRI(){
+  var f=document.getElementById("imgFile").files[0];if(!f)return;
+  var r=new FileReader();r.onload=function(e){
+    document.getElementById("ocrImg").src=e.target.result;
+    document.getElementById("ocrTitle").value="";
+    document.getElementById("ocrText").value="正在识别文字...";
+    document.getElementById("ocrModal").style.display="flex";
+    Tesseract.recognize(e.target.result,"chi_sim",{logger:function(m){
+      if(m.status==="recognizing text")document.getElementById("ocrText").value="识别中 "+Math.round(m.progress*100)+"%";
+    }}).then(function(rst){document.getElementById("ocrText").value=rst.data.text.trim()||"未检测到文字";}).catch(function(){document.getElementById("ocrText").value="识别失败，请手动输入";});
+  };r.readAsDataURL(f);
+}
+function saveOCR(){
+  var t=document.getElementById("ocrTitle").value.trim()||document.getElementById("ocrText").value.split("\n")[0].substr(0,15)||"图片任务";
+  var d=document.getElementById("ocrText").value.trim();
+  var ts=TT();ts.push({id:UD(),title:t,desc:d,priority:"中",status:"待办",start:"",due:"",assignee:"",collab:"",pj:"",top3:false,risk:false,ms:false,doneDate:"",createdAt:TD()});
+  ST(ts);closeOcr();RN();TO("图片已转任务");
+}
 function RI(){var v=C('#qin').value.trim();if(!v)return;var ix=II();ix.push({content:v,time:new Date().toLocaleString('zh-CN')});SI(ix);C('#qin').value='';RN();TO('已记录');}
 function CIX(i){var ix=II();ix[i].done=true;SI(ix);var ts=TT();ts.push({id:UD(),title:ix[i].content,priority:'低',status:'待办',start:'',due:'',assignee:'',collab:'',pj:'',top3:false,risk:false,ms:false,doneDate:'',createdAt:TD()});ST(ts);RN();TO('已转为任务');}
 function AIX(i){var ix=II();ix[i].done=true;SI(ix);RN();}function DIX(i){var ix=II();ix.splice(i,1);SI(ix);RN();}
@@ -437,6 +460,14 @@ if(!localStorage.getItem("wb_tasks")){
 <label>描述（可从图中提取）</label><textarea id="imgDesc" rows="3" placeholder="描述图片内容..."></textarea>
 <label>优先级</label><select id="imgPrio"><option>低</option><option>中</option><option>高</option></select>
 <div class="flex" style="margin-top:14px"><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" onclick="SVI()">保存任务</button></div>
+</div></div>
+
+<div class="em" id="ocrModal"><div>
+<div style="display:flex;justify-content:space-between;margin-bottom:12px"><b>📷 识图转任务</b><button onclick="closeOcr()" style="border:none;background:none;font-size:18px;cursor:pointer">✕</button></div>
+<img id="ocrImg" style="width:100%;max-height:250px;object-fit:contain;border-radius:8px;margin-bottom:10px;border:1px solid var(--b)">
+<label>标题</label><input id="ocrTitle" placeholder="给任务起名">
+<label>识别结果</label><textarea id="ocrText" rows="3" placeholder="识别中..."></textarea>
+<div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-o" onclick="closeOcr()">取消</button><button class="btn btn-p" onclick="saveOCR()">保存任务</button></div>
 </div></div>
 </body>
 </html>
