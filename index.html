@@ -276,7 +276,7 @@ function RN(){
     C('#crlist').innerHTML=ch||'<div style="padding:20px;text-align:center;color:var(--t2)">没有课程</div>';
   }
 
-  if(pg===5){renderCal();REP();WK();}
+  if(pg===5){renderCal();REP();WK();applyView();}
   if(pg===4){
     var ip=ix.filter(function(x){return !x.done;});
     C('#ic').textContent=ip.length;
@@ -398,7 +398,9 @@ function saveOCR(){
   ST(ts);closeOcr();RN();TO("图片已转任务");
 }
 var rpMode="day",rpDate=new Date().toISOString().slice(0,10);
-function RP(m,t){rpMode=m;document.querySelectorAll("#pg-report .btn-o").forEach(function(b){b.classList.remove("sel")});t.classList.add("sel");REP();}
+function applyView(){var m=rpMode;var cal=document.getElementById('calCard');if(cal)cal.style.display=(m==='day')?'':'none';document.querySelectorAll('.day-sec').forEach(function(el){el.style.display=(m==='day')?'':'none';});var wk=document.getElementById('wkCard');if(wk)wk.style.display=(m==='week')?'':'none';var mo=document.getElementById('moCard');if(mo)mo.style.display=(m==='month')?'':'none';document.querySelectorAll('#pg-report .btn-o[data-mode]').forEach(function(b){b.classList.toggle('sel',b.getAttribute('data-mode')===m);});}
+function RP(m,t){rpMode=m;applyView();REP();WK();MO();}
+function gotoToday(){rpDate=new Date().toISOString().slice(0,10);renderCal();RP('day',document.querySelector('#pg-report .btn-o[data-mode="day"]'));}
 function REP(){
   var ts=TT();var lb={"day":"今日","week":"本周","month":"本月"};var day0=rpDate;
   document.getElementById("rpTitle").textContent="📅 "+lb[rpMode]+" "+day0;
@@ -435,8 +437,8 @@ function renderCal(){
   }
   document.getElementById("calGrid").innerHTML=h;
 }
-function CM(n){var d=new Date(rpDate+"T00:00:00");d.setMonth(d.getMonth()+n);rpDate=d.toISOString().slice(0,10);renderCal();REP();MO();}
-function CD(ds){rpDate=ds;rpMode="day";document.querySelectorAll("#pg-report .btn-o").forEach(function(b){b.classList.remove("sel")});var fb=document.querySelector("#pg-report .btn-o");if(fb)fb.classList.add("sel");renderCal();REP();MO();}
+function CM(n){var d=new Date(rpDate+"T00:00:00");d.setMonth(d.getMonth()+n);rpDate=d.toISOString().slice(0,10);renderCal();REP();}
+function CD(ds){rpDate=ds;rpMode="day";document.querySelectorAll("#pg-report .btn-o").forEach(function(b){b.classList.remove("sel")});var fb=document.querySelector("#pg-report .btn-o");if(fb)fb.classList.add("sel");renderCal();REP();applyView();}
 function isoWeek(date){var d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));var dayNum=(d.getUTCDay()+6)%7;d.setUTCDate(d.getUTCDate()-dayNum+3);var firstThu=new Date(Date.UTC(d.getUTCFullYear(),0,4));return 1+Math.round((d-firstThu)/86400000/7);}
 var wkKey="";
 var SEED_WEEKLY={"2026-W29": [{"cat": "科创研学", "name": "研学项目运营", "lead": "邱雨槡", "collab": "钟涵湘", "goal": "10%（课程框架搭建）", "progress": "1、输出小初高研学课程框架初稿\n2、对接咪咕咖啡，敲定融合课程框架\n3、洽谈万千研学，输出落地方案初稿\n4、完成项目成本收益测算模型\n5、组织内部研讨，同步课程规划", "next": "1、输出小学段样例课课程标准\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案 PPT 初稿", "issue": "1、讲解词需涵湘协助，望7.29前交付"}, {"cat": "人社认证", "name": "全媒体运营师竞赛", "lead": "李振阳", "collab": "邱雨槡", "goal": "", "progress": "1、参与赛事复盘，输出模块总结\n2、完成基地物料盘点表初稿", "next": "1、待牵头人同步后续安排", "issue": "1、无"}, {"cat": "日常办公", "name": "商务拓展", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、完成院校合作案例单页制作\n2、接待夏商客户，同步产品体系\n3、对接厦大嘉庚学院，同步AI方案\n4、完成周报模板优化及填写标准编制", "next": "1、跟进商务渠道后续对接安排\n2、跟进周报规范落地执行反馈", "issue": "1、无"}], "2026-W30": [{"cat": "科创研学", "name": "研学项目运营", "lead": "邱雨槡", "collab": "钟涵湘", "goal": "15%（样例课搭建）", "progress": "1、输出小学段样例课课程\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案、PPT、任务单初稿并内部试课打磨\n4、完成AR产品测试", "next": "1、完善样例课\n2、确定课程开发交付标准\n3、跟进及交付半日营活动\n4、开发冰壶课程（竞赛课件）", "issue": "1、冰壶物料到位"}, {"cat": "人社认证", "name": "全媒体运营师竞赛", "lead": "李振阳", "collab": "邱雨槡", "goal": "", "progress": "1、库房冰壶物料查找盘点", "next": "1、无", "issue": ""}, {"cat": "日常办公", "name": "商务拓展", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、接待厦门日报客户，同步研学方案", "next": "1、推进海关半日营落地", "issue": ""}]};
@@ -574,23 +576,23 @@ if(!localStorage.getItem("wb_tasks")){
 <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-o" onclick="closeOcr()">取消</button><button class="btn btn-p" onclick="saveOCR()">保存任务</button></div>
 </div></div>
 <div id="pg-report" style="display:none"><h1>📊 日报周报</h1>
-<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o sel" onclick="RP('day',this)">📅 日</button><button class="btn btn-o" onclick="RP('week',this)">📆 周</button><button class="btn btn-o" onclick="RP('month',this)">🗓 月</button><button class="btn btn-o" style="margin-left:auto" onclick="CD(new Date().toISOString().slice(0,10))">今天</button></div>
-<div class="card" style="margin-bottom:12px"><div class="bh">📅 <span id="calTitle">—</span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="CM(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="CM(1)">›</button></div></div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--t2);margin-bottom:6px"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div></div>
-<div class="card" style="margin-bottom:12px"><div class="bh">📝 周报 <span id="wkNo" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addProj()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveWK()">保存</button></div></div>
+<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o sel" data-mode="day" onclick="RP('day',this)">📅 日</button><button class="btn btn-o" data-mode="week" onclick="RP('week',this)">📆 周</button><button class="btn btn-o" data-mode="month" onclick="RP('month',this)">🗓 月</button><button class="btn btn-o" style="margin-left:auto" onclick="gotoToday()">今天</button></div>
+<div class="card" style="margin-bottom:12px" id="calCard"><div class="bh">📅 <span id="calTitle">—</span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="CM(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="CM(1)">›</button></div></div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--t2);margin-bottom:6px"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div></div>
+<div class="card" style="margin-bottom:12px" id="wkCard"><div class="bh">📝 周报 <span id="wkNo" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addProj()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveWK()">保存</button></div></div>
 <div style="font-size:12px;color:var(--t2);margin-bottom:8px" id="wkRange"></div>
 <div id="wkProjects"></div>
 </div>
-<div class="card" style="margin-bottom:12px"><div class="bh">🗓 月报 · 绩效考核表 <span id="moYM" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addMoRow()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveMo()">保存</button></div></div>
+<div class="card" style="margin-bottom:12px" id="moCard"><div class="bh">🗓 月报 · 绩效考核表 <span id="moYM" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addMoRow()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveMo()">保存</button></div></div>
 <div style="font-size:11px;color:var(--t2);margin:0 0 8px" id="moTitle"></div>
 <div id="moRows"></div>
 </div>
-<div class="card"><div class="bh" id="rpTitle">📅 今日任务汇总</div>
+<div class="card day-sec"><div class="bh" id="rpTitle">📅 今日任务汇总</div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-bottom:12px">
 <div onclick="SG('done')" style="cursor:pointer"><div style="font-size:28px;font-weight:800;color:var(--s)" id="rpDone">0</div><div style="font-size:11px;color:var(--t2)">已完成</div></div>
 <div onclick="SG('todo')" style="cursor:pointer"><div style="font-size:28px;font-weight:800;color:var(--w)" id="rpTodo">0</div><div style="font-size:11px;color:var(--t2)">未完成</div></div>
 <div onclick="SG('help')" style="cursor:pointer"><div style="font-size:28px;font-weight:800;color:var(--d)" id="rpHelp">0</div><div style="font-size:11px;color:var(--t2)">需协助</div></div></div></div>
-<div class="card" style="display:none"><div class="bh">✅ 已完成</div><div id="rpDoneList"></div></div>
-<div class="card"><div class="bh">⏳ 未完成</div><div id="rpTodoList"></div></div>
-<div class="card"><div class="bh">🤝 需协助（标记为风险）</div><div id="rpHelpList"></div></div></div>
+<div class="card day-sec" style="display:none"><div class="bh">✅ 已完成</div><div id="rpDoneList"></div></div>
+<div class="card day-sec"><div class="bh">⏳ 未完成</div><div id="rpTodoList"></div></div>
+<div class="card day-sec"><div class="bh">🤝 需协助（标记为风险）</div><div id="rpHelpList"></div></div></div>
 </body>
 </html>
