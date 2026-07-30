@@ -397,7 +397,7 @@ function saveOCR(){
   var ts=TT();ts.push({id:UD(),title:t,desc:d,priority:"中",status:"待办",start:"",due:"",assignee:"",collab:"",pj:"",top3:false,risk:false,ms:false,doneDate:"",createdAt:TD()});
   ST(ts);closeOcr();RN();TO("图片已转任务");
 }
-var rpMode="day",rpDate=new Date().toISOString().slice(0,10);
+var rpMode="week",rpDate=new Date().toISOString().slice(0,10);
 function applyView(){var m=rpMode;var cal=document.getElementById('calCard');if(cal)cal.style.display=(m==='day')?'':'none';document.querySelectorAll('.day-sec').forEach(function(el){el.style.display=(m==='day')?'':'none';});var wk=document.getElementById('wkCard');if(wk)wk.style.display=(m==='week')?'':'none';var mo=document.getElementById('moCard');if(mo)mo.style.display=(m==='month')?'':'none';document.querySelectorAll('#pg-report .btn-o[data-mode]').forEach(function(b){b.classList.toggle('sel',b.getAttribute('data-mode')===m);});}
 function RP(m,t){rpMode=m;applyView();REP();WK();MO();}
 function gotoToday(){rpDate=new Date().toISOString().slice(0,10);renderCal();RP('day',document.querySelector('#pg-report .btn-o[data-mode="day"]'));}
@@ -576,7 +576,7 @@ if(!localStorage.getItem("wb_tasks")){
 <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-o" onclick="closeOcr()">取消</button><button class="btn btn-p" onclick="saveOCR()">保存任务</button></div>
 </div></div>
 <div id="pg-report" style="display:none"><h1>📊 日报周报</h1>
-<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o sel" data-mode="day" onclick="RP('day',this)">📅 日</button><button class="btn btn-o" data-mode="week" onclick="RP('week',this)">📆 周</button><button class="btn btn-o" data-mode="month" onclick="RP('month',this)">🗓 月</button><button class="btn btn-o" style="margin-left:auto" onclick="gotoToday()">今天</button></div>
+<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o" data-mode="day" onclick="RP('day',this)">📅 日</button><button class="btn btn-o sel" data-mode="week" onclick="RP('week',this)">📆 周</button><button class="btn btn-o" data-mode="month" onclick="RP('month',this)">🗓 月</button><button class="btn btn-o" style="margin-left:auto" onclick="gotoToday()">今天</button></div>
 <div class="card" style="margin-bottom:12px" id="calCard"><div class="bh">📅 <span id="calTitle">—</span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="CM(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="CM(1)">›</button></div></div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--t2);margin-bottom:6px"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div></div>
 <div class="card" style="margin-bottom:12px" id="wkCard"><div class="bh">📝 周报 <span id="wkNo" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addProj()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveWK()">保存</button></div></div>
 <div style="font-size:12px;color:var(--t2);margin-bottom:8px" id="wkRange"></div>
