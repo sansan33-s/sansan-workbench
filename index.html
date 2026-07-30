@@ -447,24 +447,25 @@ function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g
 function friWeekNo(fri){var y=fri.getFullYear();var jan1=new Date(y,0,1);var jd=jan1.getDay();var firstFri=new Date(y,0,1+((5-jd+7)%7));return Math.floor((fri-firstFri)/(7*86400000))+1;}
 function wkMeta(){var d=new Date(rpDate+"T00:00:00");var day=d.getDay();var fri=new Date(d);fri.setDate(d.getDate()-((day+2)%7));var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};var thu=new Date(fri);thu.setDate(fri.getDate()+6);return {key:fri.getFullYear()+"-W"+isoWeek(fri),start:fmt(fri),end:fmt(thu),no:friWeekNo(fri)};}
 function WK(){var m=wkMeta();wkKey=m.key;document.getElementById("wkRange").textContent=m.start+" ~ "+m.end;document.getElementById("wkNo").textContent="第"+m.no+"周";renderWK();MO();}
-function projField(label,f,val){return '<div style="font-size:11px;color:var(--p);font-weight:600;margin:6px 0 2px">'+label+'</div><textarea data-f="'+f+'" rows="2" placeholder="'+label+'" style="width:100%;padding:6px;border:1px solid var(--b);border-radius:6px;font-size:12px;font-family:inherit;resize:vertical">'+esc(val)+'</textarea>';}
+function projField(label,f,val){return '<div style="margin-top:10px"><div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:3px">'+label+'</div><textarea data-f="'+f+'" rows="3" placeholder="'+label+'" style="width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--b);border-radius:8px;font-size:12px;line-height:1.5;font-family:inherit;resize:vertical;background:#fff">'+esc(val)+'</textarea></div>';}
 function renderWK(){
   var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
   if(data[wkKey]===undefined){data[wkKey]=[{cat:"科创研学",name:"研学项目运营",lead:"邱雨槡",collab:"钟涵湘",goal:"",progress:"",next:"",issue:""}];localStorage.setItem("wb_weekly",JSON.stringify(data));}
   var list=data[wkKey];
   var html=list.map(function(p,i){
-    return '<div class="wk-proj" style="border:1px solid var(--b);border-radius:10px;padding:10px;margin-bottom:10px">'+
-      '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">'+
-      '<input value="'+esc(p.cat)+'" placeholder="大类" data-f="cat" style="width:32%;padding:6px;border:1px solid var(--b);border-radius:6px;font-size:12px">'+
-      '<input value="'+esc(p.name)+'" placeholder="项目名称" data-f="name" style="flex:1;padding:6px;border:1px solid var(--b);border-radius:6px;font-size:12px">'+
-      '<button onclick="delProj('+i+')" style="border:none;background:none;color:var(--d);font-size:15px;cursor:pointer;padding:0 4px">✕</button></div>'+
-      '<div style="display:flex;gap:6px;margin-bottom:4px">'+
-      '<input value="'+esc(p.lead)+'" placeholder="牵头人" data-f="lead" style="flex:1;padding:5px;border:1px solid var(--b);border-radius:6px;font-size:11px">'+
-      '<input value="'+esc(p.collab)+'" placeholder="协同人" data-f="collab" style="flex:1;padding:5px;border:1px solid var(--b);border-radius:6px;font-size:11px"></div>'+
+    return '<div class="wk-proj" style="background:var(--c);border:1px solid var(--b);border-radius:12px;padding:12px;margin-bottom:12px">'+
+      '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">'+
+      '<input value="'+esc(p.name)+'" placeholder="项目名称" data-f="name" style="flex:1;min-width:0;font-weight:700;font-size:14px;padding:6px 8px;border:1px solid var(--b);border-radius:8px;background:#fff">'+
+      '<input value="'+esc(p.cat)+'" placeholder="大类" data-f="cat" style="flex:0 0 auto;max-width:42%;font-size:11px;color:var(--p);background:#f3e8ff;border:1px solid var(--b);border-radius:10px;padding:4px 8px">'+
+      '<button onclick="delProj('+i+')" style="flex:0 0 auto;border:none;background:none;color:var(--d);font-size:16px;cursor:pointer;padding:0 2px">✕</button></div>'+
+      '<div style="display:flex;gap:8px;margin-bottom:10px">'+
+      '<div style="flex:1;min-width:0"><div style="font-size:10px;color:var(--t2);margin-bottom:2px">牵头</div><input value="'+esc(p.lead)+'" placeholder="牵头人" data-f="lead" style="width:100%;box-sizing:border-box;padding:6px;border:1px solid var(--b);border-radius:8px;font-size:12px;background:#fff"></div>'+
+      '<div style="flex:1;min-width:0"><div style="font-size:10px;color:var(--t2);margin-bottom:2px">协同</div><input value="'+esc(p.collab)+'" placeholder="协同人" data-f="collab" style="width:100%;box-sizing:border-box;padding:6px;border:1px solid var(--b);border-radius:8px;font-size:12px;background:#fff"></div>'+
+      '</div>'+
       projField("目标完成情况","goal",p.goal)+
       projField("本周进度","progress",p.progress)+
       projField("下周计划","next",p.next)+
-      projField("待解决问题/需协助","issue",p.issue)+
+      projField("待解决问题 / 需协助","issue",p.issue)+
     '</div>';
   }).join("");
   document.getElementById("wkProjects").innerHTML=html||'<div style="text-align:center;color:var(--t2);font-size:12px;padding:12px">暂无项目，点右上“＋”新增</div>';
@@ -483,12 +484,12 @@ function renderMo(){
   if(data[k]===undefined){data[k]=[];localStorage.setItem("wb_monthly",JSON.stringify(data));}
   var list=data[k];
   var html=list.map(function(p,i){
-    return '<div class="wk-proj" style="border:1px solid var(--b);border-radius:10px;padding:10px;margin-bottom:10px">'+
-      '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">'+
-      '<input value="'+esc(p.name)+'" placeholder="姓名" data-f="name" style="width:30%;padding:6px;border:1px solid var(--b);border-radius:6px;font-size:12px">'+
-      '<input value="'+esc(p.project)+'" placeholder="项目名称" data-f="project" style="flex:1;padding:6px;border:1px solid var(--b);border-radius:6px;font-size:12px">'+
-      '<button onclick="delMoRow('+i+')" style="border:none;background:none;color:var(--d);font-size:15px;cursor:pointer;padding:0 4px">✕</button></div>'+
-      '<div style="margin-bottom:6px"><input value="'+esc(p.dept)+'" placeholder="支撑部门" data-f="dept" style="width:100%;padding:5px;border:1px solid var(--b);border-radius:6px;font-size:11px"></div>'+
+    return '<div class="wk-proj" style="background:var(--c);border:1px solid var(--b);border-radius:12px;padding:12px;margin-bottom:12px">'+
+      '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">'+
+      '<input value="'+esc(p.name)+'" placeholder="姓名" data-f="name" style="flex:0 0 30%;min-width:0;font-weight:700;font-size:13px;padding:6px 8px;border:1px solid var(--b);border-radius:8px;background:#fff">'+
+      '<input value="'+esc(p.project)+'" placeholder="项目名称" data-f="project" style="flex:1;min-width:0;font-weight:700;font-size:13px;padding:6px 8px;border:1px solid var(--b);border-radius:8px;background:#fff">'+
+      '<button onclick="delMoRow('+i+')" style="flex:0 0 auto;border:none;background:none;color:var(--d);font-size:16px;cursor:pointer;padding:0 2px">✕</button></div>'+
+      '<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--t2);margin-bottom:2px">支撑部门</div><input value="'+esc(p.dept)+'" placeholder="支撑部门" data-f="dept" style="width:100%;box-sizing:border-box;padding:6px;border:1px solid var(--b);border-radius:8px;font-size:12px;background:#fff"></div>'+
       projField("重点工作目标","goal",p.goal)+
       projField("工作完成情况、主要工作成果","result",p.result)+
     '</div>';
