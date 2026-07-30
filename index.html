@@ -435,8 +435,8 @@ function renderCal(){
   }
   document.getElementById("calGrid").innerHTML=h;
 }
-function CM(n){var d=new Date(rpDate+"T00:00:00");d.setMonth(d.getMonth()+n);rpDate=d.toISOString().slice(0,10);renderCal();REP();}
-function CD(ds){rpDate=ds;rpMode="day";document.querySelectorAll("#pg-report .btn-o").forEach(function(b){b.classList.remove("sel")});var fb=document.querySelector("#pg-report .btn-o");if(fb)fb.classList.add("sel");renderCal();REP();}
+function CM(n){var d=new Date(rpDate+"T00:00:00");d.setMonth(d.getMonth()+n);rpDate=d.toISOString().slice(0,10);renderCal();REP();MO();}
+function CD(ds){rpDate=ds;rpMode="day";document.querySelectorAll("#pg-report .btn-o").forEach(function(b){b.classList.remove("sel")});var fb=document.querySelector("#pg-report .btn-o");if(fb)fb.classList.add("sel");renderCal();REP();MO();}
 function isoWeek(date){var d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));var dayNum=(d.getUTCDay()+6)%7;d.setUTCDate(d.getUTCDate()-dayNum+3);var firstThu=new Date(Date.UTC(d.getUTCFullYear(),0,4));return 1+Math.round((d-firstThu)/86400000/7);}
 var wkKey="";
 var SEED_WEEKLY={"2026-W29": [{"cat": "科创研学", "name": "研学项目运营", "lead": "邱雨槡", "collab": "钟涵湘", "goal": "10%（课程框架搭建）", "progress": "1、输出小初高研学课程框架初稿\n2、对接咪咕咖啡，敲定融合课程框架\n3、洽谈万千研学，输出落地方案初稿\n4、完成项目成本收益测算模型\n5、组织内部研讨，同步课程规划", "next": "1、输出小学段样例课课程标准\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案 PPT 初稿", "issue": "1、讲解词需涵湘协助，望7.29前交付"}, {"cat": "人社认证", "name": "全媒体运营师竞赛", "lead": "李振阳", "collab": "邱雨槡", "goal": "", "progress": "1、参与赛事复盘，输出模块总结\n2、完成基地物料盘点表初稿", "next": "1、待牵头人同步后续安排", "issue": "1、无"}, {"cat": "日常办公", "name": "商务拓展", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、完成院校合作案例单页制作\n2、接待夏商客户，同步产品体系\n3、对接厦大嘉庚学院，同步AI方案\n4、完成周报模板优化及填写标准编制", "next": "1、跟进商务渠道后续对接安排\n2、跟进周报规范落地执行反馈", "issue": "1、无"}], "2026-W30": [{"cat": "科创研学", "name": "研学项目运营", "lead": "邱雨槡", "collab": "钟涵湘", "goal": "15%（样例课搭建）", "progress": "1、输出小学段样例课课程\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案、PPT、任务单初稿并内部试课打磨\n4、完成AR产品测试", "next": "1、完善样例课\n2、确定课程开发交付标准\n3、跟进及交付半日营活动\n4、开发冰壶课程（竞赛课件）", "issue": "1、冰壶物料到位"}, {"cat": "人社认证", "name": "全媒体运营师竞赛", "lead": "李振阳", "collab": "邱雨槡", "goal": "", "progress": "1、库房冰壶物料查找盘点", "next": "1、无", "issue": ""}, {"cat": "日常办公", "name": "商务拓展", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、接待厦门日报客户，同步研学方案", "next": "1、推进海关半日营落地", "issue": ""}]};
@@ -444,7 +444,7 @@ var SEED_WEEKLY={"2026-W29": [{"cat": "科创研学", "name": "研学项目运�
 function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function friWeekNo(fri){var y=fri.getFullYear();var jan1=new Date(y,0,1);var jd=jan1.getDay();var firstFri=new Date(y,0,1+((5-jd+7)%7));return Math.floor((fri-firstFri)/(7*86400000))+1;}
 function wkMeta(){var d=new Date(rpDate+"T00:00:00");var day=d.getDay();var fri=new Date(d);fri.setDate(d.getDate()-((day+2)%7));var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};var thu=new Date(fri);thu.setDate(fri.getDate()+6);return {key:fri.getFullYear()+"-W"+isoWeek(fri),start:fmt(fri),end:fmt(thu),no:friWeekNo(fri)};}
-function WK(){var m=wkMeta();wkKey=m.key;document.getElementById("wkRange").textContent=m.start+" ~ "+m.end;document.getElementById("wkNo").textContent="第"+m.no+"周";renderWK();}
+function WK(){var m=wkMeta();wkKey=m.key;document.getElementById("wkRange").textContent=m.start+" ~ "+m.end;document.getElementById("wkNo").textContent="第"+m.no+"周";renderWK();MO();}
 function projField(label,f,val){return '<div style="font-size:11px;color:var(--p);font-weight:600;margin:6px 0 2px">'+label+'</div><textarea data-f="'+f+'" rows="2" placeholder="'+label+'" style="width:100%;padding:6px;border:1px solid var(--b);border-radius:6px;font-size:12px;font-family:inherit;resize:vertical">'+esc(val)+'</textarea>';}
 function renderWK(){
   var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
@@ -471,6 +471,32 @@ function addProj(){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
 function delProj(i){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(data[wkKey]){data[wkKey].splice(i,1);localStorage.setItem("wb_weekly",JSON.stringify(data));renderWK();}}
 function saveWK(){var list=[];document.querySelectorAll("#wkProjects .wk-proj").forEach(function(el){var o={};el.querySelectorAll("[data-f]").forEach(function(inp){o[inp.getAttribute("data-f")]=inp.value;});list.push(o);});var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");data[wkKey]=list;localStorage.setItem("wb_weekly",JSON.stringify(data));TO("周报已保存");}
 function wkStep(n){var d=new Date(rpDate+"T00:00:00");d.setDate(d.getDate()+n*7);rpDate=d.toISOString().slice(0,10);renderCal();REP();WK();}
+// ===== 月报（绩效考核表，参考邱雨槡-2026年7月运营支撑员工月报-翔通）=====
+var SEED_MONTHLY={"2026-07":[{"name":"邱雨槡","project":"咪咕新空业务运营","dept":"数值赋能中心","goal":"1. 搭建小初高研学课程基础体系，对接核心合作方，明确课程设计方向与合作模式\n2. 完成研学项目成本测算初稿，为后续定价、商务报价提供支撑\n3. 推进校企合作、客户拓展，完成配套商务宣传物料制作\n4. 配合完成基地运营、项目复盘等内部支撑工作，落地部门周报标准化流程","result":"1. 完成小初高研学框架、咪咕咖啡融合课程设计，统一课程研发方向，产出：《研学课程相关材料》\n2. 组织课程内研会，规范部门周报要求，产出：《日常办公表单》\n3. 完成赛事模块复盘、基地物料盘点，产出：《赛事复盘模块总结》《基地物料盘点表（初稿）》\n4. 制作院校合作宣传物料，对接夏商客户、厦大嘉庚学院同步方案，产出：《院校合作案例宣传页》"}]};
+(function(){var VER=1;if((localStorage.getItem("wb_monthly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_monthly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_MONTHLY){if(d[k]===undefined)d[k]=SEED_MONTHLY[k];}localStorage.setItem("wb_monthly",JSON.stringify(d));localStorage.setItem("wb_monthly_ver",String(VER));}})();
+function moKey(){return rpDate.slice(0,7);}
+function MO(){var k=moKey();var y=k.slice(0,4),mm=parseInt(k.slice(5,7),10);document.getElementById("moYM").textContent=y+"年"+mm+"月";document.getElementById("moTitle").textContent="厦门翔通动漫有限公司绩效考核表 - "+y+"年"+mm+"月";renderMo();}
+function renderMo(){
+  var k=moKey();var data=JSON.parse(localStorage.getItem("wb_monthly")||"{}");
+  if(data[k]===undefined){data[k]=[];localStorage.setItem("wb_monthly",JSON.stringify(data));}
+  var list=data[k];
+  var html=list.map(function(p,i){
+    return '<div class="wk-proj" style="border:1px solid var(--b);border-radius:10px;padding:10px;margin-bottom:10px">'+
+      '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">'+
+      '<input value="'+esc(p.name)+'" placeholder="姓名" data-f="name" style="width:30%;padding:6px;border:1px solid var(--b);border-radius:6px;font-size:12px">'+
+      '<input value="'+esc(p.project)+'" placeholder="项目名称" data-f="project" style="flex:1;padding:6px;border:1px solid var(--b);border-radius:6px;font-size:12px">'+
+      '<button onclick="delMoRow('+i+')" style="border:none;background:none;color:var(--d);font-size:15px;cursor:pointer;padding:0 4px">✕</button></div>'+
+      '<div style="margin-bottom:6px"><input value="'+esc(p.dept)+'" placeholder="支撑部门" data-f="dept" style="width:100%;padding:5px;border:1px solid var(--b);border-radius:6px;font-size:11px"></div>'+
+      projField("重点工作目标","goal",p.goal)+
+      projField("工作完成情况、主要工作成果","result",p.result)+
+    '</div>';
+  }).join("");
+  document.getElementById("moRows").innerHTML=html||'<div style="text-align:center;color:var(--t2);font-size:12px;padding:12px">暂无记录，点右上“＋”新增</div>';
+}
+function addMoRow(){var k=moKey();var data=JSON.parse(localStorage.getItem("wb_monthly")||"{}");if(!data[k])data[k]=[];data[k].push({name:"邱雨槡",project:"",dept:"",goal:"",result:""});localStorage.setItem("wb_monthly",JSON.stringify(data));renderMo();}
+function delMoRow(i){var k=moKey();var data=JSON.parse(localStorage.getItem("wb_monthly")||"{}");if(data[k]){data[k].splice(i,1);localStorage.setItem("wb_monthly",JSON.stringify(data));renderMo();}}
+function saveMo(){var k=moKey();var list=[];document.querySelectorAll("#moRows .wk-proj").forEach(function(el){var o={};el.querySelectorAll("[data-f]").forEach(function(inp){o[inp.getAttribute("data-f")]=inp.value;});list.push(o);});var data=JSON.parse(localStorage.getItem("wb_monthly")||"{}");data[k]=list;localStorage.setItem("wb_monthly",JSON.stringify(data));TO("月报已保存");}
+function moStep(n){var d=new Date(rpDate+"T00:00:00");d.setMonth(d.getMonth()+n);rpDate=d.toISOString().slice(0,10);renderCal();REP();WK();MO();}
 function SG(cat){if(cat==="done")SW(1,CL(".nav a")[1]);else if(cat==="help")SW(1,CL(".nav a")[1]);}
 function RI(){var v=C('#qin').value.trim();if(!v)return;var ix=II();ix.push({content:v,time:new Date().toLocaleString('zh-CN')});SI(ix);C('#qin').value='';RN();TO('已记录');}
 function CIX(i){var ix=II();ix[i].done=true;SI(ix);var ts=TT();ts.push({id:UD(),title:ix[i].content,priority:'低',status:'待办',start:'',due:'',assignee:'',collab:'',pj:'',top3:false,risk:false,ms:false,doneDate:'',createdAt:TD()});ST(ts);RN();TO('已转为任务');}
@@ -553,6 +579,10 @@ if(!localStorage.getItem("wb_tasks")){
 <div class="card" style="margin-bottom:12px"><div class="bh">📝 周报 <span id="wkNo" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addProj()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveWK()">保存</button></div></div>
 <div style="font-size:12px;color:var(--t2);margin-bottom:8px" id="wkRange"></div>
 <div id="wkProjects"></div>
+</div>
+<div class="card" style="margin-bottom:12px"><div class="bh">🗓 月报 · 绩效考核表 <span id="moYM" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addMoRow()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveMo()">保存</button></div></div>
+<div style="font-size:11px;color:var(--t2);margin:0 0 8px" id="moTitle"></div>
+<div id="moRows"></div>
 </div>
 <div class="card"><div class="bh" id="rpTitle">📅 今日任务汇总</div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-bottom:12px">
