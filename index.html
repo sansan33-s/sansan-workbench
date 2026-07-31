@@ -469,7 +469,7 @@ function renderWK(){
       projField("💬 待解决问题 / 需协助","issue",p.issue)+
     '</div>';
   }).join("");
-  document.getElementById("wkProjects").innerHTML=html||'<div style="text-align:center;color:var(--t2);font-size:12px;padding:12px">暂无项目，点右上“＋”新增</div>';
+  document.getElementById("wkProjects").innerHTML=(html||'')+linkedTasksBlock('week')||'<div style="text-align:center;color:var(--t2);font-size:12px;padding:12px">暂无项目，点右上“＋”新增</div>';
 }
 function addProj(){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(!data[wkKey])data[wkKey]=[];data[wkKey].push({cat:"",name:"",lead:"邱雨槡",collab:"",goal:"",progress:"",next:"",issue:""});localStorage.setItem("wb_weekly",JSON.stringify(data));renderWK();}
 function delProj(i){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(data[wkKey]){data[wkKey].splice(i,1);localStorage.setItem("wb_weekly",JSON.stringify(data));renderWK();}}
@@ -495,7 +495,7 @@ function renderMo(){
       projField("🏆 工作完成情况、主要工作成果","result",p.result)+
     '</div>';
   }).join("");
-  document.getElementById("moRows").innerHTML=html||'<div style="text-align:center;color:var(--t2);font-size:12px;padding:12px">暂无记录，点右上“＋”新增</div>';
+  document.getElementById("moRows").innerHTML=(html||'')+linkedTasksBlock('month')||'<div style="text-align:center;color:var(--t2);font-size:12px;padding:12px">暂无记录，点右上“＋”新增</div>';
 }
 function addMoRow(){var k=moKey();var data=JSON.parse(localStorage.getItem("wb_monthly")||"{}");if(!data[k])data[k]=[];data[k].push({name:"邱雨槡",project:"",dept:"",goal:"",result:""});localStorage.setItem("wb_monthly",JSON.stringify(data));renderMo();}
 function delMoRow(i){var k=moKey();var data=JSON.parse(localStorage.getItem("wb_monthly")||"{}");if(data[k]){data[k].splice(i,1);localStorage.setItem("wb_monthly",JSON.stringify(data));renderMo();}}
@@ -544,6 +544,22 @@ function addBill(){
   renderBills();TO('已记一笔');
 }
 function delBill(id){var bills=JSON.parse(localStorage.getItem('wb_bills')||'[]');localStorage.setItem('wb_bills',JSON.stringify(bills.filter(function(b){return b.id!==id;})));renderBills();}
+// ===== 任务自动归类到周报/月报 =====
+function weekKeyOf(d){var dt=new Date(d+"T00:00:00");var day=dt.getDay();var fri=new Date(dt);fri.setDate(dt.getDate()-((day+2)%7));return fri.getFullYear()+"-W"+isoWeek(fri);}
+function linkedTasksBlock(period){
+  var me="邱雨槡";
+  var key=period==='week'?wkKey:moKey();
+  var ts=TT().filter(function(t){if(!(t.assignee===me||t.collab===me))return false;var d=t.due||t.start||TD();return period==='week'?(weekKeyOf(d)===key):(d.slice(0,7)===key);});
+  if(!ts.length)return '';
+  var groups={};
+  ts.forEach(function(t){var pn='未关联项目';if(t.pj){var p=(PP().filter(function(x){return x.id===t.pj;})[0]);if(p)pn=p.name;}(groups[pn]=groups[pn]||[]).push(t);});
+  var h='<div style="background:#f0f9ff;border:1px solid var(--b);border-radius:10px;padding:10px;margin-top:4px"><div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:6px">🔗 '+(period==='week'?'本周':'本月')+'关联任务 · '+me+'（'+ts.length+'）</div>';
+  Object.keys(groups).forEach(function(pn){
+    h+='<div style="font-size:12px;font-weight:600;margin:6px 0 2px">'+esc(pn)+'</div>';
+    groups[pn].forEach(function(t){var st=t.status==='已完成'?'✅':(t.status==='进行中'?'🔄':'⚪');h+='<div style="font-size:12px;color:var(--t2);padding-left:8px">• '+st+' '+esc(t.title)+'</div>';});
+  });
+  return h+'</div>';
+}
 function SG(cat){if(cat==="done")SW(1,CL(".nav a")[1]);else if(cat==="help")SW(1,CL(".nav a")[1]);}
 function RI(){var v=C('#qin').value.trim();if(!v)return;var ix=II();ix.push({content:v,time:new Date().toLocaleString('zh-CN')});SI(ix);C('#qin').value='';RN();TO('已记录');}
 function CIX(i){var ix=II();ix[i].done=true;SI(ix);var ts=TT();ts.push({id:UD(),title:ix[i].content,priority:'低',status:'待办',start:'',due:'',assignee:'',collab:'',pj:'',top3:false,risk:false,ms:false,doneDate:'',createdAt:TD()});ST(ts);RN();TO('已转为任务');}
