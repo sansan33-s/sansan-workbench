@@ -51,7 +51,8 @@ h1{font-size:22px;font-weight:800;margin-bottom:2px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style id="inj"></style>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script></head>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script></head>
 <body>
 <div id="pg-home">
 <h1>📚 三三的工作台</h1><div class="sub" id="today"></div>
@@ -442,8 +443,8 @@ function CM(n){var d=new Date(rpDate+"T00:00:00");d.setMonth(d.getMonth()+n);rpD
 function CD(ds){rpDate=ds;rpMode="day";document.querySelectorAll("#pg-report .btn-o").forEach(function(b){b.classList.remove("sel")});var fb=document.querySelector("#pg-report .btn-o");if(fb)fb.classList.add("sel");renderCal();REP();applyView();}
 function isoWeek(date){var d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));var dayNum=(d.getUTCDay()+6)%7;d.setUTCDate(d.getUTCDate()-dayNum+3);var firstThu=new Date(Date.UTC(d.getUTCFullYear(),0,4));return 1+Math.round((d-firstThu)/86400000/7);}
 var wkKey="";
-var SEED_WEEKLY={"2026-W29": [{"cat": "科创研学", "name": "研学项目运营", "lead": "邱雨槡", "collab": "钟涵湘", "goal": "10%（课程框架搭建）", "progress": "1、输出小初高研学课程框架初稿\n2、对接咪咕咖啡，敲定融合课程框架\n3、洽谈万千研学，输出落地方案初稿\n4、完成项目成本收益测算模型\n5、组织内部研讨，同步课程规划", "next": "1、输出小学段样例课课程标准\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案 PPT 初稿", "issue": "1、讲解词需涵湘协助，望7.29前交付"}, {"cat": "人社认证", "name": "全媒体运营师竞赛", "lead": "李振阳", "collab": "邱雨槡", "goal": "", "progress": "1、参与赛事复盘，输出模块总结\n2、完成基地物料盘点表初稿", "next": "1、待牵头人同步后续安排", "issue": "1、无"}, {"cat": "日常办公", "name": "商务拓展", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、完成院校合作案例单页制作\n2、接待夏商客户，同步产品体系\n3、对接厦大嘉庚学院，同步AI方案\n4、完成周报模板优化及填写标准编制", "next": "1、跟进商务渠道后续对接安排\n2、跟进周报规范落地执行反馈", "issue": "1、无"}], "2026-W30": [{"cat": "科创研学", "name": "研学项目运营", "lead": "邱雨槡", "collab": "钟涵湘", "goal": "15%（样例课搭建）", "progress": "1、输出小学段样例课课程\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案、PPT、任务单初稿并内部试课打磨\n4、完成AR产品测试", "next": "1、完善样例课\n2、确定课程开发交付标准\n3、跟进及交付半日营活动\n4、开发冰壶课程（竞赛课件）", "issue": "1、冰壶物料到位"}, {"cat": "人社认证", "name": "全媒体运营师竞赛", "lead": "李振阳", "collab": "邱雨槡", "goal": "", "progress": "1、库房冰壶物料查找盘点", "next": "1、无", "issue": ""}, {"cat": "日常办公", "name": "商务拓展", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、接待厦门日报客户，同步研学方案", "next": "1、推进海关半日营落地", "issue": ""}]};
-(function(){var VER=2;if((localStorage.getItem("wb_weekly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_WEEKLY){d[k]=SEED_WEEKLY[k];}localStorage.setItem("wb_weekly",JSON.stringify(d));localStorage.setItem("wb_weekly_ver",String(VER));}})();
+var SEED_WEEKLY={"2026-W29":[{"cat":"科创研学","name":"研学项目运营","desc":"打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标","lead":"邱雨槡","collab":"钟涵湘, 王俊亦, 钱政东","goal":"10%（课程框架搭建）","progress":"1、输出小初高研学课程框架初稿\n2、对接咪咕咖啡，敲定融合课程框架\n3、洽谈万千研学，输出落地方案初稿\n4、完成项目成本收益测算模型\n5、组织内部研讨，同步课程规划","next":"1、输出小学段样例课课程标准\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案 PPT 初稿","issue":"1、讲解词需涵湘协助，望7.29前交付"},{"cat":"其他项目协同","name":"商务拓展","desc":"统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营","lead":"梁志发","collab":"邱雨槡","goal":"","progress":"1、完成院校合作案例单页制作\n2、接待夏商客户，同步产品体系\n3、对接厦大嘉庚学院，同步AI方案","next":"1、跟进商务渠道后续对接安排\n2、跟进周报规范落地执行反馈","issue":"1、无"},{"cat":"其他项目协同","name":"行政","desc":"统筹数智赋能中心行政后勤与物资保障，完成物资盘点、提取清点和车辆报备等内务，支撑各业务板块运转。","lead":"李振阳","collab":"邱雨槡","goal":"","progress":"1、完成基地物料盘点表初稿","next":"1、待牵头人同步后续安排","issue":"1、无"},{"cat":"其他项目协同","name":"行政","desc":"统筹数智赋能中心行政后勤与物资保障，完成物资盘点、提取清点和车辆报备等内务，支撑各业务板块运转。","lead":"梁志发","collab":"邱雨槡","goal":"","progress":"1、完成周报模板优化及填写标准编制","next":"","issue":"1、无"},{"cat":"人社认证","name":"全媒体运营师竞赛","desc":"落地全媒体运营师职业技能竞赛全流程，统筹赛事执行与复盘、等级认定及培训、专家评审、补贴申报与后勤保障。","lead":"李振阳","collab":"邱雨槡","goal":"","progress":"1、参与赛事复盘，输出模块总结","next":"","issue":"1、无"}],"2026-W30":[{"cat":"科创研学","name":"研学项目运营","desc":"打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标","lead":"邱雨槡","collab":"钟涵湘, 王俊亦, 钱政东","goal":"15%（样例课搭建）","progress":"1、输出小学段样例课课程（元宇宙启蒙课）\n2、输出小学段展厅讲解词、AR二维码、签到表等配套物料\n3、完成课程方案、PPT、任务单初稿并内部试课打磨\n4、完成AR产品测试（AR仿真特效），平板手机电话卡等物料借调","next":"1、完善样例课（元宇宙启蒙课）\n2、确定课程开发交付标准\n3、跟进及交付半日营活动（暑托班、海关）\n4、开发冰壶课程（竞赛课件）及内部演练","issue":"1、备用平板/手机号/测试账号"},{"cat":"其他项目协同","name":"商务拓展","desc":"统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营","lead":"梁志发","collab":"邱雨槡","goal":"","progress":"1、接待厦门日报客户，同步研学方案","next":"","issue":""},{"cat":"科创研学","name":"研学项目运营","desc":"打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标","lead":"梁志发","collab":"邱雨槡","goal":"","progress":"1、推进海关半日营落地，进度暂无","next":"","issue":""}]};
+(function(){var VER=3;if((localStorage.getItem("wb_weekly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_WEEKLY){d[k]=SEED_WEEKLY[k];}localStorage.setItem("wb_weekly",JSON.stringify(d));localStorage.setItem("wb_weekly_ver",String(VER));}})();
 function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function friWeekNo(fri){var y=fri.getFullYear();var jan1=new Date(y,0,1);var jd=jan1.getDay();var firstFri=new Date(y,0,1+((5-jd+7)%7));return Math.floor((fri-firstFri)/(7*86400000))+1;}
 function wkMeta(){var d=new Date(rpDate+"T00:00:00");var day=d.getDay();var fri=new Date(d);fri.setDate(d.getDate()-((day+2)%7));var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};var thu=new Date(fri);thu.setDate(fri.getDate()+6);return {key:fri.getFullYear()+"-W"+isoWeek(fri),start:fmt(fri),end:fmt(thu),no:friWeekNo(fri)};}
@@ -451,12 +452,12 @@ function WK(){var m=wkMeta();wkKey=m.key;document.getElementById("wkRange").text
 function projField(label,f,val){return '<div style="background:#faf8ff;border:1px solid var(--b);border-radius:10px;padding:8px 10px;margin-top:10px"><div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:4px">'+label+'</div><textarea data-f="'+f+'" rows="3" placeholder="'+label+'" style="width:100%;box-sizing:border-box;padding:4px 0;border:none;background:transparent;font-size:12px;line-height:1.5;font-family:inherit;resize:vertical">'+esc(val)+'</textarea></div>';}
 function renderWK(){
   var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
-  if(data[wkKey]===undefined){data[wkKey]=[{cat:"科创研学",name:"研学项目运营",lead:"邱雨槡",collab:"钟涵湘",goal:"",progress:"",next:"",issue:""}];localStorage.setItem("wb_weekly",JSON.stringify(data));}
+  if(data[wkKey]===undefined){data[wkKey]=[{cat:"科创研学",name:"研学项目运营",desc:"",lead:"邱雨槡",collab:"钟涵湘",goal:"",progress:"",next:"",issue:""}];localStorage.setItem("wb_weekly",JSON.stringify(data));}
   var list=data[wkKey];
   var html=list.map(function(p,i){
     return '<div class="wk-proj" style="background:var(--c);border:1px solid var(--b);border-left:4px solid var(--p);border-radius:12px;padding:12px;margin-bottom:14px;box-shadow:0 2px 10px rgba(139,92,246,.07)">'+
       '<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">'+
-      '<input value="'+esc(p.name)+'" placeholder="项目名称" data-f="name" style="flex:1;min-width:0;font-weight:700;font-size:15px;padding:6px 8px;border:1px solid var(--b);border-radius:8px;background:#fff">'+
+      '<input value="'+esc(p.name)+'" placeholder="项目名称" data-f="name" style="flex:1;min-width:0;font-weight:700;font-size:15px;padding:6px 8px;border:1px solid var(--b);border-radius:8px;background:#fff"><div style="font-size:10px;color:var(--t2);padding:2px 8px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+esc(p.desc||'')+'">'+esc((p.desc||'点击添加项目描述').slice(0,60))+'</div>'+
       '<input value="'+esc(p.cat)+'" placeholder="大类" data-f="cat" style="flex:0 0 auto;max-width:42%;font-size:11px;color:var(--p);background:#f3e8ff;border:1px solid var(--b);border-radius:10px;padding:4px 8px">'+
       '<button onclick="delProj('+i+')" style="flex:0 0 auto;border:none;background:none;color:var(--d);font-size:16px;cursor:pointer;padding:0 2px">✕</button></div>'+
       '<div style="display:flex;gap:8px;margin-bottom:12px">'+
@@ -471,10 +472,28 @@ function renderWK(){
   }).join("");
   document.getElementById("wkProjects").innerHTML=(html||'')+linkedTasksBlock('week')||'<div style="text-align:center;color:var(--t2);font-size:12px;padding:12px">暂无项目，点右上“＋”新增</div>';
 }
-function addProj(){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(!data[wkKey])data[wkKey]=[];data[wkKey].push({cat:"",name:"",lead:"邱雨槡",collab:"",goal:"",progress:"",next:"",issue:""});localStorage.setItem("wb_weekly",JSON.stringify(data));renderWK();}
+function addProj(){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(!data[wkKey])data[wkKey]=[];data[wkKey].push({cat:"",name:"",desc:"",lead:"邱雨槡",collab:"",goal:"",progress:"",next:"",issue:""});localStorage.setItem("wb_weekly",JSON.stringify(data));renderWK();}
 function delProj(i){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(data[wkKey]){data[wkKey].splice(i,1);localStorage.setItem("wb_weekly",JSON.stringify(data));renderWK();}}
 function saveWK(){var list=[];document.querySelectorAll("#wkProjects .wk-proj").forEach(function(el){var o={};el.querySelectorAll("[data-f]").forEach(function(inp){o[inp.getAttribute("data-f")]=inp.value;});list.push(o);});var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");data[wkKey]=list;localStorage.setItem("wb_weekly",JSON.stringify(data));TO("周报已保存");}
 function wkStep(n){var d=new Date(rpDate+"T00:00:00");d.setDate(d.getDate()+n*7);rpDate=d.toISOString().slice(0,10);renderCal();REP();WK();}
+function exportWK(){
+  if(typeof XLSX==="undefined"){TO("正在加载导出组件…");var s=document.createElement("script");s.src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";s.onload=function(){exportWK();};document.head.appendChild(s);return;}
+  var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
+  var list=data[wkKey]||[];
+  if(!list.length){TO("本周暂无项目数据");return;}
+  var m=wkMeta();
+  var rows=[["序号","项目大类","项目名称","项目一句话描述","项目牵头人","项目协同人","填写人","工作周报 "+m.start+"（周五）-"+m.end+"（周四）"]];
+  list.forEach(function(p,i){
+    var content="目标完成情况："+(p.goal||"")+"\n\n一、本周进度\n"+(p.progress||"")+"\n二、下周计划\n"+(p.next||"")+"\n三、待解决问题/需协助事项\n"+(p.issue||"无");
+    rows.push([i+1,p.cat||"",p.name||"",p.desc||"",p.lead||"",p.collab||"","邱雨槡",content]);
+  });
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  ws["!cols"]=[{wch:6},{wch:12},{wch:16},{wch:40},{wch:10},{wch:16},{wch:8},{wch:60}];
+  var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"工作周报");
+  XLSX.writeFile(wb,"咪咕新空数智赋能中心工作周报_"+m.start+"-"+m.end+".xlsx");
+  TO("周报xlsx已导出");
+}
+
 // ===== 月报（绩效考核表，参考邱雨槡-2026年7月运营支撑员工月报-翔通）=====
 var SEED_MONTHLY={"2026-07":[{"name":"邱雨槡","project":"咪咕新空业务运营","dept":"数值赋能中心","goal":"1. 搭建小初高研学课程基础体系，对接核心合作方，明确课程设计方向与合作模式\n2. 完成研学项目成本测算初稿，为后续定价、商务报价提供支撑\n3. 推进校企合作、客户拓展，完成配套商务宣传物料制作\n4. 配合完成基地运营、项目复盘等内部支撑工作，落地部门周报标准化流程","result":"1. 完成小初高研学框架、咪咕咖啡融合课程设计，统一课程研发方向，产出：《研学课程相关材料》\n2. 组织课程内研会，规范部门周报要求，产出：《日常办公表单》\n3. 完成赛事模块复盘、基地物料盘点，产出：《赛事复盘模块总结》《基地物料盘点表（初稿）》\n4. 制作院校合作宣传物料，对接夏商客户、厦大嘉庚学院同步方案，产出：《院校合作案例宣传页》"}]};
 (function(){var VER=1;if((localStorage.getItem("wb_monthly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_monthly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_MONTHLY){if(d[k]===undefined)d[k]=SEED_MONTHLY[k];}localStorage.setItem("wb_monthly",JSON.stringify(d));localStorage.setItem("wb_monthly_ver",String(VER));}})();
@@ -638,7 +657,7 @@ if(!localStorage.getItem("wb_tasks")){
 <div id="pg-report" style="display:none"><h1>📊 日报周报</h1>
 <div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o" data-mode="day" onclick="RP('day',this)">📅 日</button><button class="btn btn-o sel" data-mode="week" onclick="RP('week',this)">📆 周</button><button class="btn btn-o" data-mode="month" onclick="RP('month',this)">🗓 月</button><button class="btn btn-o" style="margin-left:auto" onclick="gotoToday()">今天</button></div>
 <div class="card" style="margin-bottom:12px" id="calCard"><div class="bh">📅 <span id="calTitle">—</span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="CM(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="CM(1)">›</button></div></div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--t2);margin-bottom:6px"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div></div>
-<div class="card" style="margin-bottom:12px" id="wkCard"><div class="bh">📝 周报 <span id="wkNo" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addProj()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveWK()">保存</button></div></div>
+<div class="card" style="margin-bottom:12px" id="wkCard"><div class="bh">📝 周报 <span id="wkNo" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addProj()">＋</button><button class="btn btn-o" style="padding:4px 12px;font-size:11px" onclick="exportWK()">📥导出xlsx</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveWK()">保存</button></div></div>
 <div style="font-size:12px;color:var(--t2);margin-bottom:8px" id="wkRange"></div>
 <div id="wkProjects"></div>
 </div>
