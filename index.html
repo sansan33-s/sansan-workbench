@@ -504,7 +504,7 @@ function autoPlanNext(){
   var nf=new Date(m.start+"T00:00:00");nf.setDate(nf.getDate()+7);
   var nt=new Date(nf);nt.setDate(nf.getDate()+6);
   var ns=fmt(nf),ne=fmt(nt);
-  var days=[];var cur=new Date(nf);while(cur<=nt){days.push(fmt(cur));cur.setDate(cur.getDate()+1);}
+  var days=[];var cur=new Date(nf);while(cur<=nt){var gd=cur.getDay();if(gd!==0&&gd!==6)days.push(fmt(cur));cur.setDate(cur.getDate()+1);}
   var items=[];
   list.forEach(function(p){
     (p.next||"").split("\n").forEach(function(raw){
