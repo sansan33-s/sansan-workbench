@@ -565,15 +565,15 @@ function autoPlanAll(){
 }
 function dedupTasks(){
   var ts=TT();if(!ts.length){TO("日历暂无任务");return;}
-  function key(t){return JSON.stringify([t.title||"",t.due||"",t.assignee||""]);}
+  function key(t){return (t.title||'').trim();}
   var seen={},del=[],gmap={};
   ts.forEach(function(t){
-    var k=key(t);
+    var k=key(t);if(!k)return;
     (gmap[k]=gmap[k]||[]).push(t);
     if(seen[k]){del.push(t.id);}else{seen[k]=1;}
   });
   var dupGroups=Object.keys(gmap).filter(function(k){return gmap[k].length>1;});
-  if(!del.length){TO("没有发现完全相同的重复任务");return;}
+  if(!del.length){TO("没有发现内容相同的重复任务");return;}
   window._ddDel=del;
   function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   var html='';
@@ -581,11 +581,13 @@ function dedupTasks(){
     var arr=gmap[k];
     html+='<div style="border:1px solid var(--b);border-radius:8px;padding:8px;margin-bottom:8px">';
     html+='<div style="font-weight:700;margin-bottom:4px">'+esc(arr[0].title||'(无标题)')+'</div>';
-    html+='<div style="color:var(--s);font-size:11px">✅ 保留：'+(F(arr[0].due)||'无日期')+' · '+(arr[0].assignee||'—')+'</div>';
-    for(var i=1;i<arr.length;i++){html+='<div style="color:var(--d);font-size:11px">🗑 删除：'+(F(arr[i].due)||'无日期')+' · '+(arr[i].assignee||'—')+'</div>';}
+    html+='<div style="color:var(--s);font-size:11px">✅ 保留 1 条（'+(F(arr[0].due)||'无日期')+' · '+(arr[0].assignee||'—')+'）</div>';
+    var dels=arr.slice(1);
+    var summ=dels.map(function(t){return (F(t.due)||'无日期')+'·'+(t.assignee||'—');}).join('，');
+    html+='<div style="color:var(--d);font-size:11px">🗑 将删除 '+dels.length+' 条：'+esc(summ)+'</div>';
     html+='</div>';
   });
-  C('#ddHint').textContent='将删除 '+del.length+' 条「完全相同」的重复任务（标题+日期+负责人一致），每组保留首条：';
+  C('#ddHint').textContent='将删除 '+del.length+' 条「内容相同」的重复任务（同名任务保留最早一条，其余删除）：';
   C('#ddList').innerHTML=html;
   C('#em-dedup').style.display='flex';
 }
@@ -794,7 +796,7 @@ if(!localStorage.getItem("wb_tasks")){
 <div style="font-size:12px;color:var(--t2);margin-bottom:8px" id="wkRange"></div>
 <div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPullWeek()">← 拉本周任务到进度</button><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPlanNext()">下周计划排进日历 →</button></div>
 <div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="autoPlanAll()">🗓 全部计划排进日历（跨周拉伸·跳周末）</button></div>
-<div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="dedupTasks()">🧹 日历去重（完全相同才删·预览确认）</button></div>
+<div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="dedupTasks()">🧹 日历去重（内容相同才删·预览确认）</button></div>
 <div id="wkProjects"></div>
 </div>
 <div class="card" style="margin-bottom:12px" id="moCard"><div class="bh">🗓 月报 · 绩效考核表 <span id="moYM" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addMoRow()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveMo()">保存</button></div></div>
