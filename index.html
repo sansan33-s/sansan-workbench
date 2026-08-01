@@ -445,9 +445,10 @@ function isoWeek(date){var d=new Date(Date.UTC(date.getFullYear(),date.getMonth(
 var wkKey="";
 var SEED_WEEKLY={"2026-W29":[{"cat":"科创研学","name":"研学项目运营","desc":"打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标","lead":"邱雨槡","collab":"钟涵湘, 王俊亦, 钱政东","goal":"10%（课程框架搭建）","progress":"1、输出小初高研学课程框架初稿\n2、对接咪咕咖啡，敲定融合课程框架\n3、洽谈万千研学，输出落地方案初稿\n4、完成项目成本收益测算模型\n5、组织内部研讨，同步课程规划","next":"1、输出小学段样例课课程标准\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案 PPT 初稿","issue":"1、讲解词需涵湘协助，望7.29前交付"},{"cat":"其他项目协同","name":"商务拓展","desc":"统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营","lead":"梁志发","collab":"邱雨槡","goal":"","progress":"1、完成院校合作案例单页制作\n2、接待夏商客户，同步产品体系\n3、对接厦大嘉庚学院，同步AI方案","next":"1、跟进商务渠道后续对接安排\n2、跟进周报规范落地执行反馈","issue":"1、无"},{"cat":"其他项目协同","name":"行政","desc":"统筹数智赋能中心行政后勤与物资保障，完成物资盘点、提取清点和车辆报备等内务，支撑各业务板块运转。","lead":"李振阳","collab":"邱雨槡","goal":"","progress":"1、完成基地物料盘点表初稿","next":"1、待牵头人同步后续安排","issue":"1、无"},{"cat":"其他项目协同","name":"行政","desc":"统筹数智赋能中心行政后勤与物资保障，完成物资盘点、提取清点和车辆报备等内务，支撑各业务板块运转。","lead":"梁志发","collab":"邱雨槡","goal":"","progress":"1、完成周报模板优化及填写标准编制","next":"","issue":"1、无"},{"cat":"人社认证","name":"全媒体运营师竞赛","desc":"落地全媒体运营师职业技能竞赛全流程，统筹赛事执行与复盘、等级认定及培训、专家评审、补贴申报与后勤保障。","lead":"李振阳","collab":"邱雨槡","goal":"","progress":"1、参与赛事复盘，输出模块总结","next":"","issue":"1、无"}],"2026-W30":[{"cat":"科创研学","name":"研学项目运营","desc":"打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标","lead":"邱雨槡","collab":"钟涵湘, 王俊亦, 钱政东","goal":"15%（样例课搭建）","progress":"1、输出小学段样例课课程（元宇宙启蒙课）\n2、输出小学段展厅讲解词、AR二维码、签到表等配套物料\n3、完成课程方案、PPT、任务单初稿并内部试课打磨\n4、完成AR产品测试（AR仿真特效），平板手机电话卡等物料借调","next":"1、完善样例课（元宇宙启蒙课）\n2、确定课程开发交付标准\n3、跟进及交付半日营活动（暑托班、海关）\n4、开发冰壶课程（竞赛课件）及内部演练","issue":"1、备用平板/手机号/测试账号"},{"cat":"其他项目协同","name":"商务拓展","desc":"统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营","lead":"梁志发","collab":"邱雨槡","goal":"","progress":"1、接待厦门日报客户，同步研学方案","next":"","issue":""},{"cat":"科创研学","name":"研学项目运营","desc":"打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标","lead":"梁志发","collab":"邱雨槡","goal":"","progress":"1、推进海关半日营落地，进度暂无","next":"","issue":""}]};
 (function(){var VER=3;if((localStorage.getItem("wb_weekly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_WEEKLY){d[k]=SEED_WEEKLY[k];}localStorage.setItem("wb_weekly",JSON.stringify(d));localStorage.setItem("wb_weekly_ver",String(VER));}})();
+(function(){var MV="1";if((localStorage.getItem("wb_weekly_monmig")||"0")!==MV){try{var d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(d&&typeof d==="object"){function oldFri(key){var mm=(""+key).match(/^(\d{4})-W(\d+)$/);if(!mm)return null;var y=+mm[1],w=+mm[2];var j1=new Date(y,0,1);var jd=j1.getDay();var ff=new Date(y,0,1+((5-jd+7)%7));var f=new Date(ff);f.setDate(ff.getDate()+(w-1)*7);return f;}function monKey(dt){var day=dt.getDay();var back=(day===0)?6:(day-1);var mn=new Date(dt);mn.setDate(dt.getDate()-back);return mn.getFullYear()+"-W"+isoWeek(mn);}var nd={};for(var k in d){if(!Array.isArray(d[k]))continue;var f=oldFri(k);var nk=f?monKey(f):k;if(!nd[nk])nd[nk]=[];for(var i=0;i<d[k].length;i++)nd[nk].push(d[k][i]);}localStorage.setItem("wb_weekly",JSON.stringify(nd));}}catch(e){}localStorage.setItem("wb_weekly_monmig",MV);}})();
 function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function friWeekNo(fri){var y=fri.getFullYear();var jan1=new Date(y,0,1);var jd=jan1.getDay();var firstFri=new Date(y,0,1+((5-jd+7)%7));return Math.floor((fri-firstFri)/(7*86400000))+1;}
-function wkMeta(){var d=new Date(rpDate+"T00:00:00");var day=d.getDay();var fri=new Date(d);fri.setDate(d.getDate()-((day+2)%7));var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};var thu=new Date(fri);thu.setDate(fri.getDate()+6);return {key:fri.getFullYear()+"-W"+isoWeek(fri),start:fmt(fri),end:fmt(thu),no:friWeekNo(fri)};}
+function wkMeta(){var d=new Date(rpDate+"T00:00:00");var day=d.getDay();var back=(day===0)?6:(day-1);var mon=new Date(d);mon.setDate(d.getDate()-back);var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};var fri=new Date(mon);fri.setDate(mon.getDate()+4);return {key:mon.getFullYear()+"-W"+isoWeek(mon),start:fmt(mon),end:fmt(fri),no:isoWeek(mon)};}
 function WK(){var m=wkMeta();wkKey=m.key;document.getElementById("wkRange").textContent=m.start+" ~ "+m.end;document.getElementById("wkNo").textContent="第"+m.no+"周";renderWK();MO();}
 function projField(label,f,val){return '<div style="background:#faf8ff;border:1px solid var(--b);border-radius:10px;padding:8px 10px;margin-top:10px"><div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:4px">'+label+'</div><textarea data-f="'+f+'" rows="3" placeholder="'+label+'" style="width:100%;box-sizing:border-box;padding:4px 0;border:none;background:transparent;font-size:12px;line-height:1.5;font-family:inherit;resize:vertical">'+esc(val)+'</textarea></div>';}
 function renderWK(){
@@ -482,7 +483,7 @@ function exportWK(){
   var list=data[wkKey]||[];
   if(!list.length){TO("本周暂无项目数据");return;}
   var m=wkMeta();
-  var rows=[["序号","项目大类","项目名称","项目一句话描述","项目牵头人","项目协同人","填写人","工作周报 "+m.start+"（周五）-"+m.end+"（周四）"]];
+  var rows=[["序号","项目大类","项目名称","项目一句话描述","项目牵头人","项目协同人","填写人","工作周报 "+m.start+"（周一）-"+m.end+"（周五）"]];
   list.forEach(function(p,i){
     var content="目标完成情况："+(p.goal||"")+"\n\n一、本周进度\n"+(p.progress||"")+"\n二、下周计划\n"+(p.next||"")+"\n三、待解决问题/需协助事项\n"+(p.issue||"无");
     rows.push([i+1,p.cat||"",p.name||"",p.desc||"",p.lead||"",p.collab||"","邱雨槡",content]);
@@ -502,7 +503,7 @@ function autoPlanNext(){
   var m=wkMeta();
   var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};
   var nf=new Date(m.start+"T00:00:00");nf.setDate(nf.getDate()+7);
-  var nt=new Date(nf);nt.setDate(nf.getDate()+6);
+  var nt=new Date(nf);nt.setDate(nf.getDate()+4);
   var ns=fmt(nf),ne=fmt(nt);
   var days=[];var cur=new Date(nf);while(cur<=nt){var gd=cur.getDay();if(gd!==0&&gd!==6)days.push(fmt(cur));cur.setDate(cur.getDate()+1);}
   var items=[];
@@ -626,7 +627,7 @@ function addBill(){
 }
 function delBill(id){var bills=JSON.parse(localStorage.getItem('wb_bills')||'[]');localStorage.setItem('wb_bills',JSON.stringify(bills.filter(function(b){return b.id!==id;})));renderBills();}
 // ===== 任务自动归类到周报/月报 =====
-function weekKeyOf(d){var dt=new Date(d+"T00:00:00");var day=dt.getDay();var fri=new Date(dt);fri.setDate(dt.getDate()-((day+2)%7));return fri.getFullYear()+"-W"+isoWeek(fri);}
+function weekKeyOf(d){var dt=new Date(d+"T00:00:00");var day=dt.getDay();var back=(day===0)?6:(day-1);var mon=new Date(dt);mon.setDate(dt.getDate()-back);return mon.getFullYear()+"-W"+isoWeek(mon);}
 function linkedTasksBlock(period){
   var me="邱雨槡";
   var key=period==='week'?wkKey:moKey();
