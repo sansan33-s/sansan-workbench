@@ -447,6 +447,7 @@ var SEED_WEEKLY={"2026-W29": [{"cat": "科创研学", "name": "研学项目运�
 (function(){var VER=5;if((localStorage.getItem("wb_weekly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_WEEKLY){d[k]=SEED_WEEKLY[k];}localStorage.setItem("wb_weekly",JSON.stringify(d));localStorage.setItem("wb_weekly_ver",String(VER));}})();
 (function(){var MV="1";if((localStorage.getItem("wb_weekly_monmig")||"0")!==MV){try{var d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(d&&typeof d==="object"){function oldFri(key){var mm=(""+key).match(/^(\d{4})-W(\d+)$/);if(!mm)return null;var y=+mm[1],w=+mm[2];var j1=new Date(y,0,1);var jd=j1.getDay();var ff=new Date(y,0,1+((5-jd+7)%7));var f=new Date(ff);f.setDate(ff.getDate()+(w-1)*7);return f;}function monKey(dt){var day=dt.getDay();var back=(day===0)?6:(day-1);var mn=new Date(dt);mn.setDate(dt.getDate()-back);return mn.getFullYear()+"-W"+isoWeek(mn);}var nd={};for(var k in d){if(!Array.isArray(d[k]))continue;var f=oldFri(k);var nk=f?monKey(f):k;if(!nd[nk])nd[nk]=[];for(var i=0;i<d[k].length;i++)nd[nk].push(d[k][i]);}localStorage.setItem("wb_weekly",JSON.stringify(nd));}}catch(e){}localStorage.setItem("wb_weekly_monmig",MV);}})();
 window.addEventListener('load',function(){var SY="1";if((localStorage.getItem("wb_sync_done")||"0")!==SY){try{autoPlanAll();}catch(e){}localStorage.setItem("wb_sync_done",SY);}});
+window.addEventListener('load',function(){var DD="1";if((localStorage.getItem("wb_dedup_done")||"0")!==DD){try{dedupTasks(true);}catch(e){}localStorage.setItem("wb_dedup_done",DD);}});
 function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function friWeekNo(fri){var y=fri.getFullYear();var jan1=new Date(y,0,1);var jd=jan1.getDay();var firstFri=new Date(y,0,1+((5-jd+7)%7));return Math.floor((fri-firstFri)/(7*86400000))+1;}
 function wkMeta(){var d=new Date(rpDate+"T00:00:00");var day=d.getDay();var back=(day===0)?6:(day-1);var mon=new Date(d);mon.setDate(d.getDate()-back);var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};var fri=new Date(mon);fri.setDate(mon.getDate()+4);return {key:mon.getFullYear()+"-W"+isoWeek(mon),start:fmt(mon),end:fmt(fri),no:isoWeek(mon)};}
@@ -518,7 +519,9 @@ function autoPlanNext(){
   });
   if(!items.length){TO("「下周计划」为空，无可排");return;}
   var ts=TT();var added=0;var lastDue=null;
+  function _ex(it){return ts.some(function(t){return t.title===it.title&&(t.assignee===(it.lead||""));});}
   items.forEach(function(it,idx){
+    if(_ex(it))return; // 已存在同名同负责人任务则跳过，避免重复排程（幂等）
     var due=candAt(idx);var guard=idx;
     // 若该工作日已有同名任务（重复），顺延到下一个空闲工作日，时间线拉长
     while(ts.some(function(t){return t.title===it.title&&t.due===due&&(t.assignee===(it.lead||""));})){guard++;due=candAt(guard);}
@@ -541,7 +544,9 @@ function autoPlanAll(){
   function nwd(){while(true){var gd=_ci.getDay();if(gd!==0&&gd!==6){var d=fmt(_ci);_ci.setDate(_ci.getDate()+1);return d;}_ci.setDate(_ci.getDate()+1);}}
   var cand=[];function candAt(i){while(cand.length<=i)cand.push(nwd());return cand[i];}
   var ts=TT();var added=0;var lastDue=null;
+  function _ex(it){return ts.some(function(t){return t.title===it.title&&(t.assignee===(it.lead||""));});}
   items.forEach(function(it,idx){
+    if(_ex(it))return; // 已存在同名同负责人任务则跳过，避免重复排程（幂等）
     var due=candAt(idx);var guard=idx;
     while(ts.some(function(t){return t.title===it.title&&t.due===due&&(t.assignee===(it.lead||""));})){guard++;due=candAt(guard);}
     ts.push({id:UD(),title:it.title,desc:"",priority:"中",status:"待办",start:"",due:due,assignee:it.lead||"",collab:it.collab||"",pj:"",top3:false,risk:false,ms:false,doneDate:"",createdAt:TD()});
@@ -549,6 +554,18 @@ function autoPlanAll(){
   });
   ST(ts);renderCal();REP();
   TO("已排 "+added+" 项到日历（"+cand[0]+" ~ "+lastDue+"）");
+}
+function dedupTasks(silent){
+  var ts=TT();if(!ts.length){if(!silent)TO("日历暂无任务");return 0;}
+  var seen={},out=[],removed=0;
+  ts.forEach(function(t){
+    var k=JSON.stringify([t.title||"",t.assignee||""]);
+    if(seen[k]){removed++;return;} // 同标题同负责人只保留第一条（最早日期）
+    seen[k]=1;out.push(t);
+  });
+  if(removed){ST(out);renderCal();REP();}
+  if(!silent)TO("已去重，移除 "+removed+" 条重复任务");
+  return removed;
 }
 function autoPullWeek(){
   if(document.getElementById('wkProjects')&&document.getElementById('wkProjects').children.length)saveWK();
@@ -749,6 +766,7 @@ if(!localStorage.getItem("wb_tasks")){
 <div style="font-size:12px;color:var(--t2);margin-bottom:8px" id="wkRange"></div>
 <div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPullWeek()">← 拉本周任务到进度</button><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPlanNext()">下周计划排进日历 →</button></div>
 <div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="autoPlanAll()">🗓 全部计划排进日历（跨周拉伸·跳周末）</button></div>
+<div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="dedupTasks()">🧹 日历去重（同标题同负责人只保留一条）</button></div>
 <div id="wkProjects"></div>
 </div>
 <div class="card" style="margin-bottom:12px" id="moCard"><div class="bh">🗓 月报 · 绩效考核表 <span id="moYM" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addMoRow()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveMo()">保存</button></div></div>
