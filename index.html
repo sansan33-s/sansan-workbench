@@ -494,6 +494,68 @@ function exportWK(){
   TO("周报xlsx已导出");
 }
 
+function autoPlanNext(){
+  if(document.getElementById('wkProjects')&&document.getElementById('wkProjects').children.length)saveWK();
+  var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
+  var list=data[wkKey]||[];
+  if(!list.length){TO("本周暂无项目");return;}
+  var m=wkMeta();
+  var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};
+  var nf=new Date(m.start+"T00:00:00");nf.setDate(nf.getDate()+7);
+  var nt=new Date(nf);nt.setDate(nf.getDate()+6);
+  var ns=fmt(nf),ne=fmt(nt);
+  var days=[];var cur=new Date(nf);while(cur<=nt){days.push(fmt(cur));cur.setDate(cur.getDate()+1);}
+  var items=[];
+  list.forEach(function(p){
+    (p.next||"").split("\n").forEach(function(raw){
+      var line=raw.replace(/^\s*\d+[、.、]\s*/,"").trim();
+      if(line)items.push({title:line,cat:p.cat,name:p.name,lead:p.lead||"",collab:p.collab||""});
+    });
+  });
+  if(!items.length){TO("「下周计划」为空，无可排");return;}
+  var ts=TT();var added=0;
+  items.forEach(function(it,idx){
+    var due=days[idx%days.length];
+    var dup=ts.some(function(t){return t.title===it.title&&t.due===due&&(t.assignee===(it.lead||""));});
+    if(dup)return;
+    ts.push({id:UD(),title:it.title,desc:"",priority:"中",status:"待办",start:"",due:due,assignee:it.lead||"",collab:it.collab||"",pj:"",top3:false,risk:false,ms:false,doneDate:"",createdAt:TD()});
+    added++;
+  });
+  ST(ts);renderCal();REP();
+  TO("已排 "+added+" 项到下周日历（"+ns+"~"+ne+"）");
+}
+function autoPullWeek(){
+  if(document.getElementById('wkProjects')&&document.getElementById('wkProjects').children.length)saveWK();
+  var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
+  var list=data[wkKey]||[];
+  if(!list.length){TO("本周暂无项目卡片");return;}
+  var m=wkMeta();var s=m.start,e=m.end;
+  var ts=TT().filter(function(t){
+    if(!(t.assignee==="邱雨槡"||t.collab==="邱雨槡"))return false;
+    var d=t.due||t.start||"";return d>=s&&d<=e;
+  });
+  if(!ts.length){TO("本周日历无相关任务");return;}
+  var byProj={};
+  ts.forEach(function(t){
+    var pn="未关联项目";
+    if(t.pj){var p=PP().filter(function(x){return x.id===t.pj;})[0];if(p)pn=p.name;}
+    (byProj[pn]=byProj[pn]||[]).push(t);
+  });
+  list.forEach(function(p){p.progress=(p.progress||"").replace(/\n?—— 自动汇总本周任务 ——[\s\S]*$/,"");});
+  var matched=Object.keys(byProj).filter(function(k){return k!=="未关联项目";});
+  var unmatched=byProj["未关联项目"]||[];
+  var sig=function(t){return t.status==="已完成"?"✅":(t.status==="进行中"?"🔄":"⚪");};
+  list.forEach(function(p){
+    var lines=[];
+    matched.forEach(function(pn){if(pn===p.name)byProj[pn].forEach(function(t){lines.push(sig(t)+" "+t.title);});});
+    if(p===list[0]&&unmatched.length)unmatched.forEach(function(t){lines.push(sig(t)+" "+t.title);});
+    if(lines.length){p.progress=(p.progress?p.progress+"\n":"")+"—— 自动汇总本周任务 ——\n"+lines.join("\n");}
+  });
+  data[wkKey]=list;localStorage.setItem("wb_weekly",JSON.stringify(data));
+  renderWK();
+  TO("已拉取 "+ts.length+" 项任务到本周进度");
+}
+
 // ===== 月报（绩效考核表，参考邱雨槡-2026年7月运营支撑员工月报-翔通）=====
 var SEED_MONTHLY={"2026-07":[{"name":"邱雨槡","project":"咪咕新空业务运营","dept":"数值赋能中心","goal":"1. 搭建小初高研学课程基础体系，对接核心合作方，明确课程设计方向与合作模式\n2. 完成研学项目成本测算初稿，为后续定价、商务报价提供支撑\n3. 推进校企合作、客户拓展，完成配套商务宣传物料制作\n4. 配合完成基地运营、项目复盘等内部支撑工作，落地部门周报标准化流程","result":"1. 完成小初高研学框架、咪咕咖啡融合课程设计，统一课程研发方向，产出：《研学课程相关材料》\n2. 组织课程内研会，规范部门周报要求，产出：《日常办公表单》\n3. 完成赛事模块复盘、基地物料盘点，产出：《赛事复盘模块总结》《基地物料盘点表（初稿）》\n4. 制作院校合作宣传物料，对接夏商客户、厦大嘉庚学院同步方案，产出：《院校合作案例宣传页》"}]};
 (function(){var VER=1;if((localStorage.getItem("wb_monthly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_monthly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_MONTHLY){if(d[k]===undefined)d[k]=SEED_MONTHLY[k];}localStorage.setItem("wb_monthly",JSON.stringify(d));localStorage.setItem("wb_monthly_ver",String(VER));}})();
@@ -659,6 +721,7 @@ if(!localStorage.getItem("wb_tasks")){
 <div class="card" style="margin-bottom:12px" id="calCard"><div class="bh">📅 <span id="calTitle">—</span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="CM(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="CM(1)">›</button></div></div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--t2);margin-bottom:6px"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div></div>
 <div class="card" style="margin-bottom:12px" id="wkCard"><div class="bh">📝 周报 <span id="wkNo" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addProj()">＋</button><button class="btn btn-o" style="padding:4px 12px;font-size:11px" onclick="exportWK()">📥导出xlsx</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveWK()">保存</button></div></div>
 <div style="font-size:12px;color:var(--t2);margin-bottom:8px" id="wkRange"></div>
+<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPullWeek()">← 拉本周任务到进度</button><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPlanNext()">下周计划排进日历 →</button></div>
 <div id="wkProjects"></div>
 </div>
 <div class="card" style="margin-bottom:12px" id="moCard"><div class="bh">🗓 月报 · 绩效考核表 <span id="moYM" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addMoRow()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveMo()">保存</button></div></div>
