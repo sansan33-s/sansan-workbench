@@ -485,7 +485,7 @@ function renderWK(){
 }
 function addProj(){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(!data[wkKey])data[wkKey]=[];data[wkKey].push({cat:"",name:"",desc:"",lead:"邱雨槡",collab:"",goal:"",progress:"",next:"",issue:""});localStorage.setItem("wb_weekly",JSON.stringify(data));renderWK();}
 function delProj(i){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(data[wkKey]){data[wkKey].splice(i,1);localStorage.setItem("wb_weekly",JSON.stringify(data));renderWK();}}
-function saveWK(){var list=[];document.querySelectorAll("#wkProjects .wk-proj").forEach(function(el){var o={};el.querySelectorAll("[data-f]").forEach(function(inp){o[inp.getAttribute("data-f")]=inp.value;});list.push(o);});var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");data[wkKey]=list;localStorage.setItem("wb_weekly",JSON.stringify(data));TO("周报已保存");}
+function saveWK(){var old=JSON.parse(localStorage.getItem("wb_weekly")||"{}");var oldList=old[wkKey]||[];var list=[];document.querySelectorAll("#wkProjects .wk-proj").forEach(function(el){var o={};el.querySelectorAll("[data-f]").forEach(function(inp){o[inp.getAttribute("data-f")]=inp.value;});list.push(o);});list.forEach(function(p,i){var oids=(oldList[i]&&oldList[i].nextIds&&Array.isArray(oldList[i].nextIds))?oldList[i].nextIds:[];var nw=(p.next||"").split("\n").map(function(ln,j){var tx=ln.replace(/^\s*\d+[、.、]\s*/,"").trim();return tx?(oids[j]||UD()):"";});p.nextIds=nw;});var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");data[wkKey]=list;localStorage.setItem("wb_weekly",JSON.stringify(data));TO("周报已保存");}
 function wkStep(n){var d=new Date(rpDate+"T00:00:00");d.setDate(d.getDate()+n*7);rpDate=d.toISOString().slice(0,10);renderCal();REP();WK();}
 function exportWK(){
   if(typeof XLSX==="undefined"){TO("正在加载导出组件…");var s=document.createElement("script");s.src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";s.onload=function(){exportWK();};document.head.appendChild(s);return;}
@@ -505,9 +505,12 @@ function exportWK(){
   TO("周报xlsx已导出");
 }
 
-function planKeyOf(wk,pn,line){return "PL:"+wk+"|"+(pn||"")+"|"+(line||"");}
+function planKeyOf(wk,pn,lid){return "PL:"+wk+"|"+(pn||"")+"|"+(lid||"");}
+// 为每条「下周计划」补齐稳定 ID（按位置对齐，不随文字改动变化），用于任务稳定绑定
+function ensurePlanIds(){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");var ch=false;for(var k in data){(data[k]||[]).forEach(function(p){var lines=(p.next||"").split("\n");var ids=(p.nextIds&&Array.isArray(p.nextIds))?p.nextIds.slice():[];var nw=[];lines.forEach(function(ln,j){var tx=ln.replace(/^\s*\d+[、.、]\s*/,"").trim();nw.push(tx?(ids[j]||UD()):"");});if(JSON.stringify(nw)!==JSON.stringify(ids)){p.nextIds=nw;ch=true;}});}if(ch)localStorage.setItem("wb_weekly",JSON.stringify(data));}
 function autoPlanNext(){
   if(document.getElementById('wkProjects')&&document.getElementById('wkProjects').children.length)saveWK();
+  ensurePlanIds();
   var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
   var list=data[wkKey]||[];
   if(!list.length){TO("本周暂无项目");return;}
@@ -521,17 +524,18 @@ function autoPlanNext(){
   function candAt(i){while(cand.length<=i)cand.push(nwd());return cand[i];}
   var items=[];
   list.forEach(function(p){
-    (p.next||"").split("\n").forEach(function(raw){
+    var ids=(p.nextIds&&Array.isArray(p.nextIds))?p.nextIds:[];
+    (p.next||"").split("\n").forEach(function(raw,j){
       var line=raw.replace(/^\s*\d+[、.、]\s*/,"").trim();
-      if(line)items.push({title:line,cat:p.cat,name:p.name,lead:p.lead||"",collab:p.collab||"",wk:wkKey});
+      if(line)items.push({title:line,cat:p.cat,name:p.name,lead:p.lead||"",collab:p.collab||"",wk:wkKey,lid:ids[j]||UD()});
     });
   });
   if(!items.length){TO("「下周计划」为空，无可排");return;}
   var ts=TT();var added=0,updated=0,ni=0,lastDue=null;
   items.forEach(function(it){
-    var pk=planKeyOf(it.wk,it.name,it.title);
+    var pk=planKeyOf(it.wk,it.name,it.lid);
     var ex=ts.find(function(t){return t.planKey===pk||(t.title===it.title&&(t.assignee||"")===(it.lead||""));});
-    if(ex){if(!ex.planKey)ex.planKey=pk;ex.assignee=it.lead||"";ex.collab=it.collab||"";updated++;return;} // 已存在则更新绑定，不重复建（幂等）
+    if(ex){if(!ex.planKey)ex.planKey=pk;ex.title=it.title;ex.assignee=it.lead||"";ex.collab=it.collab||"";updated++;return;} // 已存在则更新绑定（含标题迁移），不重复建（幂等）
     var due=candAt(ni++);
     ts.push({id:UD(),title:it.title,desc:"",priority:"中",status:"待办",start:"",due:due,assignee:it.lead||"",collab:it.collab||"",pj:"",top3:false,risk:false,ms:false,doneDate:"",createdAt:TD(),planKey:pk});
     added++;lastDue=due;
@@ -541,9 +545,10 @@ function autoPlanNext(){
 }
 function autoPlanAll(){
   if(document.getElementById('wkProjects')&&document.getElementById('wkProjects').children.length)saveWK();
+  ensurePlanIds();
   var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
   var items=[];
-  for(var k in data){(data[k]||[]).forEach(function(p){(p.next||"").split("\n").forEach(function(raw){var line=raw.replace(/^\s*\d+[、.、]\s*/,"").trim();if(line)items.push({title:line,cat:p.cat,name:p.name,lead:p.lead||"",collab:p.collab||"",wk:k});});});}
+  for(var k in data){(data[k]||[]).forEach(function(p){var ids=(p.nextIds&&Array.isArray(p.nextIds))?p.nextIds:[];(p.next||"").split("\n").forEach(function(raw,j){var line=raw.replace(/^\s*\d+[、.、]\s*/,"").trim();if(line)items.push({title:line,cat:p.cat,name:p.name,lead:p.lead||"",collab:p.collab||"",wk:k,lid:ids[j]||UD()});});});}
   if(!items.length){TO("所有周报暂无下周计划");return;}
   var m=wkMeta();
   var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};
@@ -553,9 +558,9 @@ function autoPlanAll(){
   var cand=[];function candAt(i){while(cand.length<=i)cand.push(nwd());return cand[i];}
   var ts=TT();var added=0,updated=0,ni=0,lastDue=null;
   items.forEach(function(it){
-    var pk=planKeyOf(it.wk,it.name,it.title);
+    var pk=planKeyOf(it.wk,it.name,it.lid);
     var ex=ts.find(function(t){return t.planKey===pk||(t.title===it.title&&(t.assignee||"")===(it.lead||""));});
-    if(ex){if(!ex.planKey)ex.planKey=pk;ex.assignee=it.lead||"";ex.collab=it.collab||"";updated++;return;} // 已存在则更新绑定，不重复建（幂等）
+    if(ex){if(!ex.planKey)ex.planKey=pk;ex.title=it.title;ex.assignee=it.lead||"";ex.collab=it.collab||"";updated++;return;} // 已存在则更新绑定（含标题迁移），不重复建（幂等）
     var due=candAt(ni++);
     ts.push({id:UD(),title:it.title,desc:"",priority:"中",status:"待办",start:"",due:due,assignee:it.lead||"",collab:it.collab||"",pj:"",top3:false,risk:false,ms:false,doneDate:"",createdAt:TD(),planKey:pk});
     added++;lastDue=due;
@@ -564,17 +569,20 @@ function autoPlanAll(){
   TO("已排 "+added+" 项到日历（"+(cand[0]||"")+" ~ "+lastDue+"），更新 "+updated+" 项");
 }
 function syncPlanStatus(){
+  ensurePlanIds();
   var ts=TT();
   var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
   var anyCh=false;
   for(var k in data){(data[k]||[]).forEach(function(p){
     if(!p.next)return;
+    var ids=(p.nextIds&&Array.isArray(p.nextIds))?p.nextIds:[];
     var changed=false;
-    var nl=p.next.split("\n").map(function(raw){
+    var nl=p.next.split("\n").map(function(raw,j){
       var line=raw.replace(/^\s*\d+[、.、]\s*/,"").trim();
       if(!line)return raw;
-      var pk=planKeyOf(k,p.name,line);
-      var t=ts.find(function(x){return x.planKey===pk;})||ts.find(function(x){return x.title===line&&(x.assignee||"")===(p.lead||"");});
+      var lid=ids[j]||"";
+      var pk=planKeyOf(k,p.name,lid);
+      var t=ts.find(function(x){return lid&&x.planKey===pk;})||ts.find(function(x){return x.title===line&&(x.assignee||"")===(p.lead||"");});
       var done=!!(t&&t.status==='已完成');
       var stripped=raw.replace(/^✅\s*/,"").replace(/^[✓✔]\s*/,"");
       var wm=done?("✅ "+stripped):stripped;
