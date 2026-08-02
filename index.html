@@ -141,7 +141,8 @@ h1{font-size:22px;font-weight:800;margin-bottom:2px}
 <div class="em" id="em-kb"><div>
 <div style="display:flex;justify-content:space-between;margin-bottom:12px"><b id="emkt">新建条目</b><button onclick="CE()" style="border:none;background:none;font-size:18px;cursor:pointer">✕</button></div>
 <input type="hidden" id="kbid">
-<label>类型</label><select id="kbtyp"><option>灵感</option><option>课程</option><option>费用</option><option>形态</option><option>架构</option><option>其他</option></select>
+<label>类型</label><select id="kbtyp" onchange="KBTypeChg()"><option>灵感</option><option>课程</option><option>费用</option><option>形态</option><option>架构</option><option>其他</option><option>动态</option></select>
+<div id="kbthwrap" style="display:none"><label>动态主题</label><select id="kbth"><option>政策</option><option>元宇宙</option><option>红色研学</option><option>竞品</option></select></div>
 <label>标题*</label><input id="kbti">
 <label>内容</label><textarea id="kbco" rows="5"></textarea>
 <label>来源链接（可选）</label><input id="kbsr" placeholder="https://...">
@@ -167,7 +168,14 @@ h1{font-size:22px;font-weight:800;margin-bottom:2px}
 <button class="btn btn-o" onclick="KBT('费用',this)">费用</button>
 <button class="btn btn-o" onclick="KBT('形态',this)">形态</button>
 <button class="btn btn-o" onclick="KBT('架构',this)">架构</button>
-<button class="btn btn-o" onclick="KBT('其他',this)">其他</button></div>
+<button class="btn btn-o" onclick="KBT('其他',this)">其他</button>
+<button class="btn btn-o" onclick="KBT('动态',this)">📰 动态</button></div>
+<div id="kbsub" style="margin:6px 0;display:none;gap:6px;flex-wrap:wrap">
+<button class="btn btn-o sel" onclick="KBT2('全部',this)">全部主题</button>
+<button class="btn btn-o" onclick="KBT2('政策',this)">政策</button>
+<button class="btn btn-o" onclick="KBT2('元宇宙',this)">元宇宙</button>
+<button class="btn btn-o" onclick="KBT2('红色研学',this)">红色研学</button>
+<button class="btn btn-o" onclick="KBT2('竞品',this)">竞品</button></div>
 <input id="kbSearch" placeholder="🔍 搜索标题 / 内容 / 标签" oninput="renderKB()" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid var(--b);border-radius:8px;font-size:13px;background:#fff;margin-bottom:10px">
 <div id="kblist"></div>
 </div>
@@ -415,7 +423,7 @@ function DC(id){if(!confirm('删除？'))return;SC(CC().filter(function(x){retur
 // ===== 知识库（灵感收集 + 研学资讯）=====
 function KB(){return L('kb')}
 function KBs(v){LS('kb',v)}
-var KB_TYPES=['灵感','课程','费用','形态','架构','其他'];
+var KB_TYPES=['灵感','课程','费用','形态','架构','其他','动态'];
 // 真实研学行业资讯种子（agent 现抓+整理，2026-08 预填；后续手动补充）
 var KB_SEED=[
  {type:'架构',title:'研学课程三段式结构（行前-行中-行后）',content:'主流研学课程采用「前置课程(行前导入)—实地研学(行中探究)—后拓课程(行后产出)」三段式：行前做知识铺垫与安全须知，行中开展探究与体验，行后做成果展示与评价，形成学习闭环。',source:'自整理',tags:['课程结构','三段式','闭环']},
@@ -428,42 +436,64 @@ var KB_SEED=[
  {type:'形态',title:'研学开展形态图谱',content:'①半日营/一日营(轻量低门槛)；②多日营地(住宿式深度)；③研学旅行(跨地线路)；④研学+商业空间(咖啡/商圈融合的轻量半日营)；⑤全域研学(政府统筹区域联动)。可按获客与场地成本灵活组合。',source:'自整理',tags:['形态','营地','线路','半日营']},
  {type:'形态',title:'基地营地类 vs 路线类',content:'教育部将研学分为「路线类」(跨地点行程产品)与「基地营地类」(固定场所/营地产品)。国家级中小学生研学实践教育基地(营地)由教育部 2018 年起遴选，是优质资源对接入口。',source:'https://www.moe.gov.cn/srcsite/A06/s3321/201806/t20180615_340020.html',tags:['基地','营地','教育部']},
  {type:'灵感',title:'研学+商业空间的轻量获客思路',content:'借助咪咕咖啡等自有/合作商业空间做「研学+咖啡」融合课程，作为半日营轻量形态：场地零增成本、到店即场景、易做体验式引流，适合作为样例课首发试验场。',source:'自整理',tags:['灵感','商业空间','引流','半日营']},
- {type:'灵感',title:'数字内容资产复用（AR/数字人/元宇宙）',content:'咪咕具备数字内容(AR特效、数字人、元宇宙场景)优势，可把已建元宇宙启蒙课的 AR 二维码、数字人讲解等资产沉淀为可复用组件，降低后续课程研发边际成本。',source:'自整理',tags:['灵感','AR','数字人','资产复用']}
+ {type:'灵感',title:'数字内容资产复用（AR/数字人/元宇宙）',content:'咪咕具备数字内容(AR特效、数字人、元宇宙场景)优势，可把已建元宇宙启蒙课的 AR 二维码、数字人讲解等资产沉淀为可复用组件，降低后续课程研发边际成本。',source:'自整理',tags:['灵感','AR','数字人','资产复用']},
+
+// 行业资讯动态（agent 现抓+整理，2026-08 预填；后续可在对话框让我刷新）
+ {type:'动态',theme:'政策',title:'文旅部三项研学旅游行业标准实施（2025-05-19）',content:'《研学旅游服务要求》LB/T 054-2025、《出境研学旅游服务要求》LB/T 091-2025、《研学旅游课程与线路设计指南》LB/T 092-2025 同日实施，原 LB/T 054-2016 废止。课程与线路设计首次有统一国标抓手。可复用：样例课与线路直接对标 092-2025 的「课程结构+质量评价」条款。',source:'https://zwgk.mct.gov.cn/zfxxgkml/hybz/202505/t20250519_960044.html',tags:['标准','国标','课程设计'],date:'2025-05-19'},
+ {type:'动态',theme:'政策',title:'研学监管职责分工明确（文旅/教育/市场监管）',content:'文旅行政部门监管旅行社研学业务，教育行政部门监管学校组织的研学实践，市场监管管广告与价格。分工清晰后，B 端进校合作路径更明确。可复用：与学校签研学协议时引用分工条款，规避合规风险。',source:'https://www.gov.cn/zhengce/zhengceku/202411/content_6989122.htm',tags:['合规','进校','分工'],date:'2024-11-19'},
+ {type:'动态',theme:'元宇宙',title:'AI 学伴 / 数字人讲师成课堂趋势',content:'2025-2026 多地试点 AI 学伴、数字人讲师、VR/AR 沉浸式课堂；新课标强调真实情境探究。可复用：咪咕已有 AR/数字人资产，可直接复用到研学样例课，降低研发边际成本。',source:'自整理',tags:['AI','数字人','沉浸式'],date:'2026-07-15'},
+ {type:'动态',theme:'元宇宙',title:'国家智慧教育平台扩 AI / 虚拟实验资源',content:'国家中小学智慧教育平台持续扩充 AI 与虚拟实验资源，数字教育基建成熟。可复用：研学课程可对接平台资源做行前预习，行中实地探究、行后平台复盘，形成三段式闭环。',source:'自整理',tags:['智慧教育','平台','预习'],date:'2026-06-30'},
+ {type:'动态',theme:'红色研学',title:'"数字一大·初心之旅"大空间 VR 沉浸式红色研学',content:'2025-07 上海推出"数字一大·初心之旅"大空间 VR 沉浸式体验，将中共一大会址历史转化为可行走、可交互的数字叙事，并首发"初心驿站"红色文化空间。可复用：咪咕具备 VR/数字人能力，可直接借鉴"大空间 VR + 红色 IP"做沉浸式研学模块，复用现有数字资产。',source:'https://biz.huanqiu.com/article/4NXzAhq4g3f',tags:['VR','沉浸式','红色IP'],date:'2025-07-18'},
+ {type:'动态',theme:'红色研学',title:'红岩红沉浸式剧场"行进式"研学体验',content:'重庆红岩红沉浸式剧场以情景剧打造"走着看、沉进去、演出来"的行进式研学，区别于传统"坐着看"。可复用：红色主题样例课可引入"行进式剧场+角色扮演"提升参与感与记忆留存，适配行中实地探究环节。',source:'https://cq.cnr.cn/xwsd/20250412/t20250412_527133233.shtml',tags:['行进式','剧场','角色扮演'],date:'2025-04-12'},
+ {type:'动态',theme:'竞品',title:'新东方研学："教育+科技"双轮驱动航天主题',content:'2025 夏季新东方依托海阳航天产业资源，与中国航天科技集团第十二研究院合作，做航天工程实践、空间站主题课程，主打"产业资源+名校氛围+科技实践"。可复用：B 端产品包装可学其"真实产业资源+科技实践"组合，咪咕可叠加数字内容做差异化。',source:'https://wenku.baidu.com/view/987c6e813f1ec5da50e2524de518964bce84d21c.html',tags:['新东方','航天','科技实践'],date:'2025-06'},
+ {type:'动态',theme:'竞品',title:'世纪明德上榜安徽研学"新产品"十佳案例',content:'2025-08 世纪明德凭"互动展品+国家美术馆官方讲解"入选安徽省研学旅游新产品十佳案例；行业从"游"转向"学"，强调真实探究与官方资源对接。可复用：竞品以"官方讲解+互动展品"做差异化，我方可借咪咕数字内容做"数字讲解/数字导览"替代或补充，降低成本。',source:'https://www.10100.com/article/79804405',tags:['世纪明德','官方资源','差异化'],date:'2025-08-22'}
 ];
-(function(){var V="1";if((localStorage.getItem('wb_kb_ver')||"0")!==V){var d=KB(),have={};d.forEach(function(x){have[x.title]=1;});KB_SEED.forEach(function(s){if(!have[s.title])d.push({id:UD(),date:TD(),type:s.type,title:s.title,content:s.content,source:s.source||"",tags:s.tags||[]});});KBs(d);localStorage.setItem('wb_kb_ver',V);}})();
+(function(){var V="2";if((localStorage.getItem('wb_kb_ver')||"0")!==V){var d=KB(),have={};d.forEach(function(x){have[x.title]=1;});KB_SEED.forEach(function(s){if(!have[s.title])d.push({id:UD(),date:s.date||TD(),type:s.type,title:s.title,content:s.content,source:s.source||"",tags:s.tags||[],theme:s.theme||""});});KBs(d);localStorage.setItem('wb_kb_ver',V);}})();
 var kbf='全部';
-function KBT(t,el){kbf=t;CL('#kbfilter .btn-o').forEach(function(b){b.classList.remove('sel')});if(el)el.classList.add('sel');renderKB();}
+var kbTheme='全部';
+function KBT(t,el){kbf=t;kbTheme='全部';CL('#kbfilter .btn-o').forEach(function(b){b.classList.remove('sel')});if(el)el.classList.add('sel');var sub=C('#kbsub');if(sub){sub.style.display=(t==='动态')?'flex':'none';CL('#kbsub .btn-o').forEach(function(b){b.classList.remove('sel')});var fb=CL('#kbsub .btn-o')[0];if(fb)fb.classList.add('sel');}renderKB();}
+function KBT2(t,el){kbTheme=t;CL('#kbsub .btn-o').forEach(function(b){b.classList.remove('sel')});if(el)el.classList.add('sel');renderKB();}
 function renderKB(){
   var d=KB();var q=(C('#kbSearch')?C('#kbSearch').value:'').trim().toLowerCase();
-  var list=d.filter(function(x){if(kbf!=='全部'&&x.type!==kbf)return false;if(q){var hay=(x.title+' '+(x.content||'')+' '+(x.tags||[]).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}return true;});
+  var list=d.filter(function(x){if(kbf!=='全部'&&x.type!==kbf)return false;if(kbf==='动态'&&kbTheme!=='全部'&&(x.theme||'')!==kbTheme)return false;if(q){var hay=(x.title+' '+(x.content||'')+' '+(x.tags||[]).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}return true;});
   if(C('#kbc'))C('#kbc').textContent=d.length;
   if(!list.length){C('#kblist').innerHTML='<div style="padding:20px;text-align:center;color:var(--t2)">暂无条目，点右上「＋新建」收集灵感</div>';return;}
-  var colors={'灵感':'#8b5cf6','课程':'#0ea5e9','费用':'#f59e0b','形态':'#10b981','架构':'#ef4444','其他':'#64748b'};
-  C('#kblist').innerHTML=list.slice().reverse().map(function(x){
+  var colors={'灵感':'#8b5cf6','课程':'#0ea5e9','费用':'#f59e0b','形态':'#10b981','架构':'#ef4444','其他':'#64748b','动态':'#ec4899'};
+  var tcol={'政策':'#dc2626','元宇宙':'#7c3aed','红色研学':'#b91c1c','竞品':'#0891b2'};
+  var card=function(x){
     var col=colors[x.type]||'#64748b';
+    var themeBadge=(x.type==='动态'&&x.theme)?'<span style="background:'+(tcol[x.theme]||'#64748b')+';color:#fff;border-radius:6px;padding:1px 8px;font-size:11px;font-weight:600">'+esc(x.theme)+'</span>':'';
     var tags=(x.tags||[]).map(function(t){return '<span style="background:#f3e8ff;color:var(--p);border-radius:6px;padding:1px 7px;font-size:11px">'+esc(t)+'</span>';}).join(' ');
     var src=x.source?('<a href="'+esc(x.source)+'" target="_blank" style="color:var(--s);font-size:11px;text-decoration:none">🔗 来源</a>'):'';
     return '<div class="card" style="margin-bottom:10px">'+
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="background:'+col+';color:#fff;border-radius:6px;padding:1px 8px;font-size:11px;font-weight:600">'+esc(x.type)+'</span><b style="font-size:14px;flex:1">'+esc(x.title)+'</b>'+(x.date?'<span style="font-size:11px;color:var(--t2)">'+esc(x.date)+'</span>':'')+'</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="background:'+col+';color:#fff;border-radius:6px;padding:1px 8px;font-size:11px;font-weight:600">'+esc(x.type)+'</span>'+themeBadge+'<b style="font-size:14px;flex:1">'+esc(x.title)+'</b>'+(x.date?'<span style="font-size:11px;color:var(--t2)">'+esc(x.date)+'</span>':'')+'</div>'+
       '<div style="font-size:12px;line-height:1.6;color:#374151;white-space:pre-wrap;margin-bottom:6px">'+esc(x.content||'')+'</div>'+
       (tags?'<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">'+tags+'</div>':'')+
       '<div style="display:flex;justify-content:space-between;align-items:center"><span>'+src+'</span><span style="display:flex;gap:12px"><a onclick="EKB(\''+x.id+'\')" style="color:var(--p);font-size:12px;cursor:pointer">编辑</a><a onclick="DKB(\''+x.id+'\')" style="color:var(--d);font-size:12px;cursor:pointer">删除</a></span></div>'+
     '</div>';
-  }).join('');
+  };
+  if(kbf==='动态'){
+    var order=['政策','元宇宙','红色研学','竞品'];var html='';
+    order.forEach(function(th){var g=list.filter(function(x){return (x.theme||'')===th;}).reverse();if(!g.length)return;html+='<div style="margin:10px 0 4px;font-size:12px;font-weight:700;color:'+(tcol[th]||'#64748b')+';border-left:3px solid '+(tcol[th]||'#64748b')+';padding-left:8px">'+esc(th)+' · '+g.length+'</div>'+g.map(card).join('');});
+    C('#kblist').innerHTML=html;
+  }else{
+    C('#kblist').innerHTML=list.slice().reverse().map(card).join('');
+  }
 }
-function EKB(id){C('#kbid').value=id||'';['kbti','kbco','kbsr','kbtg'].forEach(function(z){C('#'+z).value='';});C('#kbtyp').value='灵感';
-  if(id){var x=KB().find(function(y){return y.id===id;});if(x){C('#kbtyp').value=x.type;C('#kbti').value=x.title||'';C('#kbco').value=x.content||'';C('#kbsr').value=x.source||'';C('#kbtg').value=(x.tags||[]).join(',');}}
+function KBTypeChg(){var w=C('#kbthwrap');if(w)w.style.display=(C('#kbtyp').value==='动态')?'block':'none';}
+function EKB(id){C('#kbid').value=id||'';['kbti','kbco','kbsr','kbtg'].forEach(function(z){C('#'+z).value='';});C('#kbtyp').value='灵感';C('#kbth').value='政策';var ww=C('#kbthwrap');if(ww)ww.style.display='none';
+  if(id){var x=KB().find(function(y){return y.id===id;});if(x){C('#kbtyp').value=x.type;C('#kbti').value=x.title||'';C('#kbco').value=x.content||'';C('#kbsr').value=x.source||'';C('#kbtg').value=(x.tags||[]).join(',');C('#kbth').value=x.theme||'政策';var w2=C('#kbthwrap');if(w2)w2.style.display=(x.type==='动态')?'block':'none';}}
   C('#emkt').textContent=id?'编辑条目':'新建条目';C('#em-kb').style.display='flex';
 }
 function SKB(){var id=C('#kbid').value;var title=C('#kbti').value.trim();if(!title){alert('标题不能为空');return;}
-  var d={id:id||UD(),type:C('#kbtyp').value,title:title,content:C('#kbco').value.trim(),source:C('#kbsr').value.trim(),tags:C('#kbtg').value.split(/[,，]/).map(function(t){return t.trim();}).filter(Boolean),date:TD()};
+  var d={id:id||UD(),type:C('#kbtyp').value,title:title,content:C('#kbco').value.trim(),source:C('#kbsr').value.trim(),tags:C('#kbtg').value.split(/[,，]/).map(function(t){return t.trim();}).filter(Boolean),date:TD(),theme:(C('#kbtyp').value==='动态')?C('#kbth').value:''};
   var arr=KB();if(id){var i=arr.findIndex(function(x){return x.id===id;});if(i>=0)arr[i]=d;else arr.push(d);}else arr.push(d);KBs(arr);CE();renderKB();TO('已保存');
 }
 function DKB(id){if(!confirm('删除该条目？'))return;KBs(KB().filter(function(x){return x.id!==id;}));renderKB();}
 function exportKB(){if(typeof XLSX==="undefined"){TO("正在加载导出组件…");var s=document.createElement("script");s.src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";s.onload=function(){exportKB();};document.head.appendChild(s);return;}
   var d=KB();if(!d.length){TO("知识库暂无数据");return;}
-  var rows=[["类型","标题","内容","来源","标签","日期"]];
-  d.forEach(function(x){rows.push([x.type||"",x.title||"",x.content||"",x.source||"",(x.tags||[]).join("、"),x.date||""]);});
+  var rows=[["类型","主题","标题","内容","来源","标签","日期"]];
+  d.forEach(function(x){rows.push([x.type||"",x.theme||"",x.title||"",x.content||"",x.source||"",(x.tags||[]).join("、"),x.date||""]);});
   var ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=[{wch:8},{wch:24},{wch:60},{wch:30},{wch:18},{wch:12}];
   var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"知识库");
   XLSX.writeFile(wb,"三三知识库_"+TD()+".xlsx");TO("知识库已导出");
