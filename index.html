@@ -262,6 +262,28 @@ body.collapsed .content{margin-left:74px}
 <div id="kblist"></div>
 </div>
 
+
+<div id="pg-report" style="display:none"><h1><i class=ic-chart></i> 日报周报</h1>
+<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o" data-mode="day" onclick="RP('day',this)"><i class=ic-cal></i> 日</button><button class="btn btn-o sel" data-mode="week" onclick="RP('week',this)"><i class=ic-cal2></i> 周</button><button class="btn btn-o" data-mode="month" onclick="RP('month',this)"><i class=ic-cal3></i> 月</button><button class="btn btn-o" style="margin-left:auto" onclick="gotoToday()">今天</button></div>
+<div class="card" style="margin-bottom:12px" id="calCard"><div class="bh"><i class=ic-cal></i> <span id="calTitle">—</span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="CM(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="CM(1)">›</button></div></div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--t2);margin-bottom:6px"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div></div>
+<div class="card" style="margin-bottom:12px" id="wkCard"><div class="bh"><i class=ic-note></i> 周报 <span id="wkNo" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addProj()">＋</button><button class="btn btn-o" style="padding:4px 12px;font-size:11px" onclick="exportWK()"><i class=ic-down></i>导出xlsx</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveWK()">保存</button></div></div>
+<div style="font-size:12px;color:var(--t2);margin-bottom:8px" id="wkRange"></div>
+<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPullWeek()">← 拉本周任务到进度</button><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPlanNext()">下周计划排进日历 →</button></div>
+<div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="autoPlanAll()"><i class=ic-cal3></i> 全部计划排进日历（跨周拉伸·跳周末）</button></div>
+<div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="dedupTasks()"><i class=ic-broom></i> 日历去重（内容相同才删·预览确认）</button></div>
+<div id="wkProjects"></div>
+</div>
+<div class="card" style="margin-bottom:12px" id="moCard"><div class="bh"><i class=ic-cal3></i> 月报 · 绩效考核表 <span id="moYM" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addMoRow()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveMo()">保存</button></div></div>
+<div id="moRows"></div>
+</div>
+<div class="card day-sec"><div class="bh" id="rpTitle"><i class=ic-cal></i> 今日任务汇总</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-bottom:12px">
+<div onclick="SG('done')" style="cursor:pointer"><div style="font-size:28px;font-weight:800;color:var(--s)" id="rpDone">0</div><div style="font-size:11px;color:var(--t2)">已完成</div></div>
+<div onclick="SG('todo')" style="cursor:pointer"><div style="font-size:28px;font-weight:800;color:var(--w)" id="rpTodo">0</div><div style="font-size:11px;color:var(--t2)">未完成</div></div>
+<div onclick="SG('help')" style="cursor:pointer"><div style="font-size:28px;font-weight:800;color:var(--d)" id="rpHelp">0</div><div style="font-size:11px;color:var(--t2)">需协助</div></div></div></div>
+<div class="card day-sec" style="display:none"><div class="bh"><i class=ic-done></i> 已完成</div><div id="rpDoneList"></div></div>
+<div class="card day-sec"><div class="bh">⏳ 未完成</div><div id="rpTodoList"></div></div>
+<div class="card day-sec"><div class="bh"><i class=ic-users></i> 需协助（标记为风险）</div><div id="rpHelpList"></div></div></div>
 </main>
 <button class="mbtn" onclick="TGS()" aria-label="菜单"><i class=ic-menu></i></button>
 <div class="sb-scrim" onclick="TGS()"></div>
@@ -1073,26 +1095,5 @@ if(!localStorage.getItem("wb_tasks")){
 <label>识别结果</label><textarea id="ocrText" rows="3" placeholder="识别中..."></textarea>
 <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-o" onclick="closeOcr()">取消</button><button class="btn btn-p" onclick="saveOCR()">保存任务</button></div>
 </div></div>
-<div id="pg-report" style="display:none"><h1><i class=ic-chart></i> 日报周报</h1>
-<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o" data-mode="day" onclick="RP('day',this)"><i class=ic-cal></i> 日</button><button class="btn btn-o sel" data-mode="week" onclick="RP('week',this)"><i class=ic-cal2></i> 周</button><button class="btn btn-o" data-mode="month" onclick="RP('month',this)"><i class=ic-cal3></i> 月</button><button class="btn btn-o" style="margin-left:auto" onclick="gotoToday()">今天</button></div>
-<div class="card" style="margin-bottom:12px" id="calCard"><div class="bh"><i class=ic-cal></i> <span id="calTitle">—</span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="CM(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="CM(1)">›</button></div></div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--t2);margin-bottom:6px"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div></div>
-<div class="card" style="margin-bottom:12px" id="wkCard"><div class="bh"><i class=ic-note></i> 周报 <span id="wkNo" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="wkStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addProj()">＋</button><button class="btn btn-o" style="padding:4px 12px;font-size:11px" onclick="exportWK()"><i class=ic-down></i>导出xlsx</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveWK()">保存</button></div></div>
-<div style="font-size:12px;color:var(--t2);margin-bottom:8px" id="wkRange"></div>
-<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPullWeek()">← 拉本周任务到进度</button><button class="btn btn-o" style="flex:1;font-size:11px" onclick="autoPlanNext()">下周计划排进日历 →</button></div>
-<div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="autoPlanAll()"><i class=ic-cal3></i> 全部计划排进日历（跨周拉伸·跳周末）</button></div>
-<div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="dedupTasks()"><i class=ic-broom></i> 日历去重（内容相同才删·预览确认）</button></div>
-<div id="wkProjects"></div>
-</div>
-<div class="card" style="margin-bottom:12px" id="moCard"><div class="bh"><i class=ic-cal3></i> 月报 · 绩效考核表 <span id="moYM" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addMoRow()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveMo()">保存</button></div></div>
-<div id="moRows"></div>
-</div>
-<div class="card day-sec"><div class="bh" id="rpTitle"><i class=ic-cal></i> 今日任务汇总</div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-bottom:12px">
-<div onclick="SG('done')" style="cursor:pointer"><div style="font-size:28px;font-weight:800;color:var(--s)" id="rpDone">0</div><div style="font-size:11px;color:var(--t2)">已完成</div></div>
-<div onclick="SG('todo')" style="cursor:pointer"><div style="font-size:28px;font-weight:800;color:var(--w)" id="rpTodo">0</div><div style="font-size:11px;color:var(--t2)">未完成</div></div>
-<div onclick="SG('help')" style="cursor:pointer"><div style="font-size:28px;font-weight:800;color:var(--d)" id="rpHelp">0</div><div style="font-size:11px;color:var(--t2)">需协助</div></div></div></div>
-<div class="card day-sec" style="display:none"><div class="bh">'+ph('done')+' 已完成</div><div id="rpDoneList"></div></div>
-<div class="card day-sec"><div class="bh">⏳ 未完成</div><div id="rpTodoList"></div></div>
-<div class="card day-sec"><div class="bh"><i class=ic-users></i> 需协助（标记为风险）</div><div id="rpHelpList"></div></div></div>
 </body>
 </html>
