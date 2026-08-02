@@ -137,6 +137,18 @@ h1{font-size:22px;font-weight:800;margin-bottom:2px}
 <div style="display:flex;gap:6px;margin-top:14px"><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" style="background:var(--d);border-color:var(--d)" onclick="confirmDedup()">确认删除</button></div>
 </div></div>
 
+<!-- 知识库条目弹窗 -->
+<div class="em" id="em-kb"><div>
+<div style="display:flex;justify-content:space-between;margin-bottom:12px"><b id="emkt">新建条目</b><button onclick="CE()" style="border:none;background:none;font-size:18px;cursor:pointer">✕</button></div>
+<input type="hidden" id="kbid">
+<label>类型</label><select id="kbtyp"><option>灵感</option><option>课程</option><option>费用</option><option>形态</option><option>架构</option><option>其他</option></select>
+<label>标题*</label><input id="kbti">
+<label>内容</label><textarea id="kbco" rows="5"></textarea>
+<label>来源链接（可选）</label><input id="kbsr" placeholder="https://...">
+<label>标签（逗号分隔）</label><input id="kbtg" placeholder="如：定价,客单价">
+<div class="flex" style="margin-top:14px"><button class="btn btn-o" onclick="CE()">取消</button><button class="btn btn-p" onclick="SKB()">保存</button></div>
+</div></div>
+
 <div class="toast" id="toast"></div>
 <div class="nav">
 <a href="#" onclick="SW(0,this)" class="sel"><span>🏠</span>首页</a>
@@ -144,7 +156,21 @@ h1{font-size:22px;font-weight:800;margin-bottom:2px}
 <a href="#" onclick="SW(2,this)"><span>📁</span>项目</a>
 <a href="#" onclick="SW(3,this)"><span>📚</span>课程</a>
 <a href="#" onclick="SW(4,this)"><span>💰</span>记账</a>
-<a href="#" onclick="SW(5,this)"><span>📊</span>日报</a></div>
+<a href="#" onclick="SW(5,this)"><span>📊</span>日报</a>
+<a href="#" onclick="SW(6,this)"><span>🧠</span>知识库</a></div>
+<div id="pg-kb" style="display:none">
+<div class="bh" style="margin-bottom:0"><span>🧠 知识库 <b id="kbc">0</b></span><button class="btn btn-p" onclick="EKB()">+ 新建</button><button class="btn btn-o" onclick="exportKB()">导出</button></div>
+<div style="margin:8px 0;display:flex;gap:6px;flex-wrap:wrap" id="kbfilter">
+<button class="btn btn-o sel" onclick="KBT('全部',this)">全部</button>
+<button class="btn btn-o" onclick="KBT('灵感',this)">灵感</button>
+<button class="btn btn-o" onclick="KBT('课程',this)">课程</button>
+<button class="btn btn-o" onclick="KBT('费用',this)">费用</button>
+<button class="btn btn-o" onclick="KBT('形态',this)">形态</button>
+<button class="btn btn-o" onclick="KBT('架构',this)">架构</button>
+<button class="btn btn-o" onclick="KBT('其他',this)">其他</button></div>
+<input id="kbSearch" placeholder="🔍 搜索标题 / 内容 / 标签" oninput="renderKB()" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid var(--b);border-radius:8px;font-size:13px;background:#fff;margin-bottom:10px">
+<div id="kblist"></div>
+</div>
 
 <script>
 function L(k){return JSON.parse(localStorage.getItem('wb_'+k)||'[]')}
@@ -164,7 +190,7 @@ var cf='全部',pg=0;
 
 function SW(n,t){
   CL('.nav a').forEach(function(a){a.classList.remove('sel')});t.classList.add('sel');
-  ['pg-home','pg-tasks','pg-projects','pg-courses','pg-acc','pg-report'].forEach(function(id,i){C('#'+id).style.display=i===n?'block':'none'});
+  ['pg-home','pg-tasks','pg-projects','pg-courses','pg-acc','pg-report','pg-kb'].forEach(function(id,i){C('#'+id).style.display=i===n?'block':'none'});
   pg=n;RN();
 }
 
@@ -292,6 +318,7 @@ function RN(){
 
   if(pg===5){renderCal();REP();WK();applyView();}
   if(pg===4){renderBills();}
+  if(pg===6){renderKB();}
 }
 
 function TK(t,num){
@@ -384,6 +411,63 @@ function SCE(){var id=C('#ceid').value,cs=CC();
   if(!d.name){alert('名称不能为空');return;}
   if(id){var i=cs.findIndex(function(x){return x.id===id;});if(i>=0)cs[i]=d;}else cs.push(d);SC(cs);CE();RN();}
 function DC(id){if(!confirm('删除？'))return;SC(CC().filter(function(x){return x.id!==id;}));RN();}
+
+// ===== 知识库（灵感收集 + 研学资讯）=====
+function KB(){return L('kb')}
+function KBs(v){LS('kb',v)}
+var KB_TYPES=['灵感','课程','费用','形态','架构','其他'];
+// 真实研学行业资讯种子（agent 现抓+整理，2026-08 预填；后续手动补充）
+var KB_SEED=[
+ {type:'架构',title:'研学课程三段式结构（行前-行中-行后）',content:'主流研学课程采用「前置课程(行前导入)—实地研学(行中探究)—后拓课程(行后产出)」三段式：行前做知识铺垫与安全须知，行中开展探究与体验，行后做成果展示与评价，形成学习闭环。',source:'自整理',tags:['课程结构','三段式','闭环']},
+ {type:'架构',title:'研学课程设计的国家标准依据',content:'可参照 T/CATS 009-2024《研学旅游(中小学)课程设计指南》(中国旅行社协会)与文旅部行业标准 LB/T 092-2025《研学旅游课程与线路设计指南》(2025-02 发布)。两者均规定设计原则、课程结构、课程设计与质量评价。',source:'https://www.ndls.org.cn/standard/detail/8d49c44b63f7d1a0acc1fbc59ad2cc8a',tags:['标准','政策','合规']},
+ {type:'架构',title:'PBL 项目式学习是研学主流方法论',content:'以真实情境中的问题驱动，学生像研究者一样展开探究，呼应《义务教育科学课程标准(2022版)》倡导的探究式学习与真实情境问题解决。据公开报道，2025 年全国约 68% 中小学已开展跨学科 PBL。',source:'https://www.toutiao.com/article/7591478567784169993/',tags:['PBL','跨学科','方法论']},
+ {type:'课程',title:'研学主题常见细分赛道',content:'按主题可细分为科学科技、自然生态、历史文化、红色教育、劳动实践、艺术审美、职业体验等。教育部口径下研学旅行分「路线类」与「基地营地类」两大产品形态。',source:'https://www.moe.gov.cn/jyb_xwfb/s5147/202308/t20230821_1075360.html',tags:['主题','赛道','产品形态']},
+ {type:'课程',title:'样例课设计要点（以元宇宙启蒙课为例）',content:'单节样例课建议：1 个核心探究问题 + 1 个互动体验(AR/数字人) + 1 份产出物(任务单)。时长 40-90 分钟，配套讲解词、AR 二维码、签到表等物料。先打磨一节标杆课再复制。',source:'自整理',tags:['样例课','AR','设计']},
+ {type:'费用',title:'研学营价格区间参考',content:'国内研学夏令营常见区间约 3180–9800 元；含高端长线产品可达 1.98万–3.68万元。整体从几十元(轻量半日/一日)到上万元(学霸营)不等，国外线路数千至数万元。差异来自城市、天数(7/14/21/28天)、内容深度与机构品牌。',source:'https://www.36kr.com/p/2854843591445121',tags:['定价','客单价','区间']},
+ {type:'费用',title:'研学收费的监管红线',content:'多地已出台规范，如湖南某地明确中小学研学「三餐不超过70元/天」。定价需公开透明、自愿参与，避免捆绑收费。做 B 端(学校/机构)方案时要预留合规说明。',source:'https://www.cnyxlx.cn/feiyongbiaozhunchaxun/',tags:['合规','监管','定价']},
+ {type:'形态',title:'研学开展形态图谱',content:'①半日营/一日营(轻量低门槛)；②多日营地(住宿式深度)；③研学旅行(跨地线路)；④研学+商业空间(咖啡/商圈融合的轻量半日营)；⑤全域研学(政府统筹区域联动)。可按获客与场地成本灵活组合。',source:'自整理',tags:['形态','营地','线路','半日营']},
+ {type:'形态',title:'基地营地类 vs 路线类',content:'教育部将研学分为「路线类」(跨地点行程产品)与「基地营地类」(固定场所/营地产品)。国家级中小学生研学实践教育基地(营地)由教育部 2018 年起遴选，是优质资源对接入口。',source:'https://www.moe.gov.cn/srcsite/A06/s3321/201806/t20180615_340020.html',tags:['基地','营地','教育部']},
+ {type:'灵感',title:'研学+商业空间的轻量获客思路',content:'借助咪咕咖啡等自有/合作商业空间做「研学+咖啡」融合课程，作为半日营轻量形态：场地零增成本、到店即场景、易做体验式引流，适合作为样例课首发试验场。',source:'自整理',tags:['灵感','商业空间','引流','半日营']},
+ {type:'灵感',title:'数字内容资产复用（AR/数字人/元宇宙）',content:'咪咕具备数字内容(AR特效、数字人、元宇宙场景)优势，可把已建元宇宙启蒙课的 AR 二维码、数字人讲解等资产沉淀为可复用组件，降低后续课程研发边际成本。',source:'自整理',tags:['灵感','AR','数字人','资产复用']}
+];
+(function(){var V="1";if((localStorage.getItem('wb_kb_ver')||"0")!==V){var d=KB(),have={};d.forEach(function(x){have[x.title]=1;});KB_SEED.forEach(function(s){if(!have[s.title])d.push({id:UD(),date:TD(),type:s.type,title:s.title,content:s.content,source:s.source||"",tags:s.tags||[]});});KBs(d);localStorage.setItem('wb_kb_ver',V);}})();
+var kbf='全部';
+function KBT(t,el){kbf=t;CL('#kbfilter .btn-o').forEach(function(b){b.classList.remove('sel')});if(el)el.classList.add('sel');renderKB();}
+function renderKB(){
+  var d=KB();var q=(C('#kbSearch')?C('#kbSearch').value:'').trim().toLowerCase();
+  var list=d.filter(function(x){if(kbf!=='全部'&&x.type!==kbf)return false;if(q){var hay=(x.title+' '+(x.content||'')+' '+(x.tags||[]).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}return true;});
+  if(C('#kbc'))C('#kbc').textContent=d.length;
+  if(!list.length){C('#kblist').innerHTML='<div style="padding:20px;text-align:center;color:var(--t2)">暂无条目，点右上「＋新建」收集灵感</div>';return;}
+  var colors={'灵感':'#8b5cf6','课程':'#0ea5e9','费用':'#f59e0b','形态':'#10b981','架构':'#ef4444','其他':'#64748b'};
+  C('#kblist').innerHTML=list.slice().reverse().map(function(x){
+    var col=colors[x.type]||'#64748b';
+    var tags=(x.tags||[]).map(function(t){return '<span style="background:#f3e8ff;color:var(--p);border-radius:6px;padding:1px 7px;font-size:11px">'+esc(t)+'</span>';}).join(' ');
+    var src=x.source?('<a href="'+esc(x.source)+'" target="_blank" style="color:var(--s);font-size:11px;text-decoration:none">🔗 来源</a>'):'';
+    return '<div class="card" style="margin-bottom:10px">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="background:'+col+';color:#fff;border-radius:6px;padding:1px 8px;font-size:11px;font-weight:600">'+esc(x.type)+'</span><b style="font-size:14px;flex:1">'+esc(x.title)+'</b>'+(x.date?'<span style="font-size:11px;color:var(--t2)">'+esc(x.date)+'</span>':'')+'</div>'+
+      '<div style="font-size:12px;line-height:1.6;color:#374151;white-space:pre-wrap;margin-bottom:6px">'+esc(x.content||'')+'</div>'+
+      (tags?'<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">'+tags+'</div>':'')+
+      '<div style="display:flex;justify-content:space-between;align-items:center"><span>'+src+'</span><span style="display:flex;gap:12px"><a onclick="EKB(\''+x.id+'\')" style="color:var(--p);font-size:12px;cursor:pointer">编辑</a><a onclick="DKB(\''+x.id+'\')" style="color:var(--d);font-size:12px;cursor:pointer">删除</a></span></div>'+
+    '</div>';
+  }).join('');
+}
+function EKB(id){C('#kbid').value=id||'';['kbti','kbco','kbsr','kbtg'].forEach(function(z){C('#'+z).value='';});C('#kbtyp').value='灵感';
+  if(id){var x=KB().find(function(y){return y.id===id;});if(x){C('#kbtyp').value=x.type;C('#kbti').value=x.title||'';C('#kbco').value=x.content||'';C('#kbsr').value=x.source||'';C('#kbtg').value=(x.tags||[]).join(',');}}
+  C('#emkt').textContent=id?'编辑条目':'新建条目';C('#em-kb').style.display='flex';
+}
+function SKB(){var id=C('#kbid').value;var title=C('#kbti').value.trim();if(!title){alert('标题不能为空');return;}
+  var d={id:id||UD(),type:C('#kbtyp').value,title:title,content:C('#kbco').value.trim(),source:C('#kbsr').value.trim(),tags:C('#kbtg').value.split(/[,，]/).map(function(t){return t.trim();}).filter(Boolean),date:TD()};
+  var arr=KB();if(id){var i=arr.findIndex(function(x){return x.id===id;});if(i>=0)arr[i]=d;else arr.push(d);}else arr.push(d);KBs(arr);CE();renderKB();TO('已保存');
+}
+function DKB(id){if(!confirm('删除该条目？'))return;KBs(KB().filter(function(x){return x.id!==id;}));renderKB();}
+function exportKB(){if(typeof XLSX==="undefined"){TO("正在加载导出组件…");var s=document.createElement("script");s.src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";s.onload=function(){exportKB();};document.head.appendChild(s);return;}
+  var d=KB();if(!d.length){TO("知识库暂无数据");return;}
+  var rows=[["类型","标题","内容","来源","标签","日期"]];
+  d.forEach(function(x){rows.push([x.type||"",x.title||"",x.content||"",x.source||"",(x.tags||[]).join("、"),x.date||""]);});
+  var ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=[{wch:8},{wch:24},{wch:60},{wch:30},{wch:18},{wch:12}];
+  var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"知识库");
+  XLSX.writeFile(wb,"三三知识库_"+TD()+".xlsx");TO("知识库已导出");
+}
 
 // Inbox
 
@@ -792,7 +876,7 @@ document.addEventListener('touchmove',function(e){if(!swR||!swI)return;
 document.addEventListener('touchend',function(){if(!swR||!swI)return;swI.style.transition='transform .2s';
   var dx=parseInt(swI.style.transform.replace(/[^0-9.-]/g,''))||0;swI.style.transform=dx<-35?'translateX(-70px)':'';swR=null;swI=null;});
 
-function CE(mid){if(mid)C('#'+mid).style.display='flex';else{CL('.em').forEach(function(m){m.style.display='none'});document.getElementById('imgFile').value='';}}
+function CE(mid){if(mid)C('#'+mid).style.display='flex';else{CL('.em').forEach(function(m){m.style.display='none'});var f=document.getElementById('imgFile');if(f)f.value='';}}
 CL('.em').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)CE();});});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')CE();});
 RN();
