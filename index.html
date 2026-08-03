@@ -162,6 +162,20 @@ body.collapsed .sb-sync-btn .dot{display:none}
   #dash.cards{grid-template-columns:repeat(2,1fr)}
 }
 
+.tgl{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0}
+.tgl input{opacity:0;width:0;height:0}
+.tgl .slider{position:absolute;cursor:pointer;inset:0;background:var(--b2);border-radius:24px;transition:.3s}
+.tgl .slider::before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+.tgl input:checked+.slider{background:var(--grad)}
+.tgl input:checked+.slider::before{transform:translateX(18px)}
+.sync-auto-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;margin-top:8px;background:var(--bg);border-radius:14px;gap:10px}
+.sync-auto-row .lbl{font-size:12px;color:var(--t2)}
+.sync-auto-row .lbl b{color:var(--s)}
+.auto-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
+.auto-dot.on{background:var(--s);animation:autoPulse 2s infinite}
+.auto-dot.dirty{background:var(--w)}
+.auto-dot.err{background:var(--d)}
+@keyframes autoPulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style id="inj"></style>
@@ -789,7 +803,7 @@ var wkKey="";
 var SEED_WEEKLY={"2026-W29": [{"cat": "科创研学", "name": "研学项目运营", "desc": "打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标", "lead": "邱雨槡", "collab": "钟涵湘\n王俊亦\n钱政东", "goal": "10%（课程框架搭建）", "progress": "1、输出小初高研学课程框架初稿\n2、对接咪咕咖啡，敲定融合课程框架\n3、洽谈万千研学，输出落地方案初稿\n4、完成项目成本收益测算模型\n5、组织内部研讨，同步课程规划", "next": "1、输出小学段样例课课程标准\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案 PPT 初稿", "issue": "1、讲解词需涵湘协助，望7.29前交付"}, {"cat": "日常办公", "name": "商务拓展", "desc": "统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、完成院校合作案例单页制作\n2、接待夏商客户，同步产品体系\n3、对接厦大嘉庚学院，同步AI方案\n4、完成周报模板优化及填写标准编制", "next": "1、跟进商务渠道后续对接安排\n2、跟进周报规范落地执行反馈", "issue": "1、无"}], "2026-W30": [{"cat": "科创研学", "name": "研学项目运营", "desc": "打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标", "lead": "邱雨槡", "collab": "钟涵湘\n王俊亦\n钱政东", "goal": "15%（样例课搭建）", "progress": "1、输出小学段样例课课程（元宇宙启蒙课）\n2、输出小学段展厅讲解词、AR二维码、签到表等配套物料\n3、完成课程方案、PPT、任务单初稿并内部试课打磨\n4、完成AR产品测试（AR仿真特效），平板手机电话卡等物料借调", "next": "1、完善样例课（元宇宙启蒙课）\n2、确定课程开发交付标准\n3、跟进及交付半日营活动（暑托班、海关）\n4、开发冰壶课程（竞赛课件）及内部演练", "issue": "1、备用平板/手机号/测试账号"}, {"cat": "日常办公", "name": "商务拓展", "desc": "统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、接待厦门日报客户，同步研学方案", "next": "1、推进海关半日营落地，进度暂无", "issue": ""}]};
 (function(){var VER=5;if((localStorage.getItem("wb_weekly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_WEEKLY){d[k]=SEED_WEEKLY[k];}localStorage.setItem("wb_weekly",JSON.stringify(d));localStorage.setItem("wb_weekly_ver",String(VER));}})();
 (function(){var MV="1";if((localStorage.getItem("wb_weekly_monmig")||"0")!==MV){try{var d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(d&&typeof d==="object"){function oldFri(key){var mm=(""+key).match(/^(\d{4})-W(\d+)$/);if(!mm)return null;var y=+mm[1],w=+mm[2];var j1=new Date(y,0,1);var jd=j1.getDay();var ff=new Date(y,0,1+((5-jd+7)%7));var f=new Date(ff);f.setDate(ff.getDate()+(w-1)*7);return f;}function monKey(dt){var day=dt.getDay();var back=(day===0)?6:(day-1);var mn=new Date(dt);mn.setDate(dt.getDate()-back);return mn.getFullYear()+"-W"+isoWeek(mn);}var nd={};for(var k in d){if(!Array.isArray(d[k]))continue;var f=oldFri(k);var nk=f?monKey(f):k;if(!nd[nk])nd[nk]=[];for(var i=0;i<d[k].length;i++)nd[nk].push(d[k][i]);}localStorage.setItem("wb_weekly",JSON.stringify(nd));}}catch(e){}localStorage.setItem("wb_weekly_monmig",MV);}})();
-window.addEventListener('load',function(){var SY="1";if((localStorage.getItem("wb_sync_done")||"0")!==SY){try{autoPlanAll();}catch(e){}localStorage.setItem("wb_sync_done",SY);}try{syncPlanStatus();}catch(e){}try{RZ(document.body);}catch(e){}try{syncRefresh();}catch(e){}});
+window.addEventListener('load',function(){var SY="1";if((localStorage.getItem("wb_sync_done")||"0")!==SY){try{autoPlanAll();}catch(e){}localStorage.setItem("wb_sync_done",SY);}try{syncPlanStatus();}catch(e){}try{RZ(document.body);}catch(e){}try{syncRefresh();}catch(e){}try{initAutoSync();}catch(e){}});
 // 去重改为手动触发（预览+确认），不再静默自动删除
 function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function friWeekNo(fri){var y=fri.getFullYear();var jan1=new Date(y,0,1);var jd=jan1.getDay();var firstFri=new Date(y,0,1+((5-jd+7)%7));return Math.floor((fri-firstFri)/(7*86400000))+1;}
@@ -1141,15 +1155,119 @@ function syncRefresh(){
   var g=localStorage.getItem('wb_sync_gist')||'';
   C('#syncToken').value=t;
   C('#syncGist').value=g;
-  if(t&&g){C('#syncLbl').textContent='已连接';C('#syncDot').classList.remove('off');}
+  var as=localStorage.getItem('wb_auto_sync')==='1';
+  if(as){C('#syncLbl').textContent='🔄 自动';C('#syncDot').classList.remove('off');C('#syncDot').className='';}
+  else if(t&&g){C('#syncLbl').textContent='已连接';C('#syncDot').classList.remove('off');}
   else{C('#syncLbl').textContent='未连接';C('#syncDot').classList.add('off');}
 }
 function openSync(){syncRefresh();C('#syncModal').style.display='flex';}
 function closeSync(){C('#syncModal').style.display='none';}
+/* === 自动同步 === */
+var autoSyncOn=false,autoPollTimer=null,autoDirty=false,autoDebounce=null,autoLastTS='';
+function autoSyncToggle(on){
+  autoSyncOn=on;localStorage.setItem('wb_auto_sync',on?'1':'0');
+  var dot=C('#autoDot'),lbl=C('#autoLabel');
+  if(on){startAutoSync();dot.className='auto-dot on';lbl.innerHTML='自动同步中 <span style="font-size:10px;color:var(--t2)">30s轮询</span>';}
+  else{stopAutoSync();dot.className='auto-dot off';lbl.textContent='自动同步';}
+}
+function startAutoSync(){
+  if(autoPollTimer)return;
+  autoPollTimer=setInterval(autoPollCheck,30000);
+  autoPollCheck(); // 立即检查一次
+}
+function stopAutoSync(){
+  if(autoPollTimer){clearInterval(autoPollTimer);autoPollTimer=null;}
+  if(autoDebounce){clearTimeout(autoDebounce);autoDebounce=null;}
+  autoDirty=false;
+}
+async function autoMarkDirty(k){
+  if(!autoSyncOn||_syncBusy)return;
+  if(k&&(k.indexOf('wb_auto_')===0||k.indexOf('wb_sync_')===0||k.indexOf('wb_kb_ver')===0||k.indexOf('wb_weekly_ver')===0||k.indexOf('wb_monthly_ver')===0))return;
+  autoDirty=true;var dot=C('#autoDot');if(dot)dot.className='auto-dot dirty';
+  if(autoDebounce)clearTimeout(autoDebounce);
+  autoDebounce=setTimeout(autoPushLocal,5000);
+}
+var _syncBusy=false;
+async function autoPushLocal(){
+  if(!autoSyncOn||!autoDirty||_syncBusy)return;_syncBusy=true;
+  var t=localStorage.getItem('wb_sync_token')||'';
+  if(!t){_syncBusy=false;return;}
+  var gid=localStorage.getItem('wb_sync_gist')||'';
+  if(!gid){try{await autoCreateGist(t);}catch(e){_syncBusy=false;return;}}
+  gid=localStorage.getItem('wb_sync_gist')||'';
+  if(!gid){_syncBusy=false;return;}
+  var dot=C('#autoDot');
+  try{
+    var isGH=t.slice(0,4)==='ghp_';
+    var u=(isGH?'https://api.github.com/gists/':'https://gitee.com/api/v5/gists/')+gid+(isGH?'':'?access_token='+encodeURIComponent(t));
+    var data={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf('wb_sync_')!==0&&k.indexOf('wb_')===0)data[k]=localStorage.getItem(k);}
+    data['_v']=1;data['_ts']=new Date().toISOString();
+    var r=await fetch(u,{method:'PATCH',headers:isGH?{'Authorization':'Bearer '+t,'Content-Type':'application/json'}:{'Content-Type':'application/json'},body:JSON.stringify({files:{'sync-data.json':{content:JSON.stringify(data)}}})});
+    if(r.ok){autoDirty=false;autoLastTS=data['_ts'];if(dot)dot.className='auto-dot on';}
+    else{if(dot)dot.className='auto-dot err';setTimeout(function(){if(dot)dot.className='auto-dot dirty';},5000);}
+  }catch(e){if(dot)dot.className='auto-dot err';setTimeout(function(){if(dot)dot.className='auto-dot dirty';},5000);}
+  _syncBusy=false;
+}
+async function autoCreateGist(t){
+  var isGH=t.slice(0,4)==='ghp_';
+  var u=isGH?'https://api.github.com/gists':'https://gitee.com/api/v5/gists'+(isGH?'':'?access_token='+encodeURIComponent(t));
+  var body=JSON.stringify({description:'三三工作台 同步数据',public:false,files:{'sync-data.json':{content:'{}'}}});
+  var r=await fetch(u,{method:'POST',headers:isGH?{'Authorization':'Bearer '+t,'Content-Type':'application/json'}:{'Content-Type':'application/json'},body:body});
+  if(r.ok){var j=await r.json();localStorage.setItem('wb_sync_gist',j.id);C('#syncGist').value=j.id;}
+}
+async function autoPollCheck(){
+  if(!autoSyncOn)return;
+  var t=localStorage.getItem('wb_sync_token')||'';
+  var gid=localStorage.getItem('wb_sync_gist')||'';
+  if(!t||!gid)return;
+  try{
+    var isGH=t.slice(0,4)==='ghp_';
+    var u=(isGH?'https://api.github.com/gists/':'https://gitee.com/api/v5/gists/')+gid+(isGH?'':'?access_token='+encodeURIComponent(t));
+    var r=await fetch(u,{headers:isGH?{'Authorization':'Bearer '+t}:{}});
+    if(!r.ok)return;
+    var j=await r.json();
+    var raw=j.files&&j.files['sync-data.json']&&j.files['sync-data.json'].content;
+    if(!raw)return;
+    var data=JSON.parse(raw);
+    var remoteTS=data['_ts']||'';
+    if(!remoteTS||remoteTS===autoLastTS)return; // 没变化
+    // 避免上传后立即下载自己刚推的数据
+    if(autoDirty)return;
+    autoLastTS=remoteTS;
+    // 下载云端数据
+    var oldKeys=[];for(var i=0;i<localStorage.length;i++){var kk=localStorage.key(i);if(kk.indexOf('wb_')===0&&kk!=='wb_sync_token'&&kk!=='wb_sync_gist'&&kk!=='wb_sync_ts'&&kk!=='wb_auto_sync')oldKeys.push(kk);}
+    oldKeys.forEach(function(kk){localStorage.removeItem(kk);});
+    for(var dk in data){if(dk.indexOf('_')!==0&&dk!=='wb_sync_token'&&dk!=='wb_sync_gist'){var _orig=localStorage.setItem;localStorage.setItem=_origSetItem;localStorage.setItem(dk,data[dk]);localStorage.setItem=setItemPatched;}}
+    var ts=new Date().toLocaleString('zh-CN');_origSetItem('wb_sync_ts',ts);
+    C('#syncLog').innerHTML='<span style=color:var(--s)>🔄 自动同步 '+ts+'</span>';
+    setTimeout(function(){C('#syncLog').textContent='';},3000);
+    RN();
+  }catch(e){}
+}
+// Patch localStorage.setItem to detect writes
+var _origSetItem=localStorage.setItem.bind(localStorage);
+function setItemPatched(k,v){
+  _origSetItem(k,v);
+  if(k.indexOf('wb_')===0)autoMarkDirty(k);
+}
+localStorage.setItem=setItemPatched;
+// 初始化自动同步（移到 load 事件中调用）
+function initAutoSync(){
+  if(localStorage.getItem('wb_auto_sync')==='1'){
+    autoSyncOn=true;
+    var sw=C('#autoSyncSwitch');if(sw)sw.checked=true;
+    var lb=C('#autoLabel');if(lb)lb.innerHTML='自动同步中 <span style="font-size:10px;color:var(--t2)">30s轮询</span>';
+    var dt=C('#autoDot');if(dt)dt.className='auto-dot on';
+    startAutoSync();
+  }
+}
+/* === 云同步结束 === */
 function api(t,gid,act){var isGH=t.slice(0,4)==='ghp_';var u=isGH?'https://api.github.com/gists':'https://gitee.com/api/v5/gists';u+='/'+(gid||'')+act.replace('&','?');return{url:u,headers:isGH?{'Authorization':'Bearer '+t,'Content-Type':'application/json'}:{'Content-Type':'application/json'}};}
 function pushBody(data){return JSON.stringify({description:'三三工作台 同步数据',public:false,files:{'sync-data.json':{content:JSON.stringify(data)}}});}
 function patchBody(data){return JSON.stringify({files:{'sync-data.json':{content:JSON.stringify(data)}}});}
 async function syncPush(){
+  if(_syncBusy){C('#syncLog').innerHTML='<span style=color:var(--w)>正在同步中,请稍候</span>';return;}_syncBusy=true;
+  try{
   var t=C('#syncToken').value.trim()||localStorage.getItem('wb_sync_token')||'';
   var gid=localStorage.getItem('wb_sync_gist')||'';
   if(!t){C('#syncLog').innerHTML='<span style=color:var(--d)>请先粘贴令牌</span>';return;}
@@ -1165,6 +1283,7 @@ async function syncPush(){
     if(r.ok){
       if(!gid){var j=await r.json();gid=j.id;localStorage.setItem('wb_sync_gist',gid);C('#syncGist').value=gid;}
       var ts=new Date().toLocaleString('zh-CN');localStorage.setItem('wb_sync_ts',ts);
+      autoLastTS=data['_ts'];
       C('#syncLog').innerHTML='<span style=color:var(--s)>已上传 '+ts+'</span>';
       syncRefresh();setTimeout(function(){C('#syncLog').textContent='';},3500);
     }else{
@@ -1172,8 +1291,11 @@ async function syncPush(){
       C('#syncLog').innerHTML='<span style=color:var(--d)>失败: '+(e.message||r.status+' '+r.statusText)+'</span>';
     }
   }catch(e){C('#syncLog').innerHTML='<span style=color:var(--d)>网络错误: '+e.message+'</span>';}
+  }finally{_syncBusy=false;}
 }
 async function syncPull(){
+  if(_syncBusy){C('#syncLog').innerHTML='<span style=color:var(--w)>正在同步中,请稍候</span>';return;}_syncBusy=true;
+  try{
   var t=C('#syncToken').value.trim()||localStorage.getItem('wb_sync_token')||'';
   var gid=localStorage.getItem('wb_sync_gist')||C('#syncGist').value.trim()||'';
   if(!t){C('#syncLog').innerHTML='<span style=color:var(--d)>请先粘贴令牌</span>';return;}
@@ -1199,6 +1321,7 @@ async function syncPull(){
       C('#syncLog').innerHTML='<span style=color:var(--d)>失败: '+(e.message||r.status+' '+r.statusText)+'</span>';
     }
   }catch(e){C('#syncLog').innerHTML='<span style=color:var(--d)>网络错误: '+e.message+'</span>';}
+  }finally{_syncBusy=false;}
 }
 async function syncFind(){
   var t=C('#syncToken').value.trim()||localStorage.getItem('wb_sync_token')||'';
@@ -1256,6 +1379,10 @@ if(!localStorage.getItem("wb_tasks")){
   <div style="display:flex;gap:8px;margin-top:14px">
     <button class="btn btn-p" onclick="syncPush()" style="flex:1"><i class=ic-up></i> 上传</button>
     <button class="btn btn-o" onclick="syncPull()" style="flex:1"><i class=ic-down></i> 下载</button>
+  </div>
+  <div class="sync-auto-row">
+    <span class="lbl"><span class="auto-dot off" id="autoDot"></span> <b id="autoLabel">自动同步</b></span>
+    <label class="tgl"><input type="checkbox" id="autoSyncSwitch" onchange="autoSyncToggle(this.checked)"><span class="slider"></span></label>
   </div>
   <div id="syncLog" style="font-size:12px;color:var(--t2);margin-top:8px;text-align:center;min-height:18px"></div>
 </div></div>
