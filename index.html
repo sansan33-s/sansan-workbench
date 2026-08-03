@@ -140,6 +140,15 @@ body.collapsed .content{margin-left:76px}
 .chk .ic{width:13px;height:13px;stroke-width:2.8}
 .nav .ic{width:19px;height:19px}
 .bh .ic{width:16px;height:16px;margin-right:6px;vertical-align:-3px;color:var(--p);background:var(--grad-soft);padding:5px;border-radius:9px}
+.sb-sync{margin-top:4px;padding:4px 0}
+.sb-sync-btn{display:flex;align-items:center;gap:10px;width:100%;text-decoration:none;color:var(--t2);font-size:12px;font-weight:600;padding:10px 12px;border-radius:14px;min-height:40px;transition:all .18s;border:none;background:transparent;cursor:pointer;font-family:inherit}
+.sb-sync-btn:hover{background:rgba(99,102,241,.08);color:var(--p)}
+.sb-sync-btn .lbl{transition:opacity .18s}
+.sb-sync-btn .dot{width:8px;height:8px;border-radius:50%;background:var(--s);flex-shrink:0;margin-left:auto}
+.sb-sync-btn .dot.off{background:var(--t3)}
+body.collapsed .sb-sync-btn .lbl{opacity:0;width:0;overflow:hidden;display:none}
+body.collapsed .sb-sync-btn{justify-content:center;padding:10px 0}
+body.collapsed .sb-sync-btn .dot{display:none}
 @media(max-width:819px){
   .sidebar{width:238px;transform:translateX(-100%);box-shadow:0 0 60px rgba(40,55,90,.3)}
   body.sb-open .sidebar{transform:translateX(0)}
@@ -181,6 +190,13 @@ body.collapsed .content{margin-left:76px}
       <a href="#" onclick="SW(5,this)"><i class=ic-chart></i><span class="lbl">日报</span></a>
       <a href="#" onclick="SW(6,this)"><i class=ic-bulb></i><span class="lbl">知识库</span></a>
     </nav>
+  </div>
+  <div class="sb-sync" id="sbSync">
+    <button class="sb-sync-btn" onclick="openSync()" title="云同步">
+      <i class=ic-cloud></i>
+      <span class="lbl" id="syncLbl">未连接</span>
+      <span class="dot off" id="syncDot"></span>
+    </button>
   </div>
   <div class="sb-foot"><button class="sb-toggle" onclick="TGS()" aria-label="收起或展开导航"><i class=ic-chevL></i></button></div>
 </aside>
@@ -373,7 +389,9 @@ users:'<svg class="ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><circl
 down:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 4.5v9.5"/><path d="M8 11l4 4 4-4"/><path d="M5.5 19.5h13"/></svg>',
 clock:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.4 2"/></svg>',
 chevL:'<svg class="ic" viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>',
-menu:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>'
+menu:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>',
+cloud:'<svg class="ic" viewBox="0 0 24 24"><path d="M17.5 17H19c2 0 3.5-1.5 3.5-3.5S21 10 19 10h-.5c-.7-2-2.5-3.4-4.8-3.4-1.8 0-3.3 1-4.1 2.4C8.4 9 7 10.3 7 12c0 1.7 1.3 3 3 3h7.5"/></svg>',
+up:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 14.5V5"/><path d="M8 8.5l4-4 4 4"/><path d="M5.5 19.5h13"/></svg>'
 };
 function ph(k){return '<i class=ic-'+k+'></i>';}
 function RZ(root){try{root=root||document.body; if(!root||!root.querySelectorAll) return; var els=root.querySelectorAll('[class^=ic-]'); for(var i=0;i<els.length;i++){var el=els[i]; if(!el) continue; var cn=(typeof el.className==='string')?el.className:''; var m=cn.match(/\bic-(\w+)\b/); if(m && I[m[1]]){el.outerHTML=I[m[1]];}}}catch(e){}}
@@ -771,7 +789,7 @@ var wkKey="";
 var SEED_WEEKLY={"2026-W29": [{"cat": "科创研学", "name": "研学项目运营", "desc": "打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标", "lead": "邱雨槡", "collab": "钟涵湘\n王俊亦\n钱政东", "goal": "10%（课程框架搭建）", "progress": "1、输出小初高研学课程框架初稿\n2、对接咪咕咖啡，敲定融合课程框架\n3、洽谈万千研学，输出落地方案初稿\n4、完成项目成本收益测算模型\n5、组织内部研讨，同步课程规划", "next": "1、输出小学段样例课课程标准\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案 PPT 初稿", "issue": "1、讲解词需涵湘协助，望7.29前交付"}, {"cat": "日常办公", "name": "商务拓展", "desc": "统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、完成院校合作案例单页制作\n2、接待夏商客户，同步产品体系\n3、对接厦大嘉庚学院，同步AI方案\n4、完成周报模板优化及填写标准编制", "next": "1、跟进商务渠道后续对接安排\n2、跟进周报规范落地执行反馈", "issue": "1、无"}], "2026-W30": [{"cat": "科创研学", "name": "研学项目运营", "desc": "打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标", "lead": "邱雨槡", "collab": "钟涵湘\n王俊亦\n钱政东", "goal": "15%（样例课搭建）", "progress": "1、输出小学段样例课课程（元宇宙启蒙课）\n2、输出小学段展厅讲解词、AR二维码、签到表等配套物料\n3、完成课程方案、PPT、任务单初稿并内部试课打磨\n4、完成AR产品测试（AR仿真特效），平板手机电话卡等物料借调", "next": "1、完善样例课（元宇宙启蒙课）\n2、确定课程开发交付标准\n3、跟进及交付半日营活动（暑托班、海关）\n4、开发冰壶课程（竞赛课件）及内部演练", "issue": "1、备用平板/手机号/测试账号"}, {"cat": "日常办公", "name": "商务拓展", "desc": "统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、接待厦门日报客户，同步研学方案", "next": "1、推进海关半日营落地，进度暂无", "issue": ""}]};
 (function(){var VER=5;if((localStorage.getItem("wb_weekly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_WEEKLY){d[k]=SEED_WEEKLY[k];}localStorage.setItem("wb_weekly",JSON.stringify(d));localStorage.setItem("wb_weekly_ver",String(VER));}})();
 (function(){var MV="1";if((localStorage.getItem("wb_weekly_monmig")||"0")!==MV){try{var d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(d&&typeof d==="object"){function oldFri(key){var mm=(""+key).match(/^(\d{4})-W(\d+)$/);if(!mm)return null;var y=+mm[1],w=+mm[2];var j1=new Date(y,0,1);var jd=j1.getDay();var ff=new Date(y,0,1+((5-jd+7)%7));var f=new Date(ff);f.setDate(ff.getDate()+(w-1)*7);return f;}function monKey(dt){var day=dt.getDay();var back=(day===0)?6:(day-1);var mn=new Date(dt);mn.setDate(dt.getDate()-back);return mn.getFullYear()+"-W"+isoWeek(mn);}var nd={};for(var k in d){if(!Array.isArray(d[k]))continue;var f=oldFri(k);var nk=f?monKey(f):k;if(!nd[nk])nd[nk]=[];for(var i=0;i<d[k].length;i++)nd[nk].push(d[k][i]);}localStorage.setItem("wb_weekly",JSON.stringify(nd));}}catch(e){}localStorage.setItem("wb_weekly_monmig",MV);}})();
-window.addEventListener('load',function(){var SY="1";if((localStorage.getItem("wb_sync_done")||"0")!==SY){try{autoPlanAll();}catch(e){}localStorage.setItem("wb_sync_done",SY);}try{syncPlanStatus();}catch(e){}try{RZ(document.body);}catch(e){}});
+window.addEventListener('load',function(){var SY="1";if((localStorage.getItem("wb_sync_done")||"0")!==SY){try{autoPlanAll();}catch(e){}localStorage.setItem("wb_sync_done",SY);}try{syncPlanStatus();}catch(e){}try{RZ(document.body);}catch(e){}try{syncRefresh();}catch(e){}});
 // 去重改为手动触发（预览+确认），不再静默自动删除
 function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function friWeekNo(fri){var y=fri.getFullYear();var jan1=new Date(y,0,1);var jd=jan1.getDay();var firstFri=new Date(y,0,1+((5-jd+7)%7));return Math.floor((fri-firstFri)/(7*86400000))+1;}
@@ -1111,7 +1129,91 @@ document.addEventListener('touchend',function(){if(!swR||!swI)return;swI.style.t
 
 function CE(mid){if(mid)C('#'+mid).style.display='flex';else{CL('.em').forEach(function(m){m.style.display='none'});var f=document.getElementById('imgFile');if(f)f.value='';}}
 CL('.em').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)CE();});});
-document.addEventListener('keydown',function(e){if(e.key==='Escape')CE();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){CE();closeSync();}});
+/* === 云同步 === */
+function syncConfigUpdate(){
+  var t=C('#syncToken').value.trim();
+  localStorage.setItem('wb_sync_token',t);
+  syncRefresh();
+}
+function syncRefresh(){
+  var t=localStorage.getItem('wb_sync_token')||'';
+  var g=localStorage.getItem('wb_sync_gist')||'';
+  C('#syncToken').value=t;
+  C('#syncGist').value=g;
+  if(t&&g){C('#syncLbl').textContent='已连接';C('#syncDot').classList.remove('off');}
+  else{C('#syncLbl').textContent='未连接';C('#syncDot').classList.add('off');}
+}
+function openSync(){syncRefresh();C('#syncModal').style.display='flex';}
+function closeSync(){C('#syncModal').style.display='none';}
+function api(t,gid,act){var isGH=t.slice(0,4)==='ghp_';var u=isGH?'https://api.github.com/gists':'https://gitee.com/api/v5/gists';u+='/'+(gid||'')+act.replace('&','?');return{url:u,headers:isGH?{'Authorization':'Bearer '+t,'Content-Type':'application/json'}:{'Content-Type':'application/json'}};}
+function pushBody(data){return JSON.stringify({description:'三三工作台 同步数据',public:false,files:{'sync-data.json':{content:JSON.stringify(data)}}});}
+function patchBody(data){return JSON.stringify({files:{'sync-data.json':{content:JSON.stringify(data)}}});}
+async function syncPush(){
+  var t=C('#syncToken').value.trim()||localStorage.getItem('wb_sync_token')||'';
+  var gid=localStorage.getItem('wb_sync_gist')||'';
+  if(!t){C('#syncLog').innerHTML='<span style=color:var(--d)>请先粘贴令牌</span>';return;}
+  C('#syncLog').textContent='上传中…';
+  var data={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf('wb_sync_')!==0&&k.indexOf('wb_')===0)data[k]=localStorage.getItem(k);}
+  data['_v']=1;data['_ts']=new Date().toISOString();
+  try{
+    var isGH=t.slice(0,4)==='ghp_';var u,m,body;
+    if(gid){u=api(t,gid,'?access_token='+encodeURIComponent(t)).url;body=patchBody(data);}
+    else{u=(isGH?'https://api.github.com/gists':'https://gitee.com/api/v5/gists')+(isGH?'':'?access_token='+encodeURIComponent(t));body=pushBody(data);}
+    if(isGH)m='POST';else m=gid?'PATCH':'POST';
+    var r=await fetch(u,{method:m,headers:isGH?{'Authorization':'Bearer '+t,'Content-Type':'application/json'}:{'Content-Type':'application/json'},body:body});
+    if(r.ok){
+      if(!gid){var j=await r.json();gid=j.id;localStorage.setItem('wb_sync_gist',gid);C('#syncGist').value=gid;}
+      var ts=new Date().toLocaleString('zh-CN');localStorage.setItem('wb_sync_ts',ts);
+      C('#syncLog').innerHTML='<span style=color:var(--s)>已上传 '+ts+'</span>';
+      syncRefresh();setTimeout(function(){C('#syncLog').textContent='';},3500);
+    }else{
+      var e=await r.json().catch(function(){return{};});
+      C('#syncLog').innerHTML='<span style=color:var(--d)>失败: '+(e.message||r.status+' '+r.statusText)+'</span>';
+    }
+  }catch(e){C('#syncLog').innerHTML='<span style=color:var(--d)>网络错误: '+e.message+'</span>';}
+}
+async function syncPull(){
+  var t=C('#syncToken').value.trim()||localStorage.getItem('wb_sync_token')||'';
+  var gid=localStorage.getItem('wb_sync_gist')||C('#syncGist').value.trim()||'';
+  if(!t){C('#syncLog').innerHTML='<span style=color:var(--d)>请先粘贴令牌</span>';return;}
+  if(!gid){C('#syncLog').innerHTML='<span style=color:var(--d)>请先在电脑端上传一次</span>';return;}
+  C('#syncLog').textContent='下载中…';
+  try{
+    var isGH=t.slice(0,4)==='ghp_';var u=(isGH?'https://api.github.com/gists/':'https://gitee.com/api/v5/gists/')+gid+(isGH?'':'?access_token='+encodeURIComponent(t));
+    var r=await fetch(u,{headers:isGH?{'Authorization':'Bearer '+t}:{}});
+    if(r.ok){
+      var j=await r.json();
+      var raw=j.files['sync-data.json']&&j.files['sync-data.json'].content;
+      if(!raw){C('#syncLog').innerHTML='<span style=color:var(--d)>云端无数据</span>';return;}
+      var data=JSON.parse(raw);
+      var oldKeys=[];for(var i=0;i<localStorage.length;i++){var kk=localStorage.key(i);if(kk.indexOf('wb_')===0&&kk!=='wb_sync_token'&&kk!=='wb_sync_gist'&&kk!=='wb_sync_ts')oldKeys.push(kk);}
+      oldKeys.forEach(function(kk){localStorage.removeItem(kk);});
+      for(var dk in data){if(dk.indexOf('_')!==0&&dk!=='wb_sync_token'&&dk!=='wb_sync_gist')localStorage.setItem(dk,data[dk]);}
+      var ts=new Date().toLocaleString('zh-CN');localStorage.setItem('wb_sync_ts',ts);
+      C('#syncLog').innerHTML='<span style=color:var(--s)>已下载 '+ts+'</span>';
+      syncRefresh();RN();
+      setTimeout(function(){C('#syncLog').textContent='';},3500);
+    }else{
+      var e=await r.json().catch(function(){return{};});
+      C('#syncLog').innerHTML='<span style=color:var(--d)>失败: '+(e.message||r.status+' '+r.statusText)+'</span>';
+    }
+  }catch(e){C('#syncLog').innerHTML='<span style=color:var(--d)>网络错误: '+e.message+'</span>';}
+}
+async function syncFind(){
+  var t=C('#syncToken').value.trim()||localStorage.getItem('wb_sync_token')||'';
+  if(!t){C('#syncLog').innerHTML='<span style=color:var(--d)>请先粘贴令牌</span>';return;}
+  C('#syncLog').textContent='搜索中…';
+  try{
+    var isGH=t.slice(0,4)==='ghp_';var u=(isGH?'https://api.github.com/gists?per_page=100':'https://gitee.com/api/v5/gists?access_token='+encodeURIComponent(t)+'&per_page=100');
+    var r=await fetch(u,{headers:isGH?{'Authorization':'Bearer '+t}:{}});
+    if(!r.ok){C('#syncLog').innerHTML='<span style=color:var(--d)>搜索失败</span>';return;}
+    var gists=await r.json();
+    var found=gists.find(function(g){return g.description&&g.description.indexOf('三三工作台')>=0;});
+    if(found){localStorage.setItem('wb_sync_gist',found.id);C('#syncGist').value=found.id;syncRefresh();C('#syncLog').innerHTML='<span style=color:var(--s)>已找到!</span>';}
+    else{C('#syncLog').innerHTML='<span style=color:var(--w)>未找到，请在电脑端先上传一次</span>';}
+  }catch(e){C('#syncLog').innerHTML='<span style=color:var(--d)>搜索出错: '+e.message+'</span>';}
+}
 RN();RZ(document.body);
 if(!localStorage.getItem("wb_tasks")){
   localStorage.setItem("wb_tasks",JSON.stringify([{"id": "1", "title": "元宇宙教学课件审核定稿", "desc": "陈博涵梳理课程、协助修改课件教案及培训——现有内容不适合小学生，制作周期3天", "priority": "高", "status": "已完成", "start": "2026-07-24", "due": "2026-07-26", "assignee": "邱雨槡", "collab": "陈博涵", "pj": "1", "top3": true, "risk": true, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}, {"id": "4", "title": "讲解词审核 → 发至市场部补充", "desc": "钟涵湘已编制初稿，需审核后发至市场部补充（适配小学讲解词）", "priority": "高", "status": "已完成", "start": "2026-07-25", "due": "2026-07-28", "assignee": "邱雨槡", "collab": "钟涵湘", "pj": "1", "top3": false, "risk": true, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}, {"id": "2", "title": "联系综合部彩印研学任务单（20份）", "desc": "A4单面彩印，含4个展项任务+集章区", "priority": "高", "status": "待办", "start": "2026-07-26", "due": "2026-07-27", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": true, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "3", "title": "确认智能交互部二维码demo并反馈修改", "desc": "联系周涛，配置周期2小时，周一先制作demo", "priority": "中", "status": "待办", "start": "2026-07-26", "due": "2026-07-28", "assignee": "邱雨槡", "collab": "周涛", "pj": "1", "top3": true, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "5", "title": "收集10个电话号码注册元宇宙平台账号", "desc": "需提前登录，且须保持当天畅通（内测有时断开）", "priority": "高", "status": "待办", "start": "2026-07-28", "due": "2026-08-03", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": false, "risk": true, "ms": true, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "8", "title": "借用相机（数智营销部-洪风怡）", "desc": "已沟通借用，确认取用时间和归还流程", "priority": "低", "status": "待办", "start": "2026-08-02", "due": "2026-08-03", "assignee": "邱雨槡", "collab": "洪风怡", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "9", "title": "借用扩音器（市场部-翁倩文）", "desc": "已联系借用，确认取用时间", "priority": "低", "status": "待办", "start": "2026-08-03", "due": "2026-08-04", "assignee": "邱雨槡", "collab": "翁倩文", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "7", "title": "联系会务摆放课桌椅及电视", "desc": "2号楼3楼教室，1套课桌椅+电视", "priority": "低", "status": "已完成", "start": "2026-08-03", "due": "2026-08-04", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}, {"id": "6", "title": "笔记本电脑（10台）出库 + 鼠标电源", "desc": "学生上机操作，2人一台。已有设备，需办理出库手续", "priority": "低", "status": "已完成", "start": "2026-08-03", "due": "2026-08-04", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}]));
@@ -1135,6 +1237,27 @@ if(!localStorage.getItem("wb_tasks")){
 <label>标题</label><input id="ocrTitle" placeholder="给任务起名">
 <label>识别结果</label><textarea id="ocrText" rows="3" placeholder="识别中..."></textarea>
 <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-o" onclick="closeOcr()">取消</button><button class="btn btn-p" onclick="saveOCR()">保存任务</button></div>
+</div></div>
+<div class="em" id="syncModal"><div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:14px;align-items:center">
+    <b><i class=ic-cloud></i> 云同步</b>
+    <button onclick="closeSync()" style="border:none;background:none;font-size:18px;cursor:pointer;color:var(--t2)"><i class=ic-x></i></button>
+  </div>
+  <label>云同步令牌（GitHub 或 Gitee 均可）</label>
+  <input id="syncToken" type="password" placeholder="粘贴令牌…" oninput="syncConfigUpdate()" style="font-family:monospace">
+  <div style="font-size:11px;color:var(--t2);margin-top:4px;line-height:1.6">
+    ① 打开 <a href="https://gitee.com/profile/personal_access_tokens" target="_blank" style="color:var(--p)">gitee.com/profile/personal_access_tokens</a><br>
+    ② 点「生成新令牌」→ 名称随便填 → 勾选 <b>gists</b> → 提交<br>
+    ③ 复制令牌粘贴到上方（国内直连，不用翻墙）
+  </div>
+  <label>同步仓库 ID</label>
+  <div style="display:flex;gap:6px"><input id="syncGist" placeholder="首次上传后自动创建" style="flex:1;font-family:monospace;background:#f8f9fb;border:1.5px solid var(--b);border-radius:14px;padding:11px 13px;font-size:13px"><button class="btn btn-o" onclick="syncFind()" style="padding:8px 14px;font-size:11px;border-radius:14px">🔍 查找</button></div>
+  <div style="font-size:11px;color:var(--t2);margin-top:2px">电脑端先上传一次后，手机端点「🔍 查找」即可自动配对</div>
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button class="btn btn-p" onclick="syncPush()" style="flex:1"><i class=ic-up></i> 上传</button>
+    <button class="btn btn-o" onclick="syncPull()" style="flex:1"><i class=ic-down></i> 下载</button>
+  </div>
+  <div id="syncLog" style="font-size:12px;color:var(--t2);margin-top:8px;text-align:center;min-height:18px"></div>
 </div></div>
 </body>
 </html>
