@@ -1171,8 +1171,12 @@ function autoSyncToggle(on){
 }
 function startAutoSync(){
   if(autoPollTimer)return;
-  autoPollTimer=setInterval(autoPollCheck,30000);
-  autoPollCheck(); // 立即检查一次
+  // 先推送本地最新数据，再开始轮询（防止旧数据覆盖新改动）
+  autoPushLocal(true).then(function(){
+    autoPollTimer=setInterval(autoPollCheck,30000);
+  }).catch(function(){
+    autoPollTimer=setInterval(autoPollCheck,30000);
+  });
 }
 function stopAutoSync(){
   if(autoPollTimer){clearInterval(autoPollTimer);autoPollTimer=null;}
@@ -1187,8 +1191,9 @@ async function autoMarkDirty(k){
   autoDebounce=setTimeout(autoPushLocal,5000);
 }
 var _syncBusy=false;
-async function autoPushLocal(){
-  if(!autoSyncOn||!autoDirty||_syncBusy)return;_syncBusy=true;
+async function autoPushLocal(force){
+  if(!autoSyncOn||_syncBusy)return;_syncBusy=true;
+  if(!force&&!autoDirty){_syncBusy=false;return;}
   var t=localStorage.getItem('wb_sync_token')||'';
   if(!t){_syncBusy=false;return;}
   var gid=localStorage.getItem('wb_sync_gist')||'';
