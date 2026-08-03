@@ -343,10 +343,6 @@ body.collapsed .sb-sync-btn .dot{display:none}
 <div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="autoPlanAll()"><i class=ic-cal3></i> 全部计划排进日历（跨周拉伸·跳周末）</button></div>
 <div style="margin-bottom:8px"><button class="btn btn-o" style="width:100%;font-size:11px" onclick="dedupTasks()"><i class=ic-broom></i> 日历去重（内容相同才删·预览确认）</button></div>
 <div id="wkProjects"></div>
-<div style="margin-top:12px;border-top:1px dashed var(--b);padding-top:10px">
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><i class=ic-doc></i> <b style="font-size:13px">周报文档</b><label class="btn btn-o" style="padding:4px 12px;font-size:11px;margin-left:auto;cursor:pointer">📎 上传<input id="wkDocFile" type="file" style="display:none" accept=".doc,.docx,.pdf,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt" onchange="uploadWkDoc(this)"></label></div>
-  <div id="wkDocs"></div>
-</div>
 </div>
 <div class="card" style="margin-bottom:12px" id="moCard"><div class="bh"><i class=ic-cal3></i> 月报 · 绩效考核表 <span id="moYM" style="font-size:12px;color:var(--t2)"></span><div style="display:flex;gap:6px"><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(-1)">‹</button><button class="btn btn-o" style="padding:2px 10px" onclick="moStep(1)">›</button><button class="btn btn-o" style="padding:2px 12px;font-size:15px;font-weight:700" onclick="addMoRow()">＋</button><button class="btn btn-p" style="padding:4px 12px" onclick="saveMo()">保存</button></div></div>
 <div id="moRows"></div>
@@ -812,7 +808,7 @@ window.addEventListener('load',function(){var SY="1";if((localStorage.getItem("w
 function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function friWeekNo(fri){var y=fri.getFullYear();var jan1=new Date(y,0,1);var jd=jan1.getDay();var firstFri=new Date(y,0,1+((5-jd+7)%7));return Math.floor((fri-firstFri)/(7*86400000))+1;}
 function wkMeta(){var d=new Date(rpDate+"T00:00:00");var day=d.getDay();var back=(day===0)?6:(day-1);var mon=new Date(d);mon.setDate(d.getDate()-back);var fmt=function(x){return x.getFullYear()+"-"+(x.getMonth()+1<10?"0"+(x.getMonth()+1):x.getMonth()+1)+"-"+(x.getDate()<10?"0"+x.getDate():x.getDate());};var fri=new Date(mon);fri.setDate(mon.getDate()+4);return {key:mon.getFullYear()+"-W"+isoWeek(mon),start:fmt(mon),end:fmt(fri),no:isoWeek(mon)};}
-function WK(){var m=wkMeta();wkKey=m.key;document.getElementById("wkRange").textContent=m.start+" ~ "+m.end;document.getElementById("wkNo").textContent="第"+m.no+"周";renderWK();renderWkDocs();MO();}
+function WK(){var m=wkMeta();wkKey=m.key;document.getElementById("wkRange").textContent=m.start+" ~ "+m.end;document.getElementById("wkNo").textContent="第"+m.no+"周";renderWK();MO();}
 function projField(label,f,val){return '<div style="background:#faf8ff;border:1px solid var(--b);border-radius:10px;padding:8px 10px;margin-top:10px"><div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:4px">'+label+'</div><textarea data-f="'+f+'" rows="3" placeholder="'+label+'" style="width:100%;box-sizing:border-box;padding:4px 0;border:none;background:transparent;font-size:12px;line-height:1.5;font-family:inherit;resize:vertical">'+esc(val)+'</textarea></div>';}
 function renderWK(){
   var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");
@@ -857,43 +853,6 @@ function exportWK(){
   XLSX.writeFile(wb,"咪咕新空数智赋能中心工作周报_"+m.start+"-"+m.end+".xlsx");
   TO("周报xlsx已导出");
 }
-/* === 周报文档上传 === */
-function getWkDocs(){try{return JSON.parse(localStorage.getItem("wb_wkdocs")||"{}");}catch(e){return{};}}
-function uploadWkDoc(el){
-  var f=el.files&&el.files[0];if(!f)return;
-  if(f.size>15*1024*1024){TO("文件超过15MB，建议压缩后再传");el.value="";return;}
-  var rd=new FileReader();
-  rd.onload=function(){
-    var docs=getWkDocs();
-    if(!docs[wkKey])docs[wkKey]=[];
-    docs[wkKey].push({id:UD(),name:f.name,size:f.size,type:f.type||"",data:rd.result,mts:new Date().toLocaleString('zh-CN')});
-    localStorage.setItem("wb_wkdocs",JSON.stringify(docs));
-    el.value="";renderWkDocs();TO("文档已上传: "+f.name);
-  };
-  rd.onerror=function(){TO("读取失败，请重试");el.value="";};
-  rd.readAsDataURL(f);
-}
-function renderWkDocs(){
-  var docs=getWkDocs()[wkKey]||[];
-  var box=document.getElementById("wkDocs");if(!box)return;
-  if(!docs.length){box.innerHTML='<div style="font-size:11px;color:var(--t2)">暂无文档，点「📎 上传」添加周报附件</div>';return;}
-  box.innerHTML=docs.map(function(d){
-    var kb=d.size/1024,sz=kb>1024?(kb/1024).toFixed(1)+"MB":Math.round(kb)+"KB";
-    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-radius:10px;margin-bottom:6px">'+
-      '<i class=ic-doc style="color:var(--p);flex-shrink:0"></i>'+
-      '<div style="flex:1;min-width:0">'+
-        '<a href="'+d.data+'" download="'+esc(d.name)+'" style="color:var(--t);text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block">'+esc(d.name)+'</a>'+
-        '<div style="font-size:10px;color:var(--t2)">'+sz+(d.mts?' · '+d.mts:'')+'</div>'+
-      '</div>'+
-      '<button onclick="delWkDoc(\''+d.id+'\')" style="border:none;background:none;color:var(--d);cursor:pointer;flex-shrink:0;font-size:15px" title="删除"><i class=ic-x></i></button>'+
-    '</div>';
-  }).join("");
-}
-function delWkDoc(id){
-  var docs=getWkDocs();
-  if(docs[wkKey]){docs[wkKey]=docs[wkKey].filter(function(x){return x.id!==id;});localStorage.setItem("wb_wkdocs",JSON.stringify(docs));renderWkDocs();TO("已删除");}
-}
-
 function planKeyOf(wk,pn,lid){return "PL:"+wk+"|"+(pn||"")+"|"+(lid||"");}
 // 为每条「下周计划」补齐稳定 ID（按位置对齐，不随文字改动变化），用于任务稳定绑定
 function ensurePlanIds(){var data=JSON.parse(localStorage.getItem("wb_weekly")||"{}");var ch=false;for(var k in data){(data[k]||[]).forEach(function(p){var lines=(p.next||"").split("\n");var ids=(p.nextIds&&Array.isArray(p.nextIds))?p.nextIds.slice():[];var nw=[];lines.forEach(function(ln,j){var tx=ln.replace(/^\s*\d+[、.、]\s*/,"").trim();nw.push(tx?(ids[j]||UD()):"");});if(JSON.stringify(nw)!==JSON.stringify(ids)){p.nextIds=nw;ch=true;}});}if(ch)localStorage.setItem("wb_weekly",JSON.stringify(data));}
