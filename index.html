@@ -217,9 +217,18 @@ body.collapsed .sb-sync-btn .dot{display:none}
 <main class="content" id="content">
 <div id="pg-home">
 <div class="welcome"><span class="wt">你好，三三</span></div><div class="sub" id="today"></div>
+<div class="card" style="margin-bottom:14px;padding:12px 16px;background:var(--c);border:1px solid var(--b);border-radius:18px;box-shadow:var(--sh)">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><i class=ic-flame></i> <b style="font-size:13px">任务速记</b></div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <button onclick="startQuickVoice()" style="flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1.5px solid var(--b);background:var(--bg);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center" title="语音输入" id="qvBtn">🎤</button>
+    <input id="quickIn" placeholder="快速记录任务…" onkeydown="if(event.key==='Enter')quickAdd()" style="flex:1;min-width:0;border:1.5px solid var(--b);border-radius:14px;padding:10px 14px;font-size:13px;background:var(--bg)">
+    <label style="flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1.5px solid var(--b);background:var(--bg);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center" title="拍照识图"><input type="file" accept="image/*" onchange="quickOCR(this)" style="display:none">📷</label>
+    <button onclick="quickAdd()" style="flex-shrink:0;padding:10px 18px;border-radius:14px;border:none;background:var(--grad);color:#fff;font-size:13px;font-weight:700;cursor:pointer">添加</button>
+  </div>
+</div>
 <div class="cards" id="dash"></div>
-<div class="card" id="pbCard"><div class="bh"><i class=ic-target></i> 项目进度看板</div><div id="pboard"></div></div>
 <div class="card"><div class="bh"><i class=ic-flame></i> 今日 Top3</div><div id="t3list"></div></div>
+<div class="card" id="pbCard"><div class="bh"><i class=ic-target></i> 项目进度看板</div><div id="pboard"></div></div>
 </div>
 
 <div id="pg-tasks" style="display:none">
@@ -313,7 +322,7 @@ body.collapsed .sb-sync-btn .dot{display:none}
 
 <div class="toast" id="toast"></div>
 <div id="pg-kb" style="display:none">
-<div class="bh" style="margin-bottom:0"><span><i class=ic-bulb></i> 知识库 <b id="kbc">0</b></span><button class="btn btn-p" onclick="EKB()">+ 新建</button><button class="btn btn-o" onclick="exportKB()">导出</button></div>
+<div class="bh" style="margin-bottom:0"><span><i class=ic-bulb></i> 知识库 <b id="kbc">0</b></span><button class="btn btn-p" onclick="EKB()">+ 新建</button><button class="btn btn-o" onclick="fetchKBNews()" id="kbFetchBtn">🔍 抓取资讯</button><button class="btn btn-o" onclick="exportKB()">导出</button></div>
 <div style="margin:8px 0;display:flex;gap:6px;flex-wrap:wrap" id="kbfilter">
 <button class="btn btn-o sel" onclick="KBT('全部',this)">全部</button>
 <button class="btn btn-o" onclick="KBT('灵感',this)">灵感</button>
@@ -688,6 +697,56 @@ var kbf='全部';
 var kbTheme='全部';
 function KBT(t,el){kbf=t;kbTheme='全部';CL('#kbfilter .btn-o').forEach(function(b){b.classList.remove('sel')});if(el)el.classList.add('sel');var sub=C('#kbsub');if(sub){sub.style.display=(t==='动态')?'flex':'none';CL('#kbsub .btn-o').forEach(function(b){b.classList.remove('sel')});var fb=CL('#kbsub .btn-o')[0];if(fb)fb.classList.add('sel');}renderKB();}
 function KBT2(t,el){kbTheme=t;CL('#kbsub .btn-o').forEach(function(b){b.classList.remove('sel')});if(el)el.classList.add('sel');renderKB();}
+/* === 自动抓取资讯 === */
+var KB_FETCH_TOPICS=[
+  {q:"教育部+研学旅行+政策+标准+2024+2025",theme:"政策",tag:"国家政策",max:5},
+  {q:"福建省+研学+教育+政策+2024+2025",theme:"政策",tag:"福建政策",max:3},
+  {q:"厦门市+研学+教育+政策通知",theme:"政策",tag:"厦门政策",max:3},
+  {q:"元宇宙+VR+研学+教育+课程",theme:"元宇宙",tag:"元宇宙研学",max:5},
+  {q:"数字孪生+数智人+教育+教学",theme:"竞品",tag:"数字技术",max:5},
+  {q:"AI+研学+课程设计+XR+教育",theme:"元宇宙",tag:"AIGC研学",max:5}
+];
+async function fetchKBNews(){
+  var btn=C('#kbFetchBtn');if(btn){btn.disabled=true;btn.textContent='⏳ 抓取中…';}
+  var today=TD(),added=0,MAX_TOTAL=20;
+  var existing=KB();
+  var cutoff=(new Date().getFullYear()-2)+'-'+(new Date().getMonth()+1).toString().padStart(2,'0')+'-'+new Date().getDate().toString().padStart(2,'0');
+  var deleted=[];try{deleted=JSON.parse(localStorage.getItem('wb_kb_deleted')||'[]');}catch(e){}
+  for(var i=0;i<KB_FETCH_TOPICS.length&&added<MAX_TOTAL;i++){
+    var t=KB_FETCH_TOPICS[i],max=Math.min(t.max||5,MAX_TOTAL-added),count=0;
+    try{
+      var rssUrl=encodeURIComponent('https://news.google.com/rss/search?q='+encodeURIComponent(t.q)+'&hl=zh-CN&gl=CN&ceid=CN:zh');
+      var r=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+rssUrl);
+      if(!r.ok)continue;
+      var j=await r.json();if(!j.items)continue;
+      // 重新加载KB确保去重准确
+      existing=KB();
+      for(var k=0;k<j.items.length&&count<max;k++){
+        var item=j.items[k];
+        var title=(item.title||'').replace(/\s*-\s*\S+$/,'').trim();
+        if(!title||title.length<6)continue;
+        var pubDate=item.pubDate||'';
+        // 政策类做时效过滤：近2年内
+        if(t.theme==='政策'&&pubDate<cutoff)continue;
+        if(existing.find(function(x){return x.title===title;}))continue;
+        if(deleted.indexOf(title)>=0)continue; // 删除过的不再出现
+        existing.push({
+          id:UD(),type:'动态',theme:t.theme,title:title,
+          content:(item.description||'').replace(/<[^>]*>/g,'').slice(0,300),
+          source:item.link||'',tags:[t.tag,'自动抓取'],
+          date:today
+        });
+        count++;added++;
+      }
+      KBs(existing);
+    }catch(e){}
+  }
+  localStorage.setItem('wb_kb_fetch_date',today);
+  if(btn){btn.disabled=false;btn.textContent='🔍 抓取资讯';}
+  if(added>0){TO('🔍 抓取到 '+added+' 条新资讯');renderKB();}
+  else{TO('未发现新资讯 (可能需科学上网)');}
+}
+/* === 知识库 === */
 function renderKB(){
   var d=KB();var q=(C('#kbSearch')?C('#kbSearch').value:'').trim().toLowerCase();
   var list=d.filter(function(x){if(kbf!=='全部'&&x.type!==kbf)return false;if(kbf==='动态'&&kbTheme!=='全部'&&(x.theme||'')!==kbTheme)return false;if(q){var hay=(x.title+' '+(x.content||'')+' '+(x.tags||[]).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}return true;});
@@ -724,7 +783,7 @@ function SKB(){var id=C('#kbid').value;var title=C('#kbti').value.trim();if(!tit
   var d={id:id||UD(),type:C('#kbtyp').value,title:title,content:C('#kbco').value.trim(),source:C('#kbsr').value.trim(),tags:C('#kbtg').value.split(/[,，]/).map(function(t){return t.trim();}).filter(Boolean),date:TD(),theme:(C('#kbtyp').value==='动态')?C('#kbth').value:''};
   var arr=KB();if(id){var i=arr.findIndex(function(x){return x.id===id;});if(i>=0)arr[i]=d;else arr.push(d);}else arr.push(d);KBs(arr);CE();renderKB();TO('已保存');
 }
-function DKB(id){if(!confirm('删除该条目？'))return;KBs(KB().filter(function(x){return x.id!==id;}));renderKB();}
+function DKB(id){var item=KB().find(function(x){return x.id===id;});if(!item)return;if(!confirm('删除该条目？'))return;var deleted=[];try{deleted=JSON.parse(localStorage.getItem('wb_kb_deleted')||'[]');}catch(e){}deleted.push(item.title);localStorage.setItem('wb_kb_deleted',JSON.stringify(deleted));KBs(KB().filter(function(x){return x.id!==id;}));renderKB();}
 function exportKB(){if(typeof XLSX==="undefined"){TO("正在加载导出组件…");var s=document.createElement("script");s.src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";s.onload=function(){exportKB();};document.head.appendChild(s);return;}
   var d=KB();if(!d.length){TO("知识库暂无数据");return;}
   var rows=[["类型","主题","标题","内容","来源","标签","日期"]];
@@ -803,7 +862,7 @@ var wkKey="";
 var SEED_WEEKLY={"2026-W29": [{"cat": "科创研学", "name": "研学项目运营", "desc": "打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标", "lead": "邱雨槡", "collab": "钟涵湘\n王俊亦\n钱政东", "goal": "10%（课程框架搭建）", "progress": "1、输出小初高研学课程框架初稿\n2、对接咪咕咖啡，敲定融合课程框架\n3、洽谈万千研学，输出落地方案初稿\n4、完成项目成本收益测算模型\n5、组织内部研讨，同步课程规划", "next": "1、输出小学段样例课课程标准\n2、输出小学段展厅讲解词等配套物料\n3、完成课程方案 PPT 初稿", "issue": "1、讲解词需涵湘协助，望7.29前交付"}, {"cat": "日常办公", "name": "商务拓展", "desc": "统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、完成院校合作案例单页制作\n2、接待夏商客户，同步产品体系\n3、对接厦大嘉庚学院，同步AI方案\n4、完成周报模板优化及填写标准编制", "next": "1、跟进商务渠道后续对接安排\n2、跟进周报规范落地执行反馈", "issue": "1、无"}], "2026-W30": [{"cat": "科创研学", "name": "研学项目运营", "desc": "打造中小学科创研学产品矩阵，覆盖课程研发、校企拓客、落地运营全流程，达成学期4000人次、30万营收目标", "lead": "邱雨槡", "collab": "钟涵湘\n王俊亦\n钱政东", "goal": "15%（样例课搭建）", "progress": "1、输出小学段样例课课程（元宇宙启蒙课）\n2、输出小学段展厅讲解词、AR二维码、签到表等配套物料\n3、完成课程方案、PPT、任务单初稿并内部试课打磨\n4、完成AR产品测试（AR仿真特效），平板手机电话卡等物料借调", "next": "1、完善样例课（元宇宙启蒙课）\n2、确定课程开发交付标准\n3、跟进及交付半日营活动（暑托班、海关）\n4、开发冰壶课程（竞赛课件）及内部演练", "issue": "1、备用平板/手机号/测试账号"}, {"cat": "日常办公", "name": "商务拓展", "desc": "统筹商务渠道拓新与团队表单管理体系搭建，支撑数智赋能中心日常运营", "lead": "梁志发", "collab": "邱雨槡", "goal": "", "progress": "1、接待厦门日报客户，同步研学方案", "next": "1、推进海关半日营落地，进度暂无", "issue": ""}]};
 (function(){var VER=5;if((localStorage.getItem("wb_weekly_ver")||"0")!==String(VER)){var d;try{d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");}catch(e){d={};}if(!d||typeof d!=="object")d={};for(var k in SEED_WEEKLY){d[k]=SEED_WEEKLY[k];}localStorage.setItem("wb_weekly",JSON.stringify(d));localStorage.setItem("wb_weekly_ver",String(VER));}})();
 (function(){var MV="1";if((localStorage.getItem("wb_weekly_monmig")||"0")!==MV){try{var d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");if(d&&typeof d==="object"){function oldFri(key){var mm=(""+key).match(/^(\d{4})-W(\d+)$/);if(!mm)return null;var y=+mm[1],w=+mm[2];var j1=new Date(y,0,1);var jd=j1.getDay();var ff=new Date(y,0,1+((5-jd+7)%7));var f=new Date(ff);f.setDate(ff.getDate()+(w-1)*7);return f;}function monKey(dt){var day=dt.getDay();var back=(day===0)?6:(day-1);var mn=new Date(dt);mn.setDate(dt.getDate()-back);return mn.getFullYear()+"-W"+isoWeek(mn);}var nd={};for(var k in d){if(!Array.isArray(d[k]))continue;var f=oldFri(k);var nk=f?monKey(f):k;if(!nd[nk])nd[nk]=[];for(var i=0;i<d[k].length;i++)nd[nk].push(d[k][i]);}localStorage.setItem("wb_weekly",JSON.stringify(nd));}}catch(e){}localStorage.setItem("wb_weekly_monmig",MV);}})();
-window.addEventListener('load',function(){var SY="1";if((localStorage.getItem("wb_sync_done")||"0")!==SY){try{autoPlanAll();}catch(e){}localStorage.setItem("wb_sync_done",SY);}try{syncPlanStatus();}catch(e){}try{RZ(document.body);}catch(e){}try{syncRefresh();}catch(e){}try{initAutoSync();}catch(e){}});
+window.addEventListener('load',function(){var SY="1";if((localStorage.getItem("wb_sync_done")||"0")!==SY){try{autoPlanAll();}catch(e){}localStorage.setItem("wb_sync_done",SY);}try{syncPlanStatus();}catch(e){}try{RZ(document.body);}catch(e){}try{syncRefresh();}catch(e){}try{initAutoSync();}catch(e){}try{var today=TD();if(today!==(localStorage.getItem('wb_kb_fetch_date')||'')){setTimeout(function(){fetchKBNews();},2000);}}catch(e){}});
 // 去重改为手动触发（预览+确认），不再静默自动删除
 function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function friWeekNo(fri){var y=fri.getFullYear();var jan1=new Date(y,0,1);var jd=jan1.getDay();var firstFri=new Date(y,0,1+((5-jd+7)%7));return Math.floor((fri-firstFri)/(7*86400000))+1;}
@@ -1129,6 +1188,29 @@ function VC(){var b=C('#mb');if(rec&&rec.listening){rec.stop();b.innerHTML=ph('m
     rec.onerror=rec.onend=function(){b.innerHTML=ph('mic');};}
   rec.start();b.textContent='⏺';}
 
+/* === 首页速记 === */
+function quickAdd(){
+  var v=C('#quickIn').value.trim();if(!v)return;
+  var ts=TT(),today=TD();
+  ts.push({id:UD(),title:v,desc:'',priority:'中',status:'待办',start:today,due:today,assignee:'邱雨槡',collab:'',pj:'',top3:false,risk:false,ms:false,doneDate:'',createdAt:TD()});
+  ST(ts);C('#quickIn').value='';RN();TO('任务已添加: '+v);
+}
+function startQuickVoice(){
+  var b=C('#qvBtn'),inp=C('#quickIn');
+  if(!rec){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('浏览器不支持语音');return;}rec=new SR();rec.lang='zh-CN';rec.interimResults=false;}
+  if(rec.listening){rec.stop();b.textContent='🎤';return;}
+  rec.onresult=function(e){inp.value=e.results[0][0].transcript;b.textContent='🎤';};
+  rec.onerror=rec.onend=function(){b.textContent='🎤';};
+  rec.start();b.textContent='⏺';
+}
+function quickOCR(el){
+  var f=el.files&&el.files[0];if(!f)return;el.value='';
+  C('#imgFile').files=el.files; // reuse existing OCR modal
+  var rd=new FileReader();
+  rd.onload=function(){C('#imgPreview').src=rd.result;CE('em-img');};
+  rd.readAsDataURL(f);
+}
+
 // Left swipe for tasks
 var swX=0,swR=null,swI=null,swS=0;
 document.addEventListener('touchstart',function(e){var r=e.target.closest('.row');if(!r)return;
@@ -1342,7 +1424,18 @@ async function syncFind(){
   }catch(e){C('#syncLog').innerHTML='<span style=color:var(--d)>搜索出错: '+e.message+'</span>';}
 }
 RN();RZ(document.body);
-(function(){var FL="wk32seed";if(localStorage.getItem(FL)!=="1"){var d=JSON.parse(localStorage.getItem("wb_weekly")||"{}");var wk="2026-W32";if(!d[wk])d[wk]=[];d[wk].push({cat:"科创研学",name:"暑托班研学项目",desc:"小学半日营研学体验推进",lead:"邱雨槡",collab:"",goal:"",progress:"1、暑托班研学推进：了解学情及方案介绍，定于2026.8.6下午开展小学半日营研学体验\n2、参与AR+AI交互内容实训启动会：作为需求协助方线上参会\n3、筹备研学物料及沟通彩排时间：签到表、号码牌、教室桌椅电脑一体机协调、相机、AI合拍机模型配置、展厅预约、人员安排及进度表、纸质物料打印\n4、小学样例课完善：课件、教案、任务单、源视频，并交付智能交互产品部\n5、参与AR研学体验管需求会：了解动线安排，增加研学需求如人数、讲解安排、现场轮转时间等\n6、参与元宇宙学习空间会议和研学小程序讨论会：输出需求（题库打卡，电子数据留痕、登录账号）简历分享（市场小程序案例如游学研学）",next:"",issue:""},{cat:"对外合作",name:"校企合作项目",desc:"厦大嘉庚学院及闽台合作",lead:"邱雨槡",collab:"",goal:"",progress:"1、厦大嘉庚学院校企合作跟进：推送opc方案，沟通报名意向，校方待正式版发布再沟通\n2、跟进万千闽台合作交流研学团，输出报价及方案，待反馈",next:"",issue:""});localStorage.setItem("wb_weekly",JSON.stringify(d));localStorage.setItem(FL,"1");}})();
+(function(){
+if(localStorage.getItem("kdocs_w32")==="1")return;
+var d=JSON.parse(localStorage.getItem("wb_weekly")||"{}"),wk="2026-W32";
+d[wk]=[
+{cat:"科创研学",name:"研学项目运营",desc:"打造中小学科创研学产品矩阵",lead:"邱雨槡",collab:"钟涵湘、王俊亦、钱政东",goal:"",progress:"1、暑托班研学推进：了解学情及方案介绍，定于2026.8.6下午开展小学半日营研学体验\n2、参与AR+AI交互内容实训启动会：作为需求协助方线上参会\n3、筹备研学物料及沟通彩排时间：签到表、号码牌、教室桌椅电脑一体机协调、相机、AI合拍机模型配置、展厅预约、人员安排及进度表、纸质物料打印\n4、小学样例课完善：课件、教案、任务单、源视频，并交付智能交互产品部\n5、参与AR研学体验管需求会：了解动线安排，增加研学需求如人数、讲解安排、现场轮转时间等\n6、参与元宇宙学习空间会议和研学小程序讨论会：输出需求（题库打卡，电子数据留痕、登录账号）简历分享（市场小程序案例如游学研学）",next:"",issue:""},
+{cat:"对外合作",name:"校企合作项目",desc:"厦大嘉庚学院及闽台合作交流研学团对接",lead:"邱雨槡",collab:"",goal:"",progress:"1、厦大嘉庚学院校企合作跟进：推送opc方案，沟通报名意向，校方待正式版发布再沟通\n2、跟进万千闽台合作交流研学团，输出报价及方案，待反馈",next:"",issue:""}
+];
+localStorage.setItem("wb_weekly",JSON.stringify(d));
+localStorage.setItem("kdocs_w32","1");
+TO("✅ 周报已注入 2个项目");
+})();
+(function(){if(localStorage.getItem("dtfix_v3")==="1")return;var ts=JSON.parse(localStorage.getItem("wb_tasks")||"[]");var today=new Date("2026-08-05");var pool=[];ts.forEach(function(t){if(t.status!=="已完成")pool.push(t);});var wdays=["2026-08-03","2026-08-04"];pool.forEach(function(t,i){var d=wdays[i%wdays.length];t.start=d;t.due=d;});if(pool.length>0){localStorage.setItem("wb_tasks",JSON.stringify(ts));TO("📅 "+pool.length+"个任务→周一/周二");}localStorage.setItem("dtfix_v3","1");})();
 if(!localStorage.getItem("wb_tasks")){
   localStorage.setItem("wb_tasks",JSON.stringify([{"id": "1", "title": "元宇宙教学课件审核定稿", "desc": "陈博涵梳理课程、协助修改课件教案及培训——现有内容不适合小学生，制作周期3天", "priority": "高", "status": "已完成", "start": "2026-07-24", "due": "2026-07-26", "assignee": "邱雨槡", "collab": "陈博涵", "pj": "1", "top3": true, "risk": true, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}, {"id": "4", "title": "讲解词审核 → 发至市场部补充", "desc": "钟涵湘已编制初稿，需审核后发至市场部补充（适配小学讲解词）", "priority": "高", "status": "已完成", "start": "2026-07-25", "due": "2026-07-28", "assignee": "邱雨槡", "collab": "钟涵湘", "pj": "1", "top3": false, "risk": true, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}, {"id": "2", "title": "联系综合部彩印研学任务单（20份）", "desc": "A4单面彩印，含4个展项任务+集章区", "priority": "高", "status": "待办", "start": "2026-07-26", "due": "2026-07-27", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": true, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "3", "title": "确认智能交互部二维码demo并反馈修改", "desc": "联系周涛，配置周期2小时，周一先制作demo", "priority": "中", "status": "待办", "start": "2026-07-26", "due": "2026-07-28", "assignee": "邱雨槡", "collab": "周涛", "pj": "1", "top3": true, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "5", "title": "收集10个电话号码注册元宇宙平台账号", "desc": "需提前登录，且须保持当天畅通（内测有时断开）", "priority": "高", "status": "待办", "start": "2026-07-28", "due": "2026-08-03", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": false, "risk": true, "ms": true, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "8", "title": "借用相机（数智营销部-洪风怡）", "desc": "已沟通借用，确认取用时间和归还流程", "priority": "低", "status": "待办", "start": "2026-08-02", "due": "2026-08-03", "assignee": "邱雨槡", "collab": "洪风怡", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "9", "title": "借用扩音器（市场部-翁倩文）", "desc": "已联系借用，确认取用时间", "priority": "低", "status": "待办", "start": "2026-08-03", "due": "2026-08-04", "assignee": "邱雨槡", "collab": "翁倩文", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "", "createdAt": "2026-07-27 23:39:19"}, {"id": "7", "title": "联系会务摆放课桌椅及电视", "desc": "2号楼3楼教室，1套课桌椅+电视", "priority": "低", "status": "已完成", "start": "2026-08-03", "due": "2026-08-04", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}, {"id": "6", "title": "笔记本电脑（10台）出库 + 鼠标电源", "desc": "学生上机操作，2人一台。已有设备，需办理出库手续", "priority": "低", "status": "已完成", "start": "2026-08-03", "due": "2026-08-04", "assignee": "邱雨槡", "collab": "", "pj": "1", "top3": false, "risk": false, "ms": false, "doneDate": "2026-07-28", "createdAt": "2026-07-27 23:39:19"}]));
   localStorage.setItem("wb_projects",JSON.stringify([{"id": "1", "name": "元启未来 屿你同行 — 咪咕元宇宙总部科技研学半日游", "type": "半日营", "grade": "小学3-6年级", "status": "筹备中", "client": "厦门集美XX小学（首次合作，学校对接人：李老师）", "next": "元宇宙教学课件审核定稿", "notes": ""}]));
