@@ -700,12 +700,12 @@ function KBT(t,el){kbf=t;kbTheme='全部';CL('#kbfilter .btn-o').forEach(functio
 function KBT2(t,el){kbTheme=t;CL('#kbsub .btn-o').forEach(function(b){b.classList.remove('sel')});if(el)el.classList.add('sel');renderKB();}
 /* === 自动抓取资讯 === */
 var KB_FETCH_TOPICS=[
-  {q:"教育部+研学旅行+政策+标准+2024+2025",theme:"政策",tag:"国家政策",max:5},
-  {q:"福建省+研学+教育+政策+2024+2025",theme:"政策",tag:"福建政策",max:3},
-  {q:"厦门市+研学+教育+政策通知",theme:"政策",tag:"厦门政策",max:3},
-  {q:"元宇宙+VR+研学+教育+课程",theme:"元宇宙",tag:"元宇宙研学",max:5},
-  {q:"数字孪生+数智人+教育+教学",theme:"竞品",tag:"数字技术",max:5},
-  {q:"AI+研学+课程设计+XR+教育",theme:"元宇宙",tag:"AIGC研学",max:5}
+  {q:"教育部+中小学+研学旅行+政策+2024+2025",theme:"政策",tag:"国家政策",max:5},
+  {q:"福建省+中小学+研学+教育+政策+2024+2025",theme:"政策",tag:"福建政策",max:3},
+  {q:"厦门市+中小学+研学+教育+政策通知",theme:"政策",tag:"厦门政策",max:3},
+  {q:"中小学+元宇宙+XR+研学+课程设计",theme:"元宇宙",tag:"元宇宙研学",max:5},
+  {q:"中小学+数字孪生+数智人+研学+教学",theme:"竞品",tag:"数字技术",max:5},
+  {q:"中小学+AI+研学课程+AIGC+教育",theme:"元宇宙",tag:"AIGC研学",max:5}
 ];
 async function fetchKBNews(){
   var btn=C('#kbFetchBtn');if(btn){btn.disabled=true;btn.textContent='⏳ 抓取中…';}
