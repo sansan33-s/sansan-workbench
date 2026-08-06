@@ -1423,6 +1423,85 @@ async function syncFind(){
     else{C('#syncLog').innerHTML='<span style=color:var(--w)>未找到，请在电脑端先上传一次</span>';}
   }catch(e){C('#syncLog').innerHTML='<span style=color:var(--d)>搜索出错: '+e.message+'</span>';}
 }
+/* === 本周任务注入+现有任务移上周 === */
+(function(){if(localStorage.getItem("task_w32v3")==="1")return;
+var old=JSON.parse(localStorage.getItem("wb_tasks")||"[]");
+var lw=['2026-07-27','2026-07-28','2026-07-29','2026-07-30','2026-07-31'];
+old.forEach(function(t,i){if(t.status!=="已完成"){var d=lw[i%lw.length];t.start=d;t.due=d;}});
+var nts=[
+  {title:"暑托班研学推进：了解学情及方案介绍，定于2026.8.6下午开展小学半日营研学体验",start:"2026-08-03",due:"2026-08-03",top3:true,cat:"科创研学"},
+  {title:"参与AR+AI交互内容实训启动会：作为需求协助方线上参会",start:"2026-08-04",due:"2026-08-04",top3:true,cat:"科创研学"},
+  {title:"筹备研学物料及沟通彩排时间：签到表、号码牌、教室桌椅电脑一体机协调、相机、AI合拍机模型配置、展厅预约、人员安排及进度表、纸质物料打印",start:"2026-08-05",due:"2026-08-05",top3:true,cat:"科创研学"},
+  {title:"小学样例课完善：课件、教案、任务单、源视频，并交付智能交互产品部",start:"2026-08-03",due:"2026-08-03",top3:false,cat:"科创研学"},
+  {title:"参与AR研学体验管需求会：了解动线安排，增加研学需求如人数、讲解安排、现场轮转时间等",start:"2026-08-04",due:"2026-08-04",top3:false,cat:"科创研学"},
+  {title:"参与元宇宙学习空间会议和研学小程序讨论会：输出需求（题库打卡，电子数据留痕、登录账号）简历分享（市场小程序案例如游学研学）",start:"2026-08-05",due:"2026-08-05",top3:false,cat:"科创研学"},
+  {title:"厦大嘉庚学院校企合作跟进：推送opc方案，沟通报名意向，校方待正式版发布再沟通",start:"2026-08-04",due:"2026-08-04",top3:false,cat:"商务拓展"},
+  {title:"跟进万千闽台合作交流研学团，输出报价及方案，待反馈",start:"2026-08-05",due:"2026-08-05",top3:false,cat:"商务拓展"}
+];
+nts.forEach(function(t){old.push({id:UD(),title:t.title,desc:t.cat||"",priority:"高",status:"待办",start:t.start,due:t.due,assignee:"邱雨槡",collab:"",pj:t.cat==="科创研学"?"2":t.cat==="商务拓展"?"3":"1",top3:t.top3,risk:false,ms:false,doneDate:"",createdAt:TD()});});
+localStorage.setItem("wb_tasks",JSON.stringify(old));
+// 补充项目
+(function(){var pj=JSON.parse(localStorage.getItem("wb_projects")||"[]");var has=function(n){return pj.find(function(x){return x.name===n;});};if(!has("科创研学日常运营"))pj.push({id:"2",name:"科创研学日常运营",type:"日常运营",grade:"小学3-6年级",status:"进行中",client:"咪咕新空内部",next:"","notes":"课程研发、校企拓客、落地运营"});if(!has("商务拓展"))pj.push({id:"3",name:"商务拓展",type:"对外合作",grade:"",status:"进行中",client:"厦大嘉庚学院/闽台合作",next:"","notes":"校企合作、研学团对接、方案报价"});localStorage.setItem("wb_projects",JSON.stringify(pj));})();
+localStorage.setItem("task_w32v3","1");
+TO("✅ 旧任务→上周 + 新增6条本周任务");
+})();
+/* === 周报更新 v4 === */
+(function(){if(localStorage.getItem("wkly_v4")==="1")return;
+var d=JSON.parse(localStorage.getItem("wb_weekly")||"{}"),wk="2026-W32";
+if(!d[wk])d[wk]=[];
+var kc=null,sw=null;d[wk].forEach(function(x){if(x.cat==="科创研学"||(x.name||"").indexOf("研学项目")>=0)kc=x;if(x.cat==="商务渠道"||(x.name||"").indexOf("商务")>=0||(x.name||"").indexOf("校企合作")>=0)sw=x;});
+if(kc){kc.cat="科创研学";kc.name="研学项目运营";
+kc.progress="1、暑托班研学推进：了解学情及方案介绍，沟通流程动线，交付纸质材料及出行相册，并负责总控执行小学半日营研学体验\n2、参与AR+AI交互内容实训启动会：作为需求协助方线上参会\n3、筹备研学物料及沟通彩排时间：签到表、号码牌、教室桌椅电脑一体机协调、相机、AI合拍机模型配置、展厅预约、人员安排及进度表、纸质物料打印\n4、小学样例课完善：课件、教案、任务单、源视频，并交付智能交互产品部\n5、参与AR研学体验管需求会：了解动线安排，增加研学需求如人数、讲解安排、现场轮转时间等\n6、参与元宇宙学习空间会议和研学小程序讨论会：输出需求（题库打卡，电子数据留痕、登录账号）简历分享（市场小程序案例如游学研学）\n7、小学科技课开发（AI数智人课程）调整：课件、学习单、研学流程表";
+kc.next="1、暑托班研学复盘，输出标准小学半日营研学执行sop初稿\n2、冰壶课程内测\n3、编制研学管理办法初稿：含课程体系、收益估算、成本分析、讲师管理、渠道合作模式等";
+kc.issue="";
+}else{d[wk].push({cat:"科创研学",name:"研学项目运营",desc:"",lead:"邱雨槡",collab:"钟涵湘、王俊亦、钱政东",goal:"",
+progress:"1、暑托班研学推进：了解学情及方案介绍，沟通流程动线，交付纸质材料及出行相册，并负责总控执行小学半日营研学体验\n2、参与AR+AI交互内容实训启动会：作为需求协助方线上参会\n3、筹备研学物料及沟通彩排时间\n4、小学样例课完善\n5、参与AR研学体验管需求会\n6、参与元宇宙学习空间会议和研学小程序讨论会\n7、小学科技课开发（AI数智人课程）调整",
+next:"1、暑托班研学复盘sop\n2、冰壶课程内测\n3、编制研学管理办法初稿",issue:""});}
+if(sw){sw.cat="商务渠道";sw.name="商务渠道";sw.lead="邱雨槡";
+sw.progress="1、厦大嘉庚学院校企合作跟进：推送opc方案，沟通报名意向，校方待正式版发布再沟通\n2、跟进万千闽台合作交流研学团，输出报价及方案，待反馈";
+sw.next="1、跟进厦大嘉庚学院校企合作：全媒体运营师报名和opc意向\n2、跟进万千闽台合作交流研学团方案定稿，合作报价定稿，意向达成后填写售票登记表\n3、编制渠道合作协议初稿：了解多渠道的分成比例及市场定价";
+sw.issue="1、协助谈判分成定价";
+}else{d[wk].push({cat:"商务渠道",name:"商务渠道",desc:"校企合作及研学团渠道拓展",lead:"邱雨槡",collab:"",goal:"",
+progress:"1、厦大嘉庚学院校企合作跟进：推送opc方案，沟通报名意向，校方待正式版发布再沟通\n2、跟进万千闽台合作交流研学团，输出报价及方案，待反馈",
+next:"1、跟进厦大嘉庚学院校企合作\n2、跟进万千闽台合作交流研学团\n3、编制渠道合作协议初稿",
+issue:"1、协助谈判分成定价"});}
+localStorage.setItem("wb_weekly",JSON.stringify(d));
+localStorage.setItem("wkly_v4","1");
+TO("✅ 周报已更新：科创研学7条+商务渠道2条");
+})();
+/* === 任务补全+下周任务 === */
+(function(){if(localStorage.getItem("task_final")==="1")return;
+var ts=JSON.parse(localStorage.getItem("wb_tasks")||"[]");
+// 更新第1条任务标题
+ts.forEach(function(t){
+  if(t.title.indexOf("暑托班研学推进")>=0&&t.title.indexOf("总控执行")<0){
+    t.title="暑托班研学推进：了解学情及方案介绍，沟通流程动线，交付纸质材料及出行相册，并负责总控执行小学半日营研学体验";
+  }
+  if(t.title.indexOf("厦大嘉庚")>=0&&t.title.indexOf("全媒体")<0){t.desc="商务渠道";}
+  if(t.title.indexOf("万千闽台")>=0&&t.title.indexOf("售票")<0){t.desc="商务渠道";}
+});
+// 去重检查：是否已加第7条和下周任务
+var hasN7=ts.find(function(t){return t.title.indexOf("小学科技课")>=0;});
+var hasNW=ts.find(function(t){return t.title.indexOf("暑托班研学复盘")>=0;});
+var today=TD();
+// 本周新增：第7条
+if(!hasN7)ts.push({id:UD(),title:"小学科技课开发（AI数智人课程）调整：课件、学习单、研学流程表",desc:"科创研学",priority:"高",status:"待办",start:"2026-08-05",due:"2026-08-05",assignee:"邱雨槡",collab:"",pj:"2",top3:false,risk:false,ms:false,doneDate:"",createdAt:today});
+// 下周任务(W33: Aug10-14)
+var nwk=[
+  {t:"暑托班研学复盘，输出标准小学半日营研学执行sop初稿",d:"2026-08-10",c:"科创研学",pj:"2",top3:true},
+  {t:"冰壶课程内测",d:"2026-08-11",c:"科创研学",pj:"2",top3:true},
+  {t:"编制研学管理办法初稿：含课程体系、收益估算、成本分析、讲师管理、渠道合作模式等",d:"2026-08-12",c:"科创研学",pj:"2",top3:true},
+  {t:"跟进厦大嘉庚学院校企合作：全媒体运营师报名和opc意向",d:"2026-08-10",c:"商务渠道",pj:"3",top3:false},
+  {t:"跟进万千闽台合作交流研学团方案定稿，合作报价定稿，意向达成后填写售票登记表",d:"2026-08-11",c:"商务渠道",pj:"3",top3:false},
+  {t:"编制渠道合作协议初稿：了解多渠道的分成比例及市场定价",d:"2026-08-12",c:"商务渠道",pj:"3",top3:false}
+];
+if(!hasNW){nwk.forEach(function(x){ts.push({id:UD(),title:x.t,desc:x.c,priority:"高",status:"待办",start:x.d,due:x.d,assignee:"邱雨槡",collab:"",pj:x.pj,top3:x.top3,risk:false,ms:false,doneDate:"",createdAt:today});});}
+// 待解决→标为风险
+ts.forEach(function(t){if(t.title.indexOf("协助谈判分成定价")>=0){t.risk=true;t.ms=true;}});
+localStorage.setItem("wb_tasks",JSON.stringify(ts));
+localStorage.setItem("task_final","1");
+TO("✅ 本周+下周任务已分发");
+})();
 RN();RZ(document.body);
 (function(){
 if(localStorage.getItem("kdocs_w32")==="1")return;
