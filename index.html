@@ -495,8 +495,9 @@ function RN(){
     var ob=C('#ovbar');
     if(ov.length&&cf==='全部'){ob.style.display='block';ob.innerHTML='<i class=ic-clock></i> 即将逾期 '+ov.length+' 项 · '+ov.map(function(t){return t.title.substr(0,12)+'…';}).join(' | ');}
     else{ob.style.display='none';}
-    var gr={};fts.forEach(function(t){var k=t.start||t.due||'无日期';if(!gr[k])gr[k]=[];gr[k].push(t);});
-    var h='';Object.keys(gr).sort().forEach(function(k){
+    var gr={};fts.forEach(function(t){var k=(cf==='已完成'?(t.doneDate||t.start):t.start)||t.due||'无日期';if(!gr[k])gr[k]=[];gr[k].push(t);});
+    var keys=Object.keys(gr);keys.sort();if(cf==='已完成')keys.reverse();
+    var h='';keys.forEach(function(k){
       if(k!=='无日期')h+='<div class="timeline">'+k+' · '+gr[k].length+'项</div>';
       gr[k].forEach(function(t){h+=TK(t);});
     });
@@ -1446,7 +1447,7 @@ localStorage.setItem("task_w32v3","1");
 TO("✅ 旧任务→上周 + 新增6条本周任务");
 })();
 /* === 周报更新 v4 === */
-(function(){if(localStorage.getItem("wkly_v4")==="1")return;
+(function(){if(localStorage.getItem("v6_wkly")==="1")return;
 var d=JSON.parse(localStorage.getItem("wb_weekly")||"{}"),wk="2026-W32";
 if(!d[wk])d[wk]=[];
 var kc=null,sw=null;d[wk].forEach(function(x){if(x.cat==="科创研学"||(x.name||"").indexOf("研学项目")>=0)kc=x;if(x.cat==="商务渠道"||(x.name||"").indexOf("商务")>=0||(x.name||"").indexOf("校企合作")>=0)sw=x;});
@@ -1466,11 +1467,11 @@ progress:"1、厦大嘉庚学院校企合作跟进：推送opc方案，沟通报
 next:"1、跟进厦大嘉庚学院校企合作\n2、跟进万千闽台合作交流研学团\n3、编制渠道合作协议初稿",
 issue:"1、协助谈判分成定价"});}
 localStorage.setItem("wb_weekly",JSON.stringify(d));
-localStorage.setItem("wkly_v4","1");
+localStorage.setItem("v6_wkly","1");
 TO("✅ 周报已更新：科创研学7条+商务渠道2条");
 })();
 /* === 任务补全+下周任务 === */
-(function(){if(localStorage.getItem("task_final")==="1")return;
+(function(){if(localStorage.getItem("v6_task")==="1")return;
 var ts=JSON.parse(localStorage.getItem("wb_tasks")||"[]");
 // 更新第1条任务标题
 ts.forEach(function(t){
@@ -1499,7 +1500,7 @@ if(!hasNW){nwk.forEach(function(x){ts.push({id:UD(),title:x.t,desc:x.c,priority:
 // 待解决→标为风险
 ts.forEach(function(t){if(t.title.indexOf("协助谈判分成定价")>=0){t.risk=true;t.ms=true;}});
 localStorage.setItem("wb_tasks",JSON.stringify(ts));
-localStorage.setItem("task_final","1");
+localStorage.setItem("v6_task","1");
 TO("✅ 本周+下周任务已分发");
 })();
 RN();RZ(document.body);
